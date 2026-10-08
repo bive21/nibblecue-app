@@ -9,7 +9,7 @@
  */
 
 export const SHOPPING = {
-  screenTitle: 'Shopping list',
+  screenTitle: 'Grocery list',
   share: 'Share',
   clear: (n: number): string => `Clear ${n} bought`,
   clearShort: 'Clear',
@@ -37,7 +37,7 @@ export const SHOPPING = {
    */
   todayToBuyLabel: (n: number): string => (n === 1 ? 'Thing to buy' : 'Things to buy'),
   todayNothing: 'Nothing to buy',
-  removeLine: (title: string): string => `Remove ${title} from shopping list`,
+  removeLine: (title: string): string => `Remove ${title} from grocery list`,
   openLine: (title: string): string => `${title}, details`,
   tripSaved: (bought: number, left: number): string =>
     `Trip saved: ${bought} bought${left > 0 ? `, ${left} still on the list` : ''}`,
@@ -177,13 +177,13 @@ export const SUPPLIES = {
    * for the eye, and this is the same news for the ear — the toast is read out as it shows.
    * `added` stays for a new supply saved to the catalog, which is a different place.
    */
-  addedToList: (title: string): string => `Added ${title} to the shopping list`,
+  addedToList: (title: string): string => `Added ${title} to the grocery list`,
   removed: (title: string): string => `Removed ${title}`,
   undone: 'Back in supplies',
   picker: 'Add to the list',
   pickerSearch: 'Search supplies or type any item',
-  pickerAdd: (title: string): string => `${title}, add to the shopping list`,
-  pickerDrop: (title: string): string => `${title}, take off the shopping list`,
+  pickerAdd: (title: string): string => `${title}, add to the grocery list`,
+  pickerDrop: (title: string): string => `${title}, take off the grocery list`,
   pickerDone: (n: number): string => `Done · ${n} on the list`,
 
   /* ---------------------------------------------------------------- the 2026-09-19 redesign */
@@ -196,8 +196,8 @@ export const SUPPLIES = {
   lede: 'What this household buys again and again: brand, size, and the detail that matters in the aisle.',
   addSupply: 'Add supply',
   /** The link card at the top: what is on the list, and how something gets onto it. */
-  listCount: (n: number): string => `${n} on the shopping list`,
-  listCountNone: 'Nothing on the shopping list yet',
+  listCount: (n: number): string => `${n} on the grocery list`,
+  listCountNone: 'Nothing on the grocery list yet',
   listCountHint: 'Tick a supply below to add it',
   yours: (n: number): string => `Your supplies · ${n}`,
   onListPill: 'On list',
@@ -227,12 +227,12 @@ export const SUPPLIES = {
   newShopPlaceholder: 'The shop’s name',
   linkOptional: 'Product link (optional)',
   brandRequired: 'Brand',
-  onListSwitch: 'On the shopping list',
+  onListSwitch: 'On the grocery list',
   onListSwitchHint: (qty: number, shop: string): string => `Quantity ${qty} · shows under ${shop}`,
   onListSwitchOff: 'Not on the list',
   removeConfirm: 'Remove from supplies?',
   removeConfirmBody:
-    'It comes off the shopping list too. Nothing that has already been bought changes.',
+    'It comes off the grocery list too. Nothing that has already been bought changes.',
   removeConfirmYes: 'Remove',
   cancel: 'Cancel',
 
@@ -242,7 +242,7 @@ export const SUPPLIES = {
   /**
    * THE ONE DOOR TO THE CATALOG, and adding a new supply is behind it (the owner, 2026-09-26:
    * *"remove the option for new supply, but keep see all supplies, rename it to manage all
-   * supplies, and user can add new supply from there"*). It came here from the shopping list's
+   * supplies, and user can add new supply from there"*). It came here from the grocery list's
    * header on 2026-09-22, under a "New supply" row that opened the form straight from this sheet;
    * two doors to one catalog was one more choice than a parent looking for something to buy
    * needs. What they typed and could not find still goes on the list as a one-off.
@@ -258,7 +258,7 @@ export const SUPPLIES = {
   /** Said once the row has been tapped with nothing typed: the box above is waiting. */
   oneOffNudge: 'Type the item in the search box above',
   oneOffAdd: (text: string): string => `Add “${text}” as a one-off`,
-  oneOffTypedHint: 'Just for this shopping list',
+  oneOffTypedHint: 'Just for this grocery list',
   pickerNone: 'No matching supplies',
   pickerNoneHint: 'Try a different search term or add it as a one-off.',
 } as const;

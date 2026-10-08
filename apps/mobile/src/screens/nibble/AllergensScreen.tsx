@@ -38,7 +38,7 @@ import { useNibbleWrites } from '../../nibble/useNibbleWrites';
 import { useConfirm } from '../../ui/confirm';
 import { ALLERGENS_PAGE, PROFILE } from './copy';
 import { NotMedical } from './parts';
-import { dayLabel } from './TodayScreen';
+import { dayLabel } from './dates';
 
 export function allergenDetail(a: AllergenState): string {
   const parts: string[] = [STATE_LABEL[a.kind]];

@@ -19,6 +19,11 @@ export const HARD_RULES = [
     sources: ['usda-dga', 'cdc-faqs', 'aap-juice', 'cdc-milk'],
   },
   {
+    id: 'before_six_months',
+    text: 'Before 6 months, only smooth purées of single first foods, and no common allergen yet.',
+    sources: ['aap-starting-solids', 'cdc-faqs', 'raisingchildren-solids'],
+  },
+  {
     id: 'no_honey_under_12',
     text: 'No honey before 12 months, raw or cooked, including in recipes.',
     sources: ['usda-dga', 'cdc-faqs'],

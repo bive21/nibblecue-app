@@ -40,8 +40,10 @@ import type { RootParams } from '../../app/types';
 import { useCanLog } from '../../household/useCanLog';
 import { useNibble } from '../../nibble/useNibble';
 import { useNibbleWrites } from '../../nibble/useNibbleWrites';
-import { ALLERGENS_PAGE, PLAN, PROFILE, TODAY } from './copy';
+import { ALLERGENS_PAGE, NOT_STARTED, PLAN, TODAY } from './copy';
 import { ItemSheet, type OpenItem } from './ItemSheet';
+import { dayLabel } from './dates';
+import { FirstDayCard, NotStartedCard } from './NotStarted';
 import { MealCard, NotMedical, styles } from './parts';
 import { ServeSheet } from './ServeSheet';
 
@@ -49,16 +51,7 @@ type Nav = NativeStackNavigationProp<RootParams>;
 
 const IN_WEEK = new Set(['introduced', 'keeping_going', 'established']);
 
-/** "Mon, Oct 12": a day the parent reads. */
-export function dayLabel(day: string): string {
-  const d = new Date(`${day}T12:00:00Z`);
-  return d.toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    timeZone: 'UTC',
-  });
-}
+export { dayLabel } from './dates';
 
 export function TodayScreen() {
   const t = useTheme();
@@ -116,6 +109,9 @@ export function TodayScreen() {
           testID="today.nochild"
         />
       );
+    // under four months there is nothing to set up yet: the dates come first (hard rule 1)
+    if (v.stage === 'too_young' && v.birthDate !== null)
+      return <NotStartedCard v={v} testID="today" />;
     if (v.profile === null)
       return (
         <Card testID="today.setup">
@@ -124,46 +120,29 @@ export function TodayScreen() {
             <Body>{TODAY.setupBody}</Body>
             <Button
               label={TODAY.setupCta}
-              onPress={() => nav.navigate('FoodProfile', { setup: true })}
+              onPress={() => nav.navigate('FoodSetup')}
               style={styles.start}
               testID="today.setup.start"
             />
           </View>
         </Card>
       );
-    if (v.stage === 'too_young')
-      return (
-        <Card testID="today.too_young">
-          <Body>{TODAY.tooYoung}</Body>
-        </Card>
-      );
-    if (v.stage === 'getting_ready')
-      return (
-        <Card testID="today.getting_ready">
-          <View style={{ gap: t.space.sm }}>
-            <BodyStrong>{TODAY.gettingReady}</BodyStrong>
-            <Body>{TODAY.gettingReadyBody}</Body>
-            {canLog && v.profileRecord ? (
-              <Button
-                label={TODAY.started}
-                onPress={() => {
-                  if (v.childId === null || v.profile === null || v.profileRecord === null) return;
-                  void writes.saveProfile(
-                    v.childId,
-                    v.profileRecord.id,
-                    { ...v.profile, stage: 'started', startedOn: v.today, ready: true },
-                    PROFILE.saved,
-                  );
-                }}
-                style={styles.start}
-                testID="today.started"
-              />
-            ) : null}
-          </View>
-        </Card>
-      );
+    if (v.stage === 'getting_ready') return <NotStartedCard v={v} testID="today" />;
+    const firstDay =
+      v.exposures.length === 0 && (today?.meals.some(m => m.items.length > 0) ?? false);
+    const solidsDay = v.exposures[0] ? daysBetween(v.exposures[0].day, v.today) + 1 : null;
+    // a count of what was tried, never a goal: logged foods and the ones tried before the app
+    const triedCount = new Set([
+      ...[...v.statuses.values()].map(s => s.foodId ?? s.key),
+      ...(v.profile?.triedBefore ?? []),
+    ]).size;
     return (
       <>
+        {firstDay ? (
+          <FirstDayCard name={v.childName.trim() || 'Your baby'} testID="today.firstday" />
+        ) : solidsDay !== null ? (
+          <Caption testID="today.dayof">{NOT_STARTED.dayOf(solidsDay, triedCount)}</Caption>
+        ) : null}
         {pausedUntil !== null ? (
           <Card testID="today.paused">
             <BodySm>{TODAY.pausedAllergens(dayLabel(pausedUntil))}</BodySm>

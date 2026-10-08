@@ -18,7 +18,7 @@ import { useNibble, type NibbleView } from '../../nibble/useNibble';
 import { usePlan } from '../../plan/PlanProvider';
 import { SHEETS } from './copy';
 import { PlusLock } from './parts';
-import { dayLabel } from './TodayScreen';
+import { dayLabel } from './dates';
 
 const inputOf = (v: NibbleView): SheetInput => ({
   childName: v.childName,

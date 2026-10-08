@@ -71,16 +71,23 @@ export function bandFor(months: number): AgeBand {
 export interface StageInput {
   birthDate: IsoDay;
   day: IsoDay;
-  profile: Pick<NibbleProfile, 'stage' | 'startedOn' | 'ready'>;
+  profile: Pick<NibbleProfile, 'stage' | 'startedOn' | 'ready'> &
+    Partial<Pick<NibbleProfile, 'startOn'>>;
   /** The first day a meal was logged for this baby, from the household's own record. */
   firstMealDay: IsoDay | null;
 }
 
-/** The day solids started: the parent's date, else the first logged meal, else null. */
+/**
+ * The day solids started: the parent's first-taste date, the first logged meal, or the planned
+ * start day once it has come, whichever is earliest; else null.
+ */
 export function startDay(input: StageInput): IsoDay | null {
-  const candidates = [input.profile.startedOn, input.firstMealDay].filter(
-    (d): d is IsoDay => d !== null,
-  );
+  const planned = input.profile.startOn ?? null;
+  const candidates = [
+    input.profile.startedOn,
+    input.firstMealDay,
+    planned !== null && planned <= input.day ? planned : null,
+  ].filter((d): d is IsoDay => d !== null);
   if (candidates.length === 0) return null;
   return candidates.sort()[0] ?? null;
 }
@@ -91,11 +98,14 @@ export function stageFor(input: StageInput): Stage {
   if (months < 4) return 'too_young';
   const started = startDay(input);
   const startedBy = started !== null && started <= input.day;
+  // NOT STARTED YET: the plan waits only while the parent has not confirmed the readiness signs.
+  // From four months, a baby whose parent says the signs are there gets a first-foods plan from
+  // today (AAP and CDC: around six months, never before four, when the baby shows the signs); a
+  // parent who says "not yet" sees the signs to watch for, and the plan starts when they say so.
   if (!startedBy) {
-    if (input.profile.stage === 'getting_ready' && (months < 6 || !input.profile.ready)) {
-      return 'getting_ready';
-    }
-    if (!input.profile.ready && months < 6) return 'getting_ready';
+    // a planned start day still to come: the plan waits for it
+    if ((input.profile.startOn ?? null) !== null) return 'getting_ready';
+    if (!input.profile.ready) return 'getting_ready';
   }
   if (months >= 12) return 'toddler';
   if (months >= 9) return 'family_foods';

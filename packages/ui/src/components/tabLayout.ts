@@ -62,7 +62,9 @@ export const TAB_LABELS = {
   today: 'Today',
   plan: 'Plan',
   foods: 'Foods',
-  shopping: 'Shopping',
+  // NibbleCue's word for CuddleCue's shopping list (the owner, 2026-10-08: "shopping can be
+  // replaced with grocery"); the key stays `shopping`, the shared list underneath is one list
+  shopping: 'Grocery',
   more: 'More',
 } as const;
 

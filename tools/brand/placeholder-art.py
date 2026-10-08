@@ -3,7 +3,7 @@ PLACEHOLDER ARTWORK for NibbleCue, until the designer's kit arrives.
 
 The owner, 2026-10-08: "you can generate simple temporary icons that i will redesign later once we
 know clearly what it's for." So this draws the simplest honest stand-in: a bowl with a spoon, in
-the app's default scheme (Sunny), nothing traced from CuddleCue's logo. Every file it writes
+the app's default scheme (Leaf, green), nothing traced from CuddleCue's logo. Every file it writes
 carries `placeholder` in its name (CuddleCue CLAUDE.md §7: no placeholder asset without the word
 in its filename), and brand.test.ts holds that.
 
@@ -14,8 +14,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 OUT = Path(__file__).resolve().parents[2] / 'packages' / 'brand' / 'brand'
-ORANGE = (184, 86, 3, 255)      # Sunny g1 (#B85603): white clears 4.5:1 on it
-ORANGE2 = (157, 47, 2, 255)     # Sunny g2 (#9D2F02)
+GREEN = (58, 125, 24, 255)     # Leaf g1 (#3A7D18): white clears 4.5:1 on it
+GREEN2 = (36, 96, 15, 255)     # Leaf g2 (#24600F)
 CREAM = (246, 243, 236, 255)    # the paper ground (#F6F3EC)
 WHITE = (255, 255, 255, 255)
 CLEAR = (0, 0, 0, 0)
@@ -44,15 +44,15 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     font_path = sys.argv[1] if len(sys.argv) > 1 else None
     # the store icon: opaque, unrounded (iOS applies the mask)
-    icon(1024, ORANGE, WHITE, CREAM, 0.30).save(OUT / 'app-icon-1024-placeholder.png')
+    icon(1024, GREEN, WHITE, CREAM, 0.30).save(OUT / 'app-icon-1024-placeholder.png')
     # Android adaptive: the glyph inside the 66 dp safe zone (about 61% of 432 px)
     icon(432, CLEAR, WHITE, CREAM, 0.17).save(OUT / 'adaptive-foreground-placeholder.png')
-    Image.new('RGBA', (432, 432), ORANGE).save(OUT / 'adaptive-background-placeholder.png')
+    Image.new('RGBA', (432, 432), GREEN).save(OUT / 'adaptive-background-placeholder.png')
     icon(432, CLEAR, WHITE, WHITE, 0.17).save(OUT / 'adaptive-monochrome-placeholder.png')
     icon(96, CLEAR, WHITE, WHITE, 0.30).save(OUT / 'notification-icon-placeholder.png')
     # the mark: the glyph in the brand orange on transparent
-    icon(1024, CLEAR, ORANGE, ORANGE2, 0.30).save(OUT / 'mark-1024-placeholder.png')
-    icon(512, CLEAR, ORANGE, ORANGE2, 0.30).save(OUT / 'mark-placeholder.png')
+    icon(1024, CLEAR, GREEN, GREEN2, 0.30).save(OUT / 'mark-1024-placeholder.png')
+    icon(512, CLEAR, GREEN, GREEN2, 0.30).save(OUT / 'mark-placeholder.png')
     # the wordmark: the name in the UI face, in the brand orange
     if font_path:
         font = ImageFont.truetype(font_path, 150)
@@ -65,7 +65,7 @@ def main() -> None:
         font = ImageFont.truetype(font_path, int(150 * scale))
         bbox = font.getbbox(text)
         w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
-        d.text(((768 - w) / 2 - bbox[0], (192 - h) / 2 - bbox[1]), text, font=font, fill=ORANGE)
+        d.text(((768 - w) / 2 - bbox[0], (192 - h) / 2 - bbox[1]), text, font=font, fill=GREEN)
         img.save(OUT / 'wordmark-placeholder.png')
 
 

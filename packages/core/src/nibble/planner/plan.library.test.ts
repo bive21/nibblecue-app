@@ -38,7 +38,14 @@ describe('the real library under the planner', () => {
         for (const it of planItems(plan)) {
           const f = FOOD_BY_ID.get(it.foodId)!;
           const m = monthsBetween(birthDate, it.day);
-          expect(f.notBeforeMonths, `${f.id} at ${m}`).toBeLessThanOrEqual(m);
+          // 4 to 6 months, a family that started: smooth single first foods, no allergen yet
+          const early = m >= 4 && m < 6;
+          expect(f.notBeforeMonths, `${f.id} at ${m}`).toBeLessThanOrEqual(early ? 6 : m);
+          if (early) {
+            expect(it.form, `${f.id} at ${m}`).toBe('puree');
+            expect(f.firstFood, `${f.id} at ${m}`).toBe(true);
+            expect(f.allergens, `${f.id} at ${m}`).toEqual([]);
+          }
           const forms = f.serving.find(s => s.band === bandFor(m))!.forms;
           expect(forms, `${f.id} as ${it.form}`).toContain(it.form);
           if (diet === 'vegan') {

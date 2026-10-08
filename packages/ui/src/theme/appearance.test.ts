@@ -221,10 +221,10 @@ describe('resolveAppearance — theme, then scheme, then night reclaims its grou
       skin: 'paper',
       tookBack: { night: true, scheme: true, skin: true },
     });
-    // NibbleCue's default and free scheme is Sunny (the owner, 2026-10-08: the main color tells the
+    // NibbleCue's default and free scheme is Leaf (the owner, 2026-10-08: the main color tells the
     // two apps apart); CuddleCue's is Ocean
-    expect(free.scheme).toBe('sunny');
-    expect(free.palette).toEqual(resolvePalette('dark', 'sunny'));
+    expect(free.scheme).toBe('leaf');
+    expect(free.palette).toEqual(resolvePalette('dark', 'leaf'));
     // the stored choice is untouched, so a later upgrade restores it
     expect(free.prefs).toEqual(prefs);
     // every scheme but the default is sold, and the default never is
@@ -348,11 +348,11 @@ describe('what the app looks like before anybody has chosen (the owner, 2026-09-
     // …and a parent who chose to follow the phone keeps following it, on either OS setting
     expect(parseAppearance({ theme: 'system' }).theme).toBe('system');
     expect(resolveAppearance(parseAppearance({ theme: 'system' }), 'dark').theme).toBe('dark');
-    // the default scheme on a first launch is Sunny (NibbleCue; CuddleCue's is Ocean), and it is free
-    expect(DEFAULT_APPEARANCE.scheme).toBe('sunny');
+    // the default scheme on a first launch is Leaf (NibbleCue; CuddleCue's is Ocean), and it is free
+    expect(DEFAULT_APPEARANCE.scheme).toBe('leaf');
     expect(resolveAppearance(DEFAULT_APPEARANCE, 'dark', FREE_APPEARANCE)).toMatchObject({
       theme: 'light',
-      scheme: 'sunny',
+      scheme: 'leaf',
       tookBack: { scheme: false },
     });
   });

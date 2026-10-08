@@ -119,7 +119,7 @@ describe('the shopping list starts from supplies', () => {
     expect(row).toMatch(
       /\{checked \|\| readOnly \? \([\s\S]*?\) : \(\s*<View\s+style=\{\[\s*styles\.qty/,
     );
-    expect(SHOPPING.removeLine('Banana')).toBe('Remove Banana from shopping list');
+    expect(SHOPPING.removeLine('Banana')).toBe('Remove Banana from grocery list');
   });
 
   it('enlarges the diaper picture inside the same colored disc', () => {
@@ -161,8 +161,8 @@ describe('the plus belongs to the catalog, the tick to the checklist', () => {
   });
 
   it('names the plus by what it does, in both directions', () => {
-    expect(SUPPLIES.pickerAdd('Pampers')).toBe('Pampers, add to the shopping list');
-    expect(SUPPLIES.pickerDrop('Pampers')).toBe('Pampers, take off the shopping list');
+    expect(SUPPLIES.pickerAdd('Pampers')).toBe('Pampers, add to the grocery list');
+    expect(SUPPLIES.pickerDrop('Pampers')).toBe('Pampers, take off the grocery list');
   });
 
   it('gives the picker two ways out, not just a dead end on a full catalog', () => {
@@ -336,7 +336,7 @@ describe('the edit sheet asks five questions', () => {
 
   it('confirms a removal in the sheet, where the consequence can be said beside it', () => {
     expect(edit).toContain('testID="supply.remove.yes"');
-    expect(SUPPLIES.removeConfirmBody).toContain('comes off the shopping list too');
+    expect(SUPPLIES.removeConfirmBody).toContain('comes off the grocery list too');
     // and the line actually goes: a line pointing at a product nobody can open is a line a
     // parent cannot correct
     expect(edit).toContain('if (onListNow !== null && onToggleList !== undefined)');

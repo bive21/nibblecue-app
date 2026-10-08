@@ -15,12 +15,20 @@ it('a new family: the food setup, the first plan, and a meal served in a few tap
   const app = await mount(<App />);
   await app.until('Today', () => app.has('today.setup'), 15_000);
   await app.press('today.setup.start');
-  await app.until('the food setup', () => app.has('profile.next'));
-  // six questions, each with a default: Next through them, then "See the plan"
-  for (let step = 0; step < 6; step++) {
-    await app.press('profile.next');
+  await app.until('the food setup', () => app.has('setup.next'));
+  // the intro, then "Has the baby had any solid food yet?" (the one answer with no default)
+  await app.press('setup.next');
+  await app.until('the first question', () => app.has('setup.where.started'));
+  await app.press('setup.where.started');
+  // how to offer, family food, foods tried, allergens: each has a default
+  for (let step = 0; step < 5; step++) {
+    await app.press('setup.next');
     await new Promise(resolve => setTimeout(resolve, 0));
   }
+  // what the plan will do, read off the plan itself, then Today
+  await app.until('the setup summary', () => app.has('setup.summary'), 15_000);
+  expect(app.has('setup.summary.week')).toBe(true);
+  await app.press('setup.today');
   await app.until('the first plan on Today', () => app.has('today.meal.breakfast'), 15_000);
   expect(app.has('today.setup')).toBe(false);
   await app.press('today.serve.breakfast');
@@ -28,6 +36,15 @@ it('a new family: the food setup, the first plan, and a meal served in a few tap
   await app.press('serve.meal.liked');
   await app.press('serve.save');
   await app.until('breakfast served', () => app.text().includes('Served again'), 15_000);
+  // the plan's foods are waiting on the grocery list, and one tap puts them all on it
+  await app.press('tab.shopping');
+  await app.until('the grocery list', () => app.has('grocery.plan'));
+  await app.press('grocery.plan.all');
+  await app.until(
+    'the plan on the list',
+    () => app.text().includes('Everything on the plan is on the list'),
+    15_000,
+  );
   expect(app.has('error.screen')).toBe(false);
   await app.unmount();
 });

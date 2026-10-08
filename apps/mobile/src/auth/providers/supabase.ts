@@ -137,20 +137,27 @@ export interface SupabaseSocialOptions {
   browser?: AuthBrowser;
 }
 
-/** One row of `nibble_my_plan()` (docs/SERVER.md; the CuddleCue repository's migration 0162). */
+/**
+ * One row of `nibble_my_plan()` (docs/SERVER.md; the CuddleCue repository's migrations 0162 and
+ * 0163). `source` is `'welcome'` for the 14-day trial (0163) and `'store'` otherwise; a server the
+ * migration has not reached yet sends no `source`, which reads as a store row.
+ */
 interface NibblePlanRow {
   household_id: string;
   status: string | null;
   period_ends_at: string | null;
   store: string | null;
+  source?: string | null;
+  trial_available?: boolean | null;
 }
 
-/** A NibbleCue Plus row in the shape the plan code reads: a store row, never a preview. */
+/** A NibbleCue Plus row in the shape the plan code reads: the trial reads as CuddleCue's preview
+ *  does (WELCOME with its days, then FREE), every other row as a store row. */
 function nibbleRowInput(row: NibblePlanRow): PlanRowInput | null {
   if (row.status === null) return null;
   return {
     status: row.status as PlanRowInput['status'],
-    source: row.store === 'promo' ? 'promo' : 'store',
+    source: row.source === 'welcome' ? 'welcome' : row.store === 'promo' ? 'promo' : 'store',
     current_period_end: row.period_ends_at,
   };
 }
@@ -520,6 +527,22 @@ class SupabaseAccountsApi implements AccountsApi {
     if (error) return functionFailure(error);
     if (!data) return failure(500, 'server_error');
     return { ok: true, ...data };
+  }
+
+  async startNibbleTrial(
+    householdId: string,
+  ): Promise<{ ok: true; granted: boolean } | ApiFailure> {
+    // cuddlecue-app's `nibble_start_trial` (branch `nibblecue`); typed loosely until the generated
+    // database types carry it, as `nibble_my_plan` was
+    const rpc = this.client.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => PromiseLike<{ data: unknown; error: { message: string; code?: string } | null }>;
+    const { data, error } = await rpc('nibble_start_trial', { p_household: householdId });
+    if (error)
+      return failure(error.code === '42883' ? 404 : 500, 'trial_unavailable', error.message);
+    const granted = (data as { granted?: unknown } | null)?.granted === true;
+    return { ok: true, granted };
   }
 
   async planIdeas(body: Record<string, unknown>): Promise<PlanIdeasResult> {

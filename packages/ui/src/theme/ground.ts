@@ -451,20 +451,21 @@ const PATTERN_ALPHA: Record<'light' | 'dark' | 'night', number> = {
 export const patternAlpha = (theme: 'light' | 'dark' | 'night'): number => PATTERN_ALPHA[theme];
 
 /**
- * The nursery, in the order a cell cycles through it. Nothing that fills is in it (a filled shape
+ * The pattern's glyphs, in the order a cell cycles through it. Nothing that fills is in it (a filled shape
  * renders as a blob at this scale), and neither is any clinical or settings glyph.
  */
 export const PATTERN_GLYPHS = [
-  'babyface',
-  'bottle',
-  'moon',
+  // NIBBLECUE'S PANTRY, NOT CUDDLECUE'S NURSERY (the owner, 2026-10-08: "we dont need diapers icons,
+  // etc here"): food and the table, with the sun and a star for warmth; nothing that fills
+  'apple',
+  'carrot',
+  'spoon',
   'star',
-  'bath',
-  'tummy',
-  'diaper',
-  'sun',
+  'broccoli',
   'solids',
-  'sleep',
+  'sun',
+  'water',
+  'heart',
 ] as const;
 
 const PATTERN_INKS: readonly PatternInk[] = ['milk', 'sleep', 'rose'];

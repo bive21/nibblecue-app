@@ -61,6 +61,8 @@ function scenario(seed: number) {
     ),
     mealsPerDay: r() < 0.3 ? 1 + Math.floor(r() * 4) : null,
     holdTexture: r() < 0.2,
+    // a planned start day: none, already passed, or still to come
+    startOn: r() < 0.6 ? null : addDays(TODAY, -10 + Math.floor(r() * 30)),
   });
   // a history: random foods on random past days, some refused
   const exposures: Exposure[] = [];
@@ -200,6 +202,12 @@ describe('no generated plan ever breaks a hard rule', () => {
       const known = new Set<AllergenId>(inRecord);
       for (const d of plan) {
         const months = monthsBetween(s.birthDate, d.day);
+        // never a food before the family's planned start day, unless the record says they began
+        const begun = s.exposures.length > 0 || s.profile.startedOn !== null;
+        if (!begun && s.profile.startOn !== null && d.day < s.profile.startOn) {
+          if (d.meals.some(m => m.items.length > 0))
+            fail(`${d.day}: food before the planned start ${s.profile.startOn}`);
+        }
         {
           const metToday = new Set<AllergenId>();
           for (const m of d.meals) {
@@ -230,7 +238,11 @@ describe('no generated plan ever breaks a hard rule', () => {
         for (const i of items) {
           const f = FIXTURE_BY_ID.get(i.foodId);
           if (!f) return fail(`unknown food ${i.foodId}`);
-          if (f.notBeforeMonths > months) fail(`${f.id} at ${months} months`);
+          // 4 to 6 months: only smooth single first foods, no common allergen (before_six_months)
+          const early = months >= 4 && months < 6;
+          if (f.notBeforeMonths > (early ? 6 : months)) fail(`${f.id} at ${months} months`);
+          if (early && (i.form !== 'puree' || f.firstFood !== true || f.allergens.length > 0))
+            fail(`${f.id} as ${i.form} at ${months} months`);
           if (f.animal === 'honey' && months < 12) fail('honey under 12 months');
           const band = bandFor(months);
           const forms = f.serving.find(x => x.band === band)?.forms ?? [];

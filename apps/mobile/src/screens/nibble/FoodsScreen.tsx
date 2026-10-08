@@ -14,6 +14,7 @@ import { useCanLog } from '../../household/useCanLog';
 import { useNibble } from '../../nibble/useNibble';
 import { CATEGORY_LABEL, FOODS } from './copy';
 import { matchesQuery } from './FoodPickerSheet';
+import { FoodThumb } from './FoodThumb';
 import { styles } from './parts';
 
 type Nav = NativeStackNavigationProp<RootParams>;
@@ -102,6 +103,7 @@ export function FoodsScreen() {
                 <Row
                   key={f.id}
                   title={f.name}
+                  iconNode={<FoodThumb food={f} size={40} />}
                   detail={`${CATEGORY_LABEL[f.category]} · ${
                     n > 0
                       ? FOODS.tried(n)

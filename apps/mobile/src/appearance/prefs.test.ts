@@ -56,11 +56,11 @@ describe('the appearance choice on the device (R-5)', () => {
    * with Sage and Clay retired). The first frame paints whatever this read returns, so this is
    * where "a new install starts on Light" and "an old install never crashes" are true or not.
    */
-  it('opens a new install on Light and Sunny (NibbleCue’s default), and an old one on everything it chose that still exists', async () => {
+  it('opens a new install on Light and Leaf (NibbleCue’s default), and an old one on everything it chose that still exists', async () => {
     const fresh = await loadAppearance(memoryStore());
     expect(fresh.theme).toBe('light');
     expect(fresh.theme).not.toBe('system'); // the Match phone switch reads `theme === 'system'`
-    expect(fresh.scheme).toBe('sunny');
+    expect(fresh.scheme).toBe('leaf');
 
     const store = memoryStore();
     for (const retired of ['sage', 'clay', 'twilight']) {
@@ -73,8 +73,8 @@ describe('the appearance choice on the device (R-5)', () => {
       expect(await loadAppearance(store), retired).toEqual({
         ...DEFAULT_APPEARANCE,
         theme: 'system',
-        // the default, which is NibbleCue's Sunny (CuddleCue's falls back to Ocean)
-        scheme: 'sunny',
+        // the default, which is NibbleCue's Leaf (CuddleCue's falls back to Ocean)
+        scheme: 'leaf',
         skin: 'glass',
         shape: 'bubble',
       });

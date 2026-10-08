@@ -1,16 +1,19 @@
 /**
- * THE BABY'S FOOD PROFILE (docs/PRODUCT.md §Setup): the few answers the plan needs, asked one step
- * at a time the first time (`setup`), and all on one page afterwards from More. Every answer has a
- * default, so only the first question is required; the profile is a NibbleCue record for this
- * baby, shared with the other parent's phone through the shared server.
+ * THE BABY'S FOOD PROFILE (docs/PRODUCT.md §Setup): every answer the plan reads, on one page, from
+ * More. The first time is the setup (`FoodSetupScreen`), which asks only what changes the plan; this
+ * page also keeps what setup leaves out (the family allergy line for the pediatrician summary, the
+ * region, meals a day, the texture hold). The profile is a NibbleCue record for this baby, shared
+ * with the other parent's phone through the shared server.
  */
 import {
+  addDays,
   ALLERGEN_IDS,
   ALLERGENS,
   CULTURAL_RULES,
   CUISINES,
   higherPeanutRisk,
   NibbleProfile,
+  READINESS_SIGNS,
   type AllergenId,
   type NibbleProfileInput,
 } from '@nibblecue/core/nibble';
@@ -21,14 +24,12 @@ import {
   Button,
   Card,
   Chip,
-  Label,
   Row,
   Rows,
   SegmentedControl,
-  StepTrack,
   useTheme,
 } from '@nibblecue/ui';
-import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useState, type ReactNode } from 'react';
 import { View } from 'react-native';
@@ -38,7 +39,8 @@ import type { RootParams } from '../../app/types';
 import { useNibble } from '../../nibble/useNibble';
 import { useNibbleWrites } from '../../nibble/useNibbleWrites';
 import { DateField } from '../../ui/DateField';
-import { PROFILE } from './copy';
+import { PROFILE, SETUP } from './copy';
+import { FoodPickerSheet } from './FoodPickerSheet';
 import { styles } from './parts';
 
 type Nav = NativeStackNavigationProp<RootParams>;
@@ -100,7 +102,6 @@ const ALLERGEN_LABEL = Object.fromEntries(ALLERGEN_IDS.map(a => [a, ALLERGENS[a]
 export function FoodProfileScreen() {
   const t = useTheme();
   const nav = useNavigation<Nav>();
-  const setup = useRoute<RouteProp<RootParams, 'FoodProfile'>>().params?.setup === true;
   const v = useNibble();
   const writes = useNibbleWrites();
   const [p, setP] = useState<NibbleProfile>(() =>
@@ -111,7 +112,7 @@ export function FoodProfileScreen() {
       },
     ),
   );
-  const [step, setStep] = useState(0);
+  const [picking, setPicking] = useState(false);
   const [busy, setBusy] = useState(false);
   const set = (change: Partial<NibbleProfileInput>) =>
     setP(x => NibbleProfile.parse({ ...x, ...change }));
@@ -136,29 +137,74 @@ export function FoodProfileScreen() {
             />
           </Field>
           {p.stage !== 'getting_ready' ? (
-            <DateField
-              label={PROFILE.startedOn}
-              value={fromIso(p.startedOn)}
-              onChange={d => set({ startedOn: toIso(d) })}
-              maximumDate={new Date()}
-              testID="profile.started"
-            />
-          ) : (
-            <Field label={PROFILE.readiness}>
-              {PROFILE.readinessItems.map(i => (
-                <BodySm key={i}>{`· ${i}`}</BodySm>
-              ))}
-              <SegmentedControl
-                label={PROFILE.readiness}
-                value={p.ready ? 'yes' : 'no'}
-                onChange={x => set({ ready: x === 'yes' })}
-                options={[
-                  { value: 'yes', label: PROFILE.readinessYes },
-                  { value: 'no', label: PROFILE.readinessNotYet },
-                ]}
-                testID="profile.ready"
+            <View style={{ gap: t.space.lg }}>
+              <DateField
+                label={PROFILE.startedOn}
+                value={fromIso(p.startedOn)}
+                onChange={d => set({ startedOn: toIso(d) })}
+                maximumDate={new Date()}
+                testID="profile.started"
               />
-            </Field>
+              <Field label={PROFILE.tried} hint={PROFILE.triedHint}>
+                {p.triedBefore.length > 0 ? (
+                  <Chips
+                    values={p.triedBefore}
+                    labels={Object.fromEntries(
+                      p.triedBefore.map(id => [id, v.foodById(id)?.name ?? id]),
+                    )}
+                    chosen={() => true}
+                    onPress={id => set({ triedBefore: p.triedBefore.filter(x => x !== id) })}
+                    id="profile.tried"
+                  />
+                ) : null}
+                <Button
+                  label={SETUP.triedPick}
+                  variant="ghost"
+                  size="sm"
+                  icon="plus"
+                  onPress={() => setPicking(true)}
+                  style={styles.start}
+                  testID="profile.tried.add"
+                />
+              </Field>
+            </View>
+          ) : (
+            <View style={{ gap: t.space.lg }}>
+              <Field label={PROFILE.signs} hint={PROFILE.signsHint}>
+                <Chips
+                  values={READINESS_SIGNS}
+                  labels={SETUP.signs}
+                  chosen={x => p.signsSeen.includes(x)}
+                  onPress={x => set({ signsSeen: toggle(p.signsSeen, x) })}
+                  id="profile.signs"
+                />
+              </Field>
+              <Field label={SETUP.whenTitle}>
+                <Chips
+                  values={['day', 'signs'] as const}
+                  labels={{ day: SETUP.whenOptions.day, signs: SETUP.whenOptions.signs }}
+                  chosen={x => (x === 'day' ? p.startOn !== null : p.startOn === null)}
+                  onPress={x =>
+                    set(
+                      x === 'day'
+                        ? { startOn: p.startOn ?? v.today, ready: true }
+                        : { startOn: null, ready: false },
+                    )
+                  }
+                  id="profile.when"
+                />
+                {p.startOn !== null ? (
+                  <DateField
+                    label={SETUP.whenDay}
+                    value={fromIso(p.startOn)}
+                    onChange={d => set({ startOn: toIso(d) })}
+                    minimumDate={new Date()}
+                    maximumDate={fromIso(addDays(v.today, 90)) ?? new Date()}
+                    testID="profile.starton"
+                  />
+                ) : null}
+              </Field>
+            </View>
           )}
         </View>
       ),
@@ -330,12 +376,7 @@ export function FoodProfileScreen() {
     if (v.childId === null) return;
     setBusy(true);
     try {
-      const out = await writes.saveProfile(
-        v.childId,
-        v.profileRecord?.id,
-        p,
-        setup ? PROFILE.done : PROFILE.saved,
-      );
+      const out = await writes.saveProfile(v.childId, v.profileRecord?.id, p, PROFILE.saved);
       if (out?.committed) {
         if (nav.canGoBack()) nav.goBack();
         else nav.navigate('Tabs', { screen: 'Today' }, BACK_TO_TABS);
@@ -344,36 +385,6 @@ export function FoodProfileScreen() {
       setBusy(false);
     }
   };
-
-  if (setup) {
-    const last = step === sections.length - 1;
-    return (
-      <Screen title={PROFILE.setupTitle} testID="profile">
-        <View style={{ gap: t.space.lg }}>
-          <StepTrack current={step + 1} total={sections.length} />
-          <Label>{PROFILE.step(step + 1, sections.length)}</Label>
-          {sections[step]?.node}
-          <View style={{ gap: t.space.sm }}>
-            <Button
-              label={last ? PROFILE.finish : PROFILE.next}
-              onPress={() => (last ? void save() : setStep(s => s + 1))}
-              loading={busy}
-              disabled={v.childId === null}
-              testID="profile.next"
-            />
-            {step > 0 ? (
-              <Button
-                label={PROFILE.back}
-                variant="ghost"
-                onPress={() => setStep(s => s - 1)}
-                testID="profile.back"
-              />
-            ) : null}
-          </View>
-        </View>
-      </Screen>
-    );
-  }
 
   return (
     <Screen title={PROFILE.title} testID="profile">
@@ -390,6 +401,17 @@ export function FoodProfileScreen() {
           testID="profile.save"
         />
       </View>
+      <FoodPickerSheet
+        visible={picking}
+        title={SETUP.triedPick}
+        foods={v.foods}
+        statuses={v.statuses}
+        onPick={f => {
+          if (!p.triedBefore.includes(f.id)) set({ triedBefore: [...p.triedBefore, f.id] });
+          setPicking(false);
+        }}
+        onClose={() => setPicking(false)}
+      />
     </Screen>
   );
 }

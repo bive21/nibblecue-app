@@ -441,6 +441,12 @@ export interface AccountsApi {
    * sees any of it (`core/nibble/planner/ai.ts`).
    */
   planIdeas(body: Record<string, unknown>): Promise<PlanIdeasResult>;
+  /**
+   * NIBBLECUE PLUS'S 14-DAY TRIAL (the owner, 2026-10-08: "also give 14 day trial"): asked for by
+   * the NibbleCue app the first time a family opens it; granted by the server once per household
+   * ever, no card, ending by itself on the free plan. `granted` is false when it was had before.
+   */
+  startNibbleTrial(householdId: string): Promise<{ ok: true; granted: boolean } | ApiFailure>;
   acceptInvite(input: {
     code?: string;
     token?: string;

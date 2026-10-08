@@ -14,6 +14,8 @@
  *   · `expo-sqlite` → `node:sqlite` (the same SQLite the node suites use)
  *   · `expo-secure-store` → a map (its web build has no store)
  *   · `@react-native-community/datetimepicker` → nothing (Flow source, a native wheel)
+ *   · `fontfaceobserver` → every face ready at once (happy-dom draws no text, so the real one
+ *     polls for twelve seconds and outlives a short test; `shims/fontfaceobserver.ts`)
  *   · a Metro asset `require('./x.png')` → a picture of the right shape (`setup.ts`)
  *   · `fetch` → refused: the phone is offline for the whole test
  *
@@ -48,6 +50,7 @@ export default defineConfig({
       { find: /^expo-sqlite$/, replacement: shim('expo-sqlite.ts') },
       { find: /^expo-secure-store$/, replacement: shim('expo-secure-store.ts') },
       { find: /^@react-native-community\/datetimepicker$/, replacement: shim('datetimepicker.ts') },
+      { find: /^fontfaceobserver$/, replacement: shim('fontfaceobserver.ts') },
     ],
     mainFields: ['browser', 'module', 'jsnext:main', 'jsnext', 'main'],
     conditions: ['browser', 'import', 'module', 'default'],

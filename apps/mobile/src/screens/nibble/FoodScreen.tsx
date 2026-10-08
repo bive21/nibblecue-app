@@ -36,8 +36,9 @@ import { useCanLog } from '../../household/useCanLog';
 import { useNibble } from '../../nibble/useNibble';
 import { useNibbleWrites } from '../../nibble/useNibbleWrites';
 import { CATEGORY_LABEL, FOOD, FOODS, NUTRIENT_LABEL } from './copy';
+import { FoodThumb } from './FoodThumb';
 import { NotMedical } from './parts';
-import { dayLabel } from './TodayScreen';
+import { dayLabel } from './dates';
 
 type Nav = NativeStackNavigationProp<RootParams>;
 
@@ -95,7 +96,10 @@ export function FoodScreen() {
   return (
     <Screen title={food.name} testID="food">
       <View style={{ gap: t.space.md }}>
-        <BodySm>{CATEGORY_LABEL[food.category]}</BodySm>
+        <View style={{ alignItems: 'center', gap: t.space.xs }}>
+          <FoodThumb food={food} size={160} />
+          <BodySm>{CATEGORY_LABEL[food.category]}</BodySm>
+        </View>
         {custom ? <BodySm testID="food.custom">{FOOD.custom}</BodySm> : null}
 
         <Card testID="food.serving">

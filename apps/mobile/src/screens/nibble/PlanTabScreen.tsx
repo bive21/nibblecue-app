@@ -41,8 +41,9 @@ import { usePlan } from '../../plan/PlanProvider';
 import { PLAN, TODAY } from './copy';
 import { FoodPickerSheet } from './FoodPickerSheet';
 import { ItemSheet, type OpenItem } from './ItemSheet';
+import { NotStartedCard } from './NotStarted';
 import { NotMedical, PlanItemRow, PlusLock, styles } from './parts';
-import { dayLabel } from './TodayScreen';
+import { dayLabel } from './dates';
 
 type Nav = NativeStackNavigationProp<RootParams>;
 
@@ -98,7 +99,12 @@ export function PlanTabScreen() {
       setAsking(false);
     }
   };
-  const shown = full ? v.plan : v.plan.slice(0, FREE_PLAN_DAYS);
+  // a start planned for a later day: the plan is shown from that day, so the first days are there
+  // to look at and shop for before they come
+  const startOn = v.profile?.startOn ?? null;
+  const planned = v.stage === 'getting_ready' && startOn !== null && startOn > v.today;
+  const fromDay = planned ? v.plan.filter(d => d.day >= startOn) : v.plan;
+  const shown = full ? fromDay : fromDay.slice(0, FREE_PLAN_DAYS);
 
   const nextAllergen = v.plan
     .flatMap(d => d.meals.flatMap(m => m.items))
@@ -209,7 +215,7 @@ export function PlanTabScreen() {
               <BodyStrong>{TODAY.setupTitle}</BodyStrong>
               <Button
                 label={TODAY.setupCta}
-                onPress={() => nav.navigate('FoodProfile', { setup: true })}
+                onPress={() => nav.navigate('FoodSetup')}
                 style={styles.start}
                 testID="plantab.setup.start"
               />
@@ -243,7 +249,9 @@ export function PlanTabScreen() {
                 {hasIdeas ? <Caption>{PLAN.ideasOn}</Caption> : null}
               </View>
             ) : null}
-            {shown.length === 0 ? (
+            {v.stage === 'too_young' || (v.stage === 'getting_ready' && !planned) ? (
+              <NotStartedCard v={v} testID="plantab" />
+            ) : shown.length === 0 ? (
               <Card>
                 <Body>{TODAY.emptyTitle}</Body>
               </Card>

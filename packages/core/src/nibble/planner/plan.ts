@@ -271,6 +271,14 @@ export function buildPlan(input: PlanInput): PlanDay[] {
     });
     const base: PlanDay = { day, months, stage, band, skip: false, meals: [], refused: [] };
     if (stage === 'too_young' || stage === 'getting_ready') return base;
+    // 4 to 6 months, a family that chose to start: smooth purées only (hard rule
+    // `before_six_months`, which the validator holds too); from 6 months the approach decides
+    const formOf = (food: Food, opts: Parameters<typeof chooseForm>[3] = {}): Form | null =>
+      months < 6
+        ? servingFor(food, band).forms.includes('puree')
+          ? 'puree'
+          : null
+        : chooseForm(food, band, profile.approach, opts);
 
     const marks = input.marks.filter(m => m.day === day);
     if (marks.some(m => m.kind === 'skip_day')) return { ...base, skip: true };
@@ -359,7 +367,7 @@ export function buildPlan(input: PlanInput): PlanDay[] {
     for (const m of marks.filter(x => x.kind === 'pin' && x.foodId !== null)) {
       const food = byId.get(m.foodId as string);
       if (!food || !meals.includes(m.meal)) continue;
-      const form = chooseForm(food, band, profile.approach, { holdTexture: profile.holdTexture });
+      const form = formOf(food, { holdTexture: profile.holdTexture });
       tryPlace(food, m.meal, form, ['pinned'], 'parent', null, true);
     }
 
@@ -379,7 +387,7 @@ export function buildPlan(input: PlanInput): PlanDay[] {
         let placedIt = false;
         let waiting = false;
         for (const carrier of firstExposureFoods(allergen, states)) {
-          const form = chooseForm(carrier, band, profile.approach, { firstAllergen: true });
+          const form = formOf(carrier, { firstAllergen: true });
           if (form === null) continue;
           const refusals = checkItem(carrier, form, ctxFor(firstMeal)).map(x => x.rule);
           if (refusals.length === 0) {
@@ -407,7 +415,7 @@ export function buildPlan(input: PlanInput): PlanDay[] {
       // the first meal of the day, as for a first allergen: a sign after it is seen in daylight
       const target = firstMeal;
       for (const { f } of candidates) {
-        const form = chooseForm(f, band, profile.approach, { holdTexture: profile.holdTexture });
+        const form = formOf(f, { holdTexture: profile.holdTexture });
         const reasons: Reason[] = ['new_food'];
         if (f.ironRich) reasons.push('iron');
         if (tryPlace(f, target, form, reasons, 'rules')) break;
@@ -418,7 +426,7 @@ export function buildPlan(input: PlanInput): PlanDay[] {
     for (const s of (input.ai ?? []).filter(a => a.day === day)) {
       const food = byId.get(s.foodId);
       if (!food || !meals.includes(s.meal) || !roomIn(s.meal)) continue;
-      const form = chooseForm(food, band, profile.approach, { holdTexture: profile.holdTexture });
+      const form = formOf(food, { holdTexture: profile.holdTexture });
       tryPlace(food, s.meal, form, ['suggested'], 'ai', s.note);
     }
 
@@ -442,7 +450,7 @@ export function buildPlan(input: PlanInput): PlanDay[] {
       let done = false;
       for (const meal of mealsByRoom()) {
         for (const { f } of options) {
-          const form = chooseForm(f, band, profile.approach, { holdTexture: profile.holdTexture });
+          const form = formOf(f, { holdTexture: profile.holdTexture });
           if (tryPlace(f, meal, form, ['keep_going'], 'rules')) {
             done = true;
             break;
@@ -461,7 +469,7 @@ export function buildPlan(input: PlanInput): PlanDay[] {
         .sort((a, b) => b.s - a.s);
       outer: for (const meal of mealsByRoom()) {
         for (const { f } of options) {
-          const form = chooseForm(f, band, profile.approach, { holdTexture: profile.holdTexture });
+          const form = formOf(f, { holdTexture: profile.holdTexture });
           if (tryPlace(f, meal, form, ['iron'], 'rules')) break outer;
         }
       }
@@ -510,7 +518,7 @@ export function buildPlan(input: PlanInput): PlanDay[] {
           if (f.ironRich) reasons.push('iron');
           if (input.softeningUntil && day <= input.softeningUntil && f.softening)
             reasons.push('softening');
-          const form = chooseForm(f, band, profile.approach, {
+          const form = formOf(f, {
             holdTexture: profile.holdTexture,
             avoid: retry ? (st?.lastForm ?? null) : null,
           });

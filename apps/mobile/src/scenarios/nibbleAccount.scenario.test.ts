@@ -100,4 +100,53 @@ describe('a new parent', () => {
     // and the caregiver seats are still CuddleCue's to answer
     expect(planOf('caregivers')).toBe('cuddlecue');
   });
+
+  it('gets 14 days of NibbleCue Plus once, which end by themselves and never come back', async () => {
+    const backend = new MockBackend({ now: () => Date.now(), newId: seededIds('cdcdcdcd') });
+    const prefs = memoryStore();
+    const auth = new MockAuthProvider(backend, sessionStore());
+    const api = new MockAccountsApi(backend, auth) as AccountsApi;
+    await auth.signUpWithPassword('ana@example.com', 'correct horse battery');
+    await auth.handleAuthLink(backend.lastLink ?? '');
+    const uid = auth.current()?.user.id ?? '';
+    const sent = await sendFinish(
+      {
+        store: prefs,
+        userId: uid,
+        context: { locale: 'en-US', time_zone: TZ },
+        createHousehold: body => api.createHousehold(body),
+      },
+      nibbleDraft(initialDraft(crypto.randomUUID()), {
+        name: 'Ana',
+        child: 'Leo',
+        birth: '2026-03-01',
+      }),
+    );
+    if (sent.kind !== 'created') throw new Error('no family');
+    const h = sent.result.household_id;
+    const cuddle = (await api.bootstrapState()).entitlement;
+
+    expect(await api.startNibbleTrial(h)).toEqual({ ok: true, granted: true });
+    let state = await api.bootstrapState();
+    let plan = planSnapshot(state.nibblePlans?.[h] ?? null, state.serverNow);
+    expect(plan).toMatchObject({ status: 'WELCOME', tier: 'PLUS', daysLeft: 14 });
+    expect(can('fullPlan', plan.tier)).toBe(true);
+    // CuddleCue's own plan is untouched by NibbleCue's trial
+    expect(state.entitlement).toEqual(cuddle);
+    // asked again: once per family, ever
+    expect(await api.startNibbleTrial(h)).toEqual({ ok: true, granted: false });
+
+    // fifteen days on: the free plan, by itself, and asking again gives nothing
+    vi.setSystemTime(EVENING + 15 * 86_400_000);
+    state = await api.bootstrapState();
+    plan = planSnapshot(state.nibblePlans?.[h] ?? null, state.serverNow);
+    expect(plan.tier).toBe('FREE');
+    expect(await api.startNibbleTrial(h)).toEqual({ ok: true, granted: false });
+
+    // and a purchase after it still works
+    const billing = new MockBillingProvider(backend, () => ({ userId: uid, householdId: h }));
+    expect(await billing.purchase('nibble_plus_monthly')).toEqual({ kind: 'purchased' });
+    state = await api.bootstrapState();
+    expect(planSnapshot(state.nibblePlans?.[h] ?? null, state.serverNow).tier).toBe('PLUS');
+  });
 });

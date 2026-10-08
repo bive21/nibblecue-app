@@ -145,6 +145,7 @@ import { useWriteContext } from '../../sheets/quick/useWriteContext';
 import { TourSpot } from '../../tour/TourSpot';
 import { useTour } from '../../tour/TourProvider';
 import { useToast } from '../../ui/toast';
+import { FromPlanCard } from '../nibble/FromPlanCard';
 import { ListRow } from './ListRow';
 import {
   arrivalDelays,
@@ -860,6 +861,9 @@ export function ShoppingScreen() {
           </TourSpot>
         </View>
       </View>
+
+      {/* NIBBLECUE: the meal plan's foods, ready to put on the list (`FromPlanCard`) */}
+      <FromPlanCard />
 
       {/* how far through the trip, and how many shops it walks through */}
       {ready && lines.length > 0 ? (

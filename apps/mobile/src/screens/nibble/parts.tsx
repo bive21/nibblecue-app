@@ -33,6 +33,7 @@ import {
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { RESPONSE_TILE } from '../../sheets/quick/modules/solids/copy';
+import { FoodThumb } from './FoodThumb';
 import { PLUS_SEE } from './copy';
 
 /** The line under every page that gives advice (spec §14). */
@@ -81,7 +82,7 @@ export function PlanItemRow({
     <Row
       title={name}
       detail={`${FORM_LABEL[item.form]} · ${itemReason(item)}`}
-      icon="solids"
+      iconNode={<FoodThumb food={food} size={36} />}
       {...(badge ? { badge } : {})}
       {...(onPress ? { onPress } : {})}
       {...(right !== undefined ? { right } : {})}

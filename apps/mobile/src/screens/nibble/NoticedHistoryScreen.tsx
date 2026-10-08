@@ -10,7 +10,7 @@ import { Screen } from '../../app/Screen';
 import { useNibble } from '../../nibble/useNibble';
 import { NOTICED } from './copy';
 import { NotMedical } from './parts';
-import { dayLabel } from './TodayScreen';
+import { dayLabel } from './dates';
 
 export function NoticedHistoryScreen() {
   const t = useTheme();

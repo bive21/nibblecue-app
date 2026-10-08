@@ -16,7 +16,7 @@ const LABELS: typeof TAB_LABELS = {
   today: 'Today',
   plan: 'Plan',
   foods: 'Foods',
-  shopping: 'Shopping',
+  shopping: 'Grocery',
   more: 'More',
 };
 

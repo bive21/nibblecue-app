@@ -62,6 +62,8 @@ export type RootParams = {
   Caregiver: undefined;
   /** The pediatrician summary (NibbleCue Plus). */
   Summary: undefined;
-  /** The baby's food setup: first time for a child (`setup`), or an edit from More. */
-  FoodProfile: { setup?: boolean } | undefined;
+  /** The baby's food profile, every answer on one page, from More. */
+  FoodProfile: undefined;
+  /** The first-time food setup: a few questions, a live plan preview, then what the plan will do. */
+  FoodSetup: undefined;
 };

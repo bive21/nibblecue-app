@@ -59,7 +59,7 @@ describe('a one-off is an action in the add sheet', () => {
     // Add item no longer carries "Supplies or one-offs"; the picker's own hints still do the job
     // says where to type (the owner, 2026-10-06)
     expect(SUPPLIES.oneOffEmptyHint).toBe('Type it in the search box above, then tap here');
-    expect(SUPPLIES.oneOffTypedHint).toBe('Just for this shopping list');
+    expect(SUPPLIES.oneOffTypedHint).toBe('Just for this grocery list');
     expect(SUPPLIES.pickerNone).toBe('No matching supplies');
     expect(SUPPLIES.pickerNoneHint).toBe('Try a different search term or add it as a one-off.');
     expect(picker).toContain('SUPPLIES.pickerNoneHint');

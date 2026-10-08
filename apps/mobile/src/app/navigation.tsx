@@ -45,6 +45,7 @@ import { AddFoodScreen } from '../screens/nibble/AddFoodScreen';
 import { AllergensScreen } from '../screens/nibble/AllergensScreen';
 import { EmergencyScreen } from '../screens/nibble/EmergencyScreen';
 import { FoodProfileScreen } from '../screens/nibble/FoodProfileScreen';
+import { FoodSetupScreen } from '../screens/nibble/FoodSetupScreen';
 import { FoodScreen } from '../screens/nibble/FoodScreen';
 import { FoodsScreen } from '../screens/nibble/FoodsScreen';
 import { MilkScreen } from '../screens/nibble/MilkScreen';
@@ -57,6 +58,7 @@ import { OnboardingScreen } from '../screens/onboarding/OnboardingScreen';
 import { JOIN_SHEET_ROUTE, JoinCodeSheet } from '../sheets/JoinCodeSheet';
 import { SignOutSheet } from '../sheets/SignOutSheet';
 import { useCanLog } from '../household/useCanLog';
+import { useNibbleTrial } from '../nibble/useNibbleTrial';
 import { useShell } from './shell';
 import { tabItems, tabKeyOf, TAB_ROUTE } from './tabs';
 import type { RootParams, TabParams } from './types';
@@ -104,6 +106,8 @@ function AppTabBar({ state, navigation }: BottomTabBarProps) {
 function AppTabs() {
   const t = useTheme();
   useEffect(() => crumb('tabs: mounted'), []);
+  // NibbleCue Plus's 14-day trial, asked for once when a family first opens NibbleCue
+  useNibbleTrial();
   /*
     A JOIN NOTE WRITTEN WHILE TODAY IS ALREADY SHOWING — an invite link opened inside a household,
     a code held on the first screen by somebody signing in to the household they already had — is
@@ -311,6 +315,7 @@ export function RootNavigator() {
             <Root.Screen name="Caregiver" component={CaregiverScreen} />
             <Root.Screen name="Summary" component={SummaryScreen} />
             <Root.Screen name="FoodProfile" component={FoodProfileScreen} />
+            <Root.Screen name="FoodSetup" component={FoodSetupScreen} />
             <Root.Screen name="DeleteAccount" component={DeleteAccountScreen} />
             <Root.Screen name="Account" component={AccountScreen} />
             <Root.Screen name="Plan" component={PlanScreen} />

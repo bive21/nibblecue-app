@@ -161,7 +161,8 @@ describe('2. the controls that log are not there for them', () => {
     const today = flat('screens', 'nibble', 'TodayScreen.tsx');
     expect(today).toContain('const canLog = useCanLog();');
     expect(today).toContain('<Screen testID="today" logButton={canLog}>');
-    expect(today).toContain('{canLog && v.profileRecord ? (');
+    // before the first bite, starting the plan is the page under it (NotStarted.tsx)
+    expect(flat('screens', 'nibble', 'NotStarted.tsx')).toContain('{canLog ? (');
     expect(today).toContain('{canLog && skipMarkId ? (');
     expect(today).toContain('canEdit={canLog && v.childId !== null}');
     expect(today).toContain('{!canLog ? <Caption>{TODAY.viewOnly}</Caption> : null}');

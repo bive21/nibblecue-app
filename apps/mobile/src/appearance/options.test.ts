@@ -73,19 +73,19 @@ describe('the option lists (DESIGN_SYSTEM.md §21: an enum value is not copy)', 
   it('takes the skin labels from the skin table, so a rename there reaches both surfaces', () => {
     // two looks since 2026-09-18: Soft was removed (`skins.ts` says why and what it cost)
     expect(SKIN_OPTIONS.map(o => o.label)).toEqual(['Liquid Glass', 'Paper']);
-    // the default first (2026-09-27: Ocean), Sage and Clay gone, Lilac and Sunny in their places
+    // CuddleCue's order, with NibbleCue's green Leaf where Sunny was (2026-10-08)
     expect(SCHEME_OPTIONS.map(o => o.label)).toEqual([
       'Ocean',
       'Lilac',
       'Rose',
-      'Sunny',
+      'Leaf',
       'Reef',
       'Slate',
     ]);
-    // NIBBLECUE STARTS ON SUNNY (packages/ui `DEFAULT_SCHEME`, the owner, 2026-10-08: "change the
-    // main color to diferentiate the two app"). The swatch row keeps CuddleCue's order, so the
-    // default is no longer the first swatch; whether it should move first is the owner's call
-    expect(DEFAULT_SCHEME).toBe('sunny');
+    // NIBBLECUE STARTS ON LEAF (packages/ui `DEFAULT_SCHEME`, the owner, 2026-10-08: "i like the
+    // green color theme instea of orange. because in our cuddlecue app, solid is green"). The
+    // swatch row keeps CuddleCue's order, so the default is not the first swatch
+    expect(DEFAULT_SCHEME).toBe('leaf');
     expect(SCHEME_OPTIONS.map(o => o.value)).toContain(DEFAULT_SCHEME);
   });
 
@@ -129,8 +129,8 @@ describe('isLocked (PRICING.md §6: a gate looks gated before the tap)', () => {
       expect(isLocked('scheme', k, FREE_APPEARANCE)).toBe(k !== DEFAULT_SCHEME);
       expect(isLocked('scheme', k, PLUS_APPEARANCE)).toBe(false);
     }
-    // …and NibbleCue's move: Sunny is free, CuddleCue's Ocean is sold like the rest
-    expect(isLocked('scheme', 'sunny', FREE_APPEARANCE)).toBe(false);
+    // …and NibbleCue's move: Leaf is free, CuddleCue's Ocean is sold like the rest
+    expect(isLocked('scheme', 'leaf', FREE_APPEARANCE)).toBe(false);
     expect(isLocked('scheme', 'ocean', FREE_APPEARANCE)).toBe(true);
     expect(isLocked('scheme', 'reef', FREE_APPEARANCE)).toBe(true);
     for (const k of SKIN_NAMES) {
@@ -256,6 +256,6 @@ describe('appearanceSummary', () => {
   it('reads "<scheme> · <theme>" from what is painted', () => {
     expect(appearanceSummary({ scheme: 'lilac', theme: 'dark' })).toBe('Lilac · Dark');
     expect(appearanceSummary({ scheme: 'ocean', theme: 'light' })).toBe('Ocean · Light');
-    expect(appearanceSummary({ scheme: 'sunny', theme: 'night' })).toBe('Sunny · Night');
+    expect(appearanceSummary({ scheme: 'leaf', theme: 'night' })).toBe('Leaf · Night');
   });
 });

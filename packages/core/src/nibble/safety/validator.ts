@@ -113,7 +113,13 @@ export function checkItem(food: Food, form: Form, ctx: ItemContext): Violation[]
   const { profile, months } = ctx;
 
   if (months < 4) v.push('not_before_4_months');
-  if (food.notBeforeMonths > months) v.push('not_before_age');
+  // 4 to 6 months: a family that chose to start before 6 months is offered the library's first
+  // foods (all held to 6 months as the usual age) as smooth single purées with no common allergen
+  const early = months >= 4 && months < 6;
+  if (food.notBeforeMonths > (early ? 6 : months)) v.push('not_before_age');
+  if (early && (form !== 'puree' || !food.firstFood || food.allergens.length > 0)) {
+    v.push('before_six_months');
+  }
   if (food.animal === 'honey' && months < 12) v.push('no_honey_under_12');
   if ([food.name, ...food.aliases].some(isHighMercuryName)) v.push('no_high_mercury_fish');
   if ([food.name, ...food.aliases].some(isUnsafeName)) v.push('unsafe_food');

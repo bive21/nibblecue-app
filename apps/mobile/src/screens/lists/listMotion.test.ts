@@ -701,7 +701,7 @@ describe('the Supplies page’s cart (runAddToList, cartShows)', () => {
   });
 
   it('says where the thing went, for a parent who cannot see the throw', () => {
-    expect(SUPPLIES.addedToList('Diapers')).toBe('Added Diapers to the shopping list');
+    expect(SUPPLIES.addedToList('Diapers')).toBe('Added Diapers to the grocery list');
   });
 });
 

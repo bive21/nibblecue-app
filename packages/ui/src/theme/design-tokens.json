@@ -363,8 +363,8 @@
     "wellbeing": "rose"
   },
   "colorScheme": {
-    "$note": "A scheme overrides exactly these ten roles on top of the active theme: accent, accent2, accentSoft, onAccent, the brand gradient (g1→g2), page, pageWarm, pageCool, app, app2. It must never change semantic status colors (good/warn/crit/info) or the fixed category hues, because a user learns those meanings once. Night theme keeps only accent and accent2 from the scheme and supplies its own grounds. NibbleCue’s default is sunny, the bright orange (2026-10-08: the main color is what tells the two apps apart; CuddleCue’s default is ocean, a clear blue (the owner, 2026-09-27: the green default felt boring and should be a brighter color); it is the one scheme the free plan paints, and an unknown key falls back to it. Reef, the logo’s teal and coral, was the default from 2026-09-21 and stays as a choice. A retired key is never reused for different hues: twilight (retired 2026-09-21), and sage and clay (retired 2026-09-27, replaced by lilac and sunny), fall back to the default wherever a device or a profile row still holds one. Stored per user on profiles.color_scheme. Gradient labels use onGradient (always #FFFFFF), never onAccent: onAccent is correct on the flat accent, but the gradient's light end needs white. Every g1 is tuned so white text clears 4.5:1 on it.",
-    "$default": "sunny",
+    "$note": "A scheme overrides exactly these ten roles on top of the active theme: accent, accent2, accentSoft, onAccent, the brand gradient (g1→g2), page, pageWarm, pageCool, app, app2. It must never change semantic status colors (good/warn/crit/info) or the fixed category hues, because a user learns those meanings once. Night theme keeps only accent and accent2 from the scheme and supplies its own grounds. NibbleCue’s default is leaf, a fresh green built from CuddleCue’s solids hue (2026-10-08, the owner: the main color tells the two apps apart, and solids is green in CuddleCue; leaf takes Sunny’s place in the six); CuddleCue’s default is ocean, a clear blue (the owner, 2026-09-27: the green default felt boring and should be a brighter color); it is the one scheme the free plan paints, and an unknown key falls back to it. Reef, the logo’s teal and coral, was the default from 2026-09-21 and stays as a choice. A retired key is never reused for different hues: twilight (retired 2026-09-21), and sage and clay (retired 2026-09-27, replaced by lilac and sunny), fall back to the default wherever a device or a profile row still holds one. Stored per user on profiles.color_scheme. Gradient labels use onGradient (always #FFFFFF), never onAccent: onAccent is correct on the flat accent, but the gradient's light end needs white. Every g1 is tuned so white text clears 4.5:1 on it.",
+    "$default": "leaf",
     "ocean": {
       "name": "Ocean",
       "note": "Clear blue",
@@ -461,36 +461,36 @@
         "app2": "#2A1522"
       }
     },
-    "sunny": {
-      "name": "Sunny",
-      "note": "Bright orange, the default",
+    "leaf": {
+      "name": "Leaf",
+      "note": "Fresh green, the default",
       "light": {
-        "accent": "#BA4400",
-        "accent2": "#8B2D01",
-        "accentSoft": "#FFEDE0",
+        "accent": "#2F7517",
+        "accent2": "#225A10",
+        "accentSoft": "#E6F3DD",
         "onAccent": "#FFFFFF",
         "onGradient": "#FFFFFF",
-        "g1": "#B85603",
-        "g2": "#9D2F02",
-        "page": "#FAE3D0",
-        "pageWarm": "#FEE9DE",
-        "pageCool": "#F2EBCF",
-        "app": "#FDF6EB",
-        "app2": "#FBF6E4"
+        "g1": "#3A7D18",
+        "g2": "#24600F",
+        "page": "#DDEED2",
+        "pageWarm": "#F3EFDA",
+        "pageCool": "#D8ECDF",
+        "app": "#F2F8EC",
+        "app2": "#F6F8E8"
       },
       "dark": {
-        "accent": "#FFA159",
-        "accent2": "#FEC598",
-        "accentSoft": "#3D1E05",
-        "onAccent": "#270E00",
+        "accent": "#76BF45",
+        "accent2": "#B8E69A",
+        "accentSoft": "#1C3310",
+        "onAccent": "#0E2005",
         "onGradient": "#FFFFFF",
-        "g1": "#B75901",
-        "g2": "#993C02",
-        "page": "#160902",
-        "pageWarm": "#201103",
-        "pageCool": "#1B0C06",
-        "app": "#241308",
-        "app2": "#2D1B0A"
+        "g1": "#3B7A1A",
+        "g2": "#28600F",
+        "page": "#07120A",
+        "pageWarm": "#14130A",
+        "pageCool": "#081310",
+        "app": "#0F1C10",
+        "app2": "#152416"
       }
     },
     "reef": {

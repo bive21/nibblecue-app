@@ -33,7 +33,7 @@ import { hit, space, type as typeScale } from '../theme/theme';
  * `advance` is how wide a character is allowed to be, as a fraction of the size — a BOUND, not an
  * average, the same one the theme toggle's words are held to (`WORD_TYPE`). The six names in the
  * face the app ships, read out of its TTF (Hanken Grotesk Regular, 1000 units to the em): Ocean
- * 2.893 em, Lilac 2.044, Rose 2.185, Sunny 2.726, Reef 2.013, Slate 2.255 — at most 0.579 em a
+ * 2.893 em, Lilac 2.044, Rose 2.185, Sunny 2.726 (NibbleCue's Leaf, in its place, 1.91), Reef 2.013, Slate 2.255 — at most 0.579 em a
  * character, Ocean's capital O doing the work. The system faces that draw the name for the moment
  * before the app's own are in set Ocean near 2.85 em. 0.6 covers every one of them.
  *

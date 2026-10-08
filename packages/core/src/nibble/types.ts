@@ -219,6 +219,10 @@ export type MealName = z.infer<typeof MealName>;
 const IsoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const ClockTime = z.string().regex(/^\d{2}:\d{2}$/);
 
+/** The four readiness signs a parent can see before any food is offered (AAP, CDC, NHS). */
+export const READINESS_SIGNS = ['head', 'sits', 'mouthing', 'interest'] as const;
+export type ReadinessSign = (typeof READINESS_SIGNS)[number];
+
 export const NibbleProfile = z.object({
   /** Where the family is on the journey when they start. */
   stage: z.enum(['getting_ready', 'started', 'eating_many']),
@@ -257,7 +261,19 @@ export const NibbleProfile = z.object({
   mealsPerDay: z.number().int().min(1).max(4).nullable().default(null),
   mealTimes: z.array(z.object({ meal: MealName, at: ClockTime })).default([]),
   region: Region.default('US'),
-  /** The parent has confirmed the readiness signs (only asked before about six months). */
+  /**
+   * The readiness signs the parent has SEEN (setup's "Which of these have you seen Ada do?", and
+   * Today's checklist): each one observable without food (AAP, CDC, NHS). Never gates the plan on
+   * its own; it sets the default start answer and fills the checklist.
+   */
+  signsSeen: z.array(z.enum(READINESS_SIGNS)).default([]),
+  /**
+   * The day the family plans to start (setup's "When would you like to start?"): today, a day
+   * they choose (never before 4 months), or null for "when I see the signs". Before it the plan
+   * is getting ready; from it, first foods.
+   */
+  startOn: IsoDate.nullable().default(null),
+  /** Older records: the parent confirmed readiness with no start day (kept, read when `startOn` is null). */
   ready: z.boolean().default(true),
   /** The parent has held the texture stage (the nudge past nine months stays a nudge). */
   holdTexture: z.boolean().default(false),

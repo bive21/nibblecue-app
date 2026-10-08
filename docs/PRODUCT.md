@@ -29,29 +29,52 @@ orange where CuddleCue's is blue.
 | **Today** | Today's meals from the plan, the serve flow, one guidance card for the stage, allergens due this week, a "Something you noticed" button, tomorrow at a glance. The raised **+** in the bar opens CuddleCue's own meal sheet to log anything else. |
 | **Plan** | The next 14 days, meal by meal, with "why" on every item. Pin a food, remove one, skip a day. A strip of what is changing this week (texture step, cups, a new allergen). |
 | **Foods** | The library: search, filters (first foods, allergens, iron-rich, not tried yet), each food with how to serve it at this age, the choking note, its allergens, and this baby's history with it. Add your own food. |
-| **Shopping** | CuddleCue's shopping list, the same list (one list, both apps), with "Add this week's foods". |
+| **Grocery** | CuddleCue's shopping list, the same list (one list, both apps), opening on the plan's foods by aisle: each one tap from the list, or "Add all". |
 | **More** | Allergens, Something you noticed (history), Milk and drinks, Caregiver sheet, Pediatrician summary, Baby's food profile, Family, Supplies, NibbleCue Plus, Help, About. Appearance, Account and privacy (with Download your data) and Sign out are in the account menu behind the avatar, as in CuddleCue. |
 
 ## Setup
 
 A parent who already uses CuddleCue signs in with the same account and lands on a short food
 setup for their baby. A new parent creates an account (CuddleCue's sign-up, same checkbox for the
-terms), names their baby, then does the same food setup. Every answer is a choice, never free text
-the plan has to interpret. About two minutes:
+terms), names their baby, then does the same food setup. The full design, question by question,
+is `docs/research/MARKET_AND_SETUP.md` §2; the screen is `FoodSetupScreen.tsx`.
 
-1. Where you are: not started, just started (with a date), or already eating lots
-2. If not started and under six months: the readiness signs
-3. Purées, baby-led, or a mix
-4. Your family's diet and rules (vegetarian, vegan, halal, kosher, no pork, Jain…)
-5. Foods your family cooks (cuisines), optional
-6. Allergy history: eczema, family allergies, anything a doctor has diagnosed
-7. How you want allergens introduced: early and often (current guidance), as your pediatrician
-   directs, or not planned
-8. Allergens and foods already offered
-9. Foods never to serve: later, from any food's page
-10. Region (US, UK, Canada, Australia)
+- **Under 4 months there are no questions**: the dates solids can start and most babies start,
+  and the food library to browse.
+- **Has Ada had any solid food yet?** Not yet, just started, or eats lots of foods. Filled in from
+  CuddleCue's log when solids are logged there ("We found 4 meals logged since Sep 12").
+- **Not yet**: which readiness signs the parent has *seen* (head steady, sits with a little help,
+  brings toys to the mouth, watches you eat), and when to start: today, on a day they choose, or
+  when they see the signs. Nothing about swallowing: nobody can know it before the first spoon,
+  so Today says what to watch for on the first day. Before 6 months the setup says most babies
+  start around 6 months and to check with the pediatrician first.
+- **How to offer food** (spoon, finger foods, some of each), or for a family already eating
+  lots, **what the baby eats most easily now** (smooth, soft lumps, soft pieces, family food).
+- **What the family eats**: diet, rules (halal, kosher, no pork, Jain…), and the cuisines they
+  cook, folded away.
+- **Foods already had** (just started and lots): a grid of common first foods with photos, ticked
+  from the log, "Tick all the fruits and vegetables", and search for more.
+- **Allergens**: a doctor's word, eczema in plain words, allergens already had (ticked from the
+  foods above: yogurt counts as milk), and how to introduce them.
 
-Then the first plan is shown. The setup is the same page from More, all questions at once.
+Under every question the first days of the plan are drawn by the planner as the parent answers.
+The setup ends on **"Ada's plan is ready"**: the start day, the first week's foods with New and
+first-allergen badges, when allergens start and in what order, three lines of "because you told
+us", the first days' foods one tap from the grocery list, and the guidance region read from the
+phone. Region, meals a day, the family allergy line and the texture hold are on the food profile
+page in More, with every other answer.
+
+## Before the first bite, and day one
+
+- **Getting ready** (not started, or waiting for the signs): Today shows the signs, ticked and kept
+  on the profile so both phones agree; the 6-month day; the first days a start would bring; what
+  to have ready (high chair, soft spoon, open cup, bibs) one tap from the grocery list; and three
+  short reads before day one (gagging and choking, a possible reaction, how much to offer). "Start
+  the plan today", "Choose a day" and "We have already started" (with the first taste's date).
+- **A start day chosen**: the countdown on Today, and the plan and the grocery list from that day.
+- **Day one**: a first-day card above the meals (sit upright, stay within arm's reach, a teaspoon
+  or two, and what the first tries show).
+- **After**: "Day 9 of solids. 6 foods tried." A count, never a goal.
 
 ## The plan (rules, plus an optional model)
 
@@ -89,6 +112,6 @@ is a real app, and **safety is never sold**:
 | Allergen tracking, keep-going counts | The caregiver and daycare sheet |
 | Something you noticed, the emergency card | The pediatrician summary (PDF and share) |
 | Both parents and caregivers, every child | Milk and drinks, read against CuddleCue's log |
-| Shopping list, light and dark, data download, account deletion, no ads | Color schemes |
+| Grocery list, light and dark, data download, account deletion, no ads | Color schemes |
 
 Prices come from the stores at runtime; the target numbers are the owner's to set.

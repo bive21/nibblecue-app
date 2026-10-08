@@ -95,17 +95,11 @@ describe('resolvePalette', () => {
     }
   });
 
-  it('starts every NibbleCue household on Sunny, and ships Ocean, Reef and Lilac beside it', () => {
-    // the owner, 2026-10-08: "we can change the main color to diferentiate the two app"
-    expect(theme.DEFAULT_SCHEME).toBe('sunny');
-    expect(Object.keys(theme.schemes)).toEqual([
-      'ocean',
-      'lilac',
-      'rose',
-      'sunny',
-      'reef',
-      'slate',
-    ]);
+  it('starts every NibbleCue household on Leaf, and ships Ocean, Reef and Lilac beside it', () => {
+    // the owner, 2026-10-08: "i like the green color theme instea of orange. because in our
+    // cuddlecue app, solid is green"
+    expect(theme.DEFAULT_SCHEME).toBe('leaf');
+    expect(Object.keys(theme.schemes)).toEqual(['ocean', 'lilac', 'rose', 'leaf', 'reef', 'slate']);
     for (const name of Object.keys(theme.schemes)) expect(theme.isSchemeName(name)).toBe(true);
   });
 

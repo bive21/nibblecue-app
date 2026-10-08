@@ -16,8 +16,8 @@ const light = {
   /**
    * THE PAPER GROUND — a warm, neutral off-white, the same in every color scheme.
    *
-   * `app` is the lit ground and a scheme OVERRIDES it (Ocean's is a pale blue, Sunny's is a pale
-   * cream): that is correct for Today, where the household's color is the point of the screen.
+   * `app` is the lit ground and a scheme OVERRIDES it (Ocean's is a pale blue, Leaf's is a pale
+   * green): that is correct for Today, where the household's color is the point of the screen.
    * It is wrong for a page that is a stack of white cards with almost nothing colored on it —
    * the tint has nothing to sit against and reads as a cast over the paper rather than a choice
    * (the shopping brief, 2026-09-19: "page background changes to the warm off-white … remove the
@@ -384,12 +384,12 @@ export function gradientFor(name: ThemeName, key: keyof typeof gradients.light) 
  * A scheme overlays EXACTLY ten roles on top of the active theme palette.
  * It must never touch semantic status colors or the fixed category hues:
  * a missed schedule looks the same in Rose as in Slate, and a chart read in
- * Ocean is describable to someone on Sunny.
+ * Ocean is describable to someone on Leaf.
  *
  * Night theme takes only `accent` and `accent2` from the scheme — its grounds
  * are non-negotiable, because night mode exists to be safe in a dark room.
  * ------------------------------------------------------------------------- */
-export type SchemeName = 'ocean' | 'lilac' | 'rose' | 'sunny' | 'reef' | 'slate';
+export type SchemeName = 'ocean' | 'lilac' | 'rose' | 'leaf' | 'reef' | 'slate';
 /**
  * THE DEFAULT IS OCEAN, A CLEAR BLUE (the owner, 2026-09-27: *"default color should not be the
  * green, the green just feels boring. it shouldbe brighter color. I like the rose color but this
@@ -418,14 +418,17 @@ export type SchemeName = 'ocean' | 'lilac' | 'rose' | 'sunny' | 'reef' | 'slate'
  * household that chose a green would silently own a purple under a name that still said green.
  */
 /*
- * NIBBLECUE'S DEFAULT IS SUNNY, THE BRIGHT ORANGE (2026-10-08). The owner, on starting NibbleCue
- * from CuddleCue's design system: *"we can change the main color to diferentiate the two app, but
- * the module and look need to be the same"*. So the one thing that moves is which scheme a new
- * install starts on: CuddleCue's is Ocean blue, NibbleCue's is Sunny orange, a scheme that already
- * passes every contrast gate above. The module hues, the paper ground and every component stay
- * CuddleCue's. Reversible by changing this one constant.
+ * NIBBLECUE'S DEFAULT IS LEAF, A FRESH GREEN (2026-10-08). The owner, on starting NibbleCue from
+ * CuddleCue's design system: *"we can change the main color to diferentiate the two app, but the
+ * module and look need to be the same"*, and then: *"i like the green color theme instea of orange.
+ * because in our cuddlecue app, solid is green"*. So Leaf is built from CuddleCue's solids hue
+ * (#3F8417), deepened until white clears 4.5:1 on the accent and the gradient, and it takes the
+ * place CuddleCue's Sunny had in the six (the swatch row is sized for six). Sunny is not a key
+ * here: a stored `sunny` lands on the default like any key this build does not ship, and `leaf`
+ * is a new key, never one of the retired ones. The module hues, the paper ground and every
+ * component stay CuddleCue's. Reversible by changing this one constant.
  */
-export const DEFAULT_SCHEME: SchemeName = 'sunny';
+export const DEFAULT_SCHEME: SchemeName = 'leaf';
 
 export type SchemeOverlay = {
   accent: string; accent2: string; accentSoft: string; onAccent: string;
@@ -469,16 +472,16 @@ export const schemes: Record<SchemeName, { name: string; note: string; light: Sc
         g1: '#BA507F', g2: '#A82C61',
         page: '#140610', pageWarm: '#200D18', pageCool: '#150A18', app: '#20101B', app2: '#2A1522' }
   },
-  sunny: {
-    name: 'Sunny', note: 'Bright orange, the default',
+  leaf: {
+    name: 'Leaf', note: 'Fresh green, the default',
     light:
-      { accent: '#BA4400', accent2: '#8B2D01', accentSoft: '#FFEDE0', onAccent: '#FFFFFF', onGradient: '#FFFFFF',
-        g1: '#B85603', g2: '#9D2F02',
-        page: '#FAE3D0', pageWarm: '#FEE9DE', pageCool: '#F2EBCF', app: '#FDF6EB', app2: '#FBF6E4' },
+      { accent: '#2F7517', accent2: '#225A10', accentSoft: '#E6F3DD', onAccent: '#FFFFFF', onGradient: '#FFFFFF',
+        g1: '#3A7D18', g2: '#24600F',
+        page: '#DDEED2', pageWarm: '#F3EFDA', pageCool: '#D8ECDF', app: '#F2F8EC', app2: '#F6F8E8' },
     dark:
-      { accent: '#FFA159', accent2: '#FEC598', accentSoft: '#3D1E05', onAccent: '#270E00', onGradient: '#FFFFFF',
-        g1: '#B75901', g2: '#993C02',
-        page: '#160902', pageWarm: '#201103', pageCool: '#1B0C06', app: '#241308', app2: '#2D1B0A' }
+      { accent: '#76BF45', accent2: '#B8E69A', accentSoft: '#1C3310', onAccent: '#0E2005', onGradient: '#FFFFFF',
+        g1: '#3B7A1A', g2: '#28600F',
+        page: '#07120A', pageWarm: '#14130A', pageCool: '#081310', app: '#0F1C10', app2: '#152416' }
   },
   reef: {
     name: 'Reef', note: 'Teal and coral',

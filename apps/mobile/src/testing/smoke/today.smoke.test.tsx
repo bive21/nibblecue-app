@@ -10,7 +10,8 @@ import { signedInWithHousehold } from './account';
 import { mount } from './mount';
 
 it('signed in with a family: lands on Today, the food setup opens, and every tab mounts', async () => {
-  await signedInWithHousehold();
+  // about seven months old: a baby under four months sees the dates instead of a setup (hard rule 1)
+  await signedInWithHousehold(214);
   const app = await mount(<App />);
   await app.until('Today', () => app.has('today'), 15_000);
   await app.until('the food setup card', () => app.has('today.setup'));
@@ -28,8 +29,8 @@ it('signed in with a family: lands on Today, the food setup opens, and every tab
   await app.until('Today again', () => app.has('today.setup'));
   // and the food setup opens from it, on its first question
   await app.press('today.setup.start');
-  await app.until('the food setup', () => app.has('profile'));
-  expect(app.has('profile.next')).toBe(true);
+  await app.until('the food setup', () => app.has('setup'));
+  expect(app.has('setup.next')).toBe(true);
   expect(app.has('error.screen')).toBe(false);
   await app.unmount();
 });

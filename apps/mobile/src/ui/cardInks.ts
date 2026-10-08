@@ -58,7 +58,7 @@ export interface StashCardInks {
  *     ground alone. In light that is the near-black and the dark gold `#6B4409`; on the dark
  *     version white and a light gold, and on the Night version Night's amber for both. The asterisk
  *     takes the accent as well: the scheme's was never measured for the picture and does not hold
- *     on it (over the light picture's darker gold, Ocean's blue is 3.3:1 and Sunny's orange 3.0:1).
+ *     on it (over the light picture's darker gold, Ocean's blue is 3.3:1 and CuddleCue's Sunny orange 3.0:1).
  *     The places' bands and dots take their lighter on-picture tone over the owner's pale picture
  *     (`placeOnArt`, the owner's 2026-09-22 ask) and their own theme's hue over a dark or Night
  *     version, which is the hue a place is drawn in on every other dark card.

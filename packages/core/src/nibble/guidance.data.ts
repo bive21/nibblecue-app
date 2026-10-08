@@ -16,9 +16,9 @@ export const GUIDANCE_DATA: readonly GuidanceCardInput[] = [
     points: [
       'Holds the head steady and upright.',
       'Sits with support.',
-      'Opens the mouth when food comes near.',
-      'Swallows food rather than pushing it back out.',
       'Reaches for things and brings them to the mouth.',
+      'Watches you eat and reaches for your food.',
+      'On the first tries, watch whether food goes back and is swallowed. Pushing it out is common at first.',
       'Solids are not recommended before 4 months.',
     ],
     trigger: 'getting_ready',

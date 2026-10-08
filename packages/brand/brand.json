@@ -66,9 +66,9 @@
     "notificationIcon": "brand/notification-icon-placeholder.png",
     "adaptiveMonochrome": "brand/adaptive-monochrome-placeholder.png",
     "colors": {
-      "$note": "Placeholder artwork colors (the Sunny scheme's own) for the splash grounds and the notification tint. Never the app's palette, which is packages/ui/src/theme/design-tokens.json.",
-      "brand": "#B85603",
-      "ink": "#2D1B0A",
+      "$note": "Placeholder artwork colors (the Leaf scheme's own, the green the owner chose on 2026-10-08) for the splash grounds and the notification tint. Never the app's palette, which is packages/ui/src/theme/design-tokens.json.",
+      "brand": "#3A7D18",
+      "ink": "#14260A",
       "splashLight": "#F6F3EC"
     }
   },

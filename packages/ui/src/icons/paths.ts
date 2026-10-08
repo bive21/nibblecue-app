@@ -17,6 +17,10 @@
  * coin shop draw them now).
  */
 export type IconName =
+  | 'apple'
+  | 'carrot'
+  | 'spoon'
+  | 'broccoli'
   | 'bottle'
   | 'breast'
   | 'pump'
@@ -424,6 +428,92 @@ const SPRITE: Record<Exclude<IconName, TabIconName>, IconDef> = {
       {
         type: 'path',
         d: 'M20 14.6A8.6 8.6 0 1 1 9.4 4.1a7 7 0 0 0 10.6 10.5z',
+      },
+    ],
+  },
+  // NibbleCue's food glyphs (2026-10-08): line drawings in the set's own stroke, for the ground's
+  // pattern and the food pages; placeholders the owner's designer may redraw
+  apple: {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    strokeWidth: 1.7,
+    elements: [
+      {
+        type: 'path',
+        d: 'M12 7.6c-1.9-1.4-6.7-1.1-7.3 3.6-.6 4.4 2.4 9.6 5.1 9.6 1 0 1.3-.5 2.2-.5s1.2.5 2.2.5c2.7 0 5.7-5.2 5.1-9.6-.6-4.7-5.4-5-7.3-3.6z',
+      },
+      {
+        type: 'path',
+        d: 'M12 7.6c0-1.7.5-3.2 1.8-4.2',
+      },
+      {
+        type: 'path',
+        d: 'M13 5.6c1.1-1.3 2.9-1.8 4.4-1.3-.5 1.5-1.9 2.6-3.8 2.5',
+      },
+    ],
+  },
+  carrot: {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    strokeWidth: 1.7,
+    elements: [
+      {
+        type: 'path',
+        d: 'M15.2 8.8c-1.4-1.4-3.6-1.4-5 0L4.6 18.5c-.5.8.3 1.6 1.1 1.1l9.5-5.8c1.4-1.4 1.4-3.6 0-5z',
+      },
+      {
+        type: 'path',
+        d: 'M15.6 8.4 19.4 4.6',
+      },
+      {
+        type: 'path',
+        d: 'M16.6 10 20.6 8.8',
+      },
+      {
+        type: 'path',
+        d: 'M14 7.4 15.2 3.4',
+      },
+      {
+        type: 'path',
+        d: 'M8.8 13.8l1.4 1.4',
+      },
+      {
+        type: 'path',
+        d: 'M11.2 11.4l1.2 1.2',
+      },
+    ],
+  },
+  spoon: {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    strokeWidth: 1.7,
+    elements: [
+      {
+        type: 'path',
+        d: 'M12 3c2.3 0 3.8 2.1 3.8 4.6S14.3 12 12 12 8.2 10.1 8.2 7.6 9.7 3 12 3z',
+      },
+      {
+        type: 'path',
+        d: 'M12 12v9',
+      },
+    ],
+  },
+  broccoli: {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    strokeWidth: 1.7,
+    elements: [
+      {
+        type: 'path',
+        d: 'M7.6 12.4a3 3 0 0 1 .2-5.9 3.7 3.7 0 0 1 7-1.4 3 3 0 0 1 1.6 5.7 3 3 0 0 1-2.8 1.6z',
+      },
+      {
+        type: 'path',
+        d: 'M10.2 12.4 9.4 20.6h5.2l-.8-8.2',
+      },
+      {
+        type: 'path',
+        d: 'M12 12.4v-2.2',
       },
     ],
   },

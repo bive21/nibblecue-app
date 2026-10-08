@@ -34,7 +34,7 @@ const BLEED = space.xxl;
 describe('the name bound covers the names the app draws', () => {
   it('is the six schemes, in the order the resolver keeps them', () => {
     // the default first (2026-09-27), and no two neighbors of one hue family
-    expect(NAMES).toEqual(['Ocean', 'Lilac', 'Rose', 'Sunny', 'Reef', 'Slate']);
+    expect(NAMES).toEqual(['Ocean', 'Lilac', 'Rose', 'Leaf', 'Reef', 'Slate']);
     expect(SWATCH_NAME.size).toBe(typeScale.meta.fontSize);
   });
 
@@ -45,7 +45,8 @@ describe('the name bound covers the names the app draws', () => {
       Ocean: 2.893,
       Lilac: 2.044,
       Rose: 2.185,
-      Sunny: 2.726,
+      // NibbleCue's green, in Sunny's place (2026-10-08), measured in the same TTF
+      Leaf: 1.91,
       Reef: 2.013,
       Slate: 2.255,
     };

@@ -281,6 +281,8 @@ export interface MockState {
    * different subscription called nibblecue plus").
    */
   nibble_entitlements: MockEntitlement[];
+  /** The households NibbleCue Plus's trial was ever granted to: once each, ever. */
+  nibble_trial_ledger: string[];
   rate_limits: Record<string, { window_start: number; count: number }>;
   deletions: Record<string, { requested_at: string; purge_at: string }>;
   household_ops: Record<string, string>;
@@ -307,6 +309,7 @@ const emptyState = (): MockState => ({
   welcome_ledger: [],
   entitlements: [],
   nibble_entitlements: [],
+  nibble_trial_ledger: [],
   rate_limits: {},
   deletions: {},
   household_ops: {},
@@ -996,6 +999,32 @@ export class MockAccountsApi implements AccountsApi {
     if (!s || !u || !this.backend.sessionValid(s)) return fail(401, 'unauthenticated');
     if (!u.verified) return fail(401, 'unverified_email');
     return { ok: true, user: u };
+  }
+
+  /**
+   * NIBBLECUE PLUS'S TRIAL ON THE TEST BACKEND, as `nibble_start_trial` grants it: a live member
+   * asks, the household gets fourteen days once ever, as a welcome row of its own (never CuddleCue's
+   * preview, never CuddleCue Plus), and a purchase replaces it (`billing/mock.ts`).
+   */
+  async startNibbleTrial(
+    householdId: string,
+  ): Promise<{ ok: true; granted: boolean } | ApiFailure> {
+    const c = this.caller();
+    if (!c.ok) return c;
+    if (this.backend.membership(householdId, c.user.id) === undefined)
+      return fail(403, 'forbidden');
+    const s = this.backend.state;
+    if (s.nibble_trial_ledger.includes(householdId)) return { ok: true, granted: false };
+    s.nibble_trial_ledger.push(householdId);
+    s.nibble_entitlements.push({
+      user_id: c.user.id,
+      household_id: householdId,
+      source: 'welcome',
+      status: 'ACTIVE',
+      current_period_end: new Date(this.backend.now() + 14 * 86_400_000).toISOString(),
+    });
+    await this.backend.save();
+    return { ok: true, granted: true };
   }
 
   /**

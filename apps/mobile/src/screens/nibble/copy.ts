@@ -51,6 +51,60 @@ export const TODAY = {
   viewOnly: 'You can see the plan. Logging is for parents and caregivers.',
 } as const;
 
+/** The two states before a plan exists: too young, and getting ready (`NotStarted.tsx`). */
+export const NOT_STARTED = {
+  tooYoungTitle: 'Not time for solids yet',
+  tooYoung: (name: string, from4: string, around6: string): string =>
+    `${name} can start solids from 4 months, on ${from4}. Most babies start around 6 months, on ${around6}. Until then, milk is everything.`,
+  tooYoungSetup: 'Food setup opens from 4 months. The food library is open to browse now.',
+  readyTitle: 'Getting ready for solids',
+  signsTitle: 'Signs you have seen',
+  readyLede: 'Tick each sign when you see it. Nothing here holds the plan back.',
+  allSigns: 'You have seen all four signs. Pick a day to start?',
+  countdown: (name: string, day: string, weeks: number): string =>
+    weeks <= 0
+      ? `${name} turns 6 months on ${day}.`
+      : weeks === 1
+        ? `${name} turns 6 months on ${day}, in about a week.`
+        : `${name} turns 6 months on ${day}, in about ${weeks} weeks.`,
+  startsOn: (name: string, day: string, days: number): string =>
+    days === 1
+      ? `${name}’s first food day is tomorrow, ${day}.`
+      : `${name}’s first food day is ${day}, in ${days} days.`,
+  previewIf: 'If you start today, the first days look like this',
+  previewOn: 'The first days',
+  shopFirst: 'Add the first days’ foods to the grocery list',
+  shopDone: 'On your grocery list',
+  getReadyTitle: 'Things to have ready',
+  getReady: [
+    'A high chair or a seat where your baby sits upright',
+    'A small soft spoon',
+    'An open cup or a straw cup',
+    'A bib or two',
+  ],
+  getReadyAdd: 'Add these to the grocery list',
+  learnTitle: 'Before day one',
+  tongueNote:
+    'Pushing food back out with the tongue is common on the first tries. It usually fades within a few days of practice.',
+  readyCta: 'Start the plan today',
+  chooseDay: 'Choose a day',
+  startedCta: 'We have already started',
+  startedWhen: 'When was the first taste?',
+  startedSave: 'Save the first taste',
+  notAll:
+    'Most babies show all four around 6 months. You can start the plan any time you feel ready.',
+  firstDayTitle: (name: string): string => `${name}’s first food day`,
+  firstDayChecks: [
+    'Your baby sits upright, in a high chair if you have one',
+    'You stay within arm’s reach',
+    'Start with a teaspoon or two. Your baby decides how much',
+  ],
+  firstTries:
+    'On the first tries, watch whether the food goes back and is swallowed. If most of it comes back out, that is common at first. Try a thinner mash, or try again in a week or two.',
+  dayOf: (day: number, tried: number): string =>
+    `Day ${day} of solids. ${tried === 1 ? '1 food tried' : `${tried} foods tried`}.`,
+} as const;
+
 export const SERVE = {
   title: (meal: string): string => `${meal}: how did it go?`,
   wholeMeal: 'The whole meal',
@@ -259,15 +313,178 @@ export const SHEETS = {
   notMedical: 'General guidance, not medical advice.',
 } as const;
 
-export const PROFILE = {
-  title: 'Baby’s food profile',
-  setupTitle: 'Food setup',
+/**
+ * THE FOOD SETUP (docs/research/MARKET_AND_SETUP.md §2.4): the baby's name in every title, a
+ * question only where its answer changes the plan, and nothing a parent cannot know before the
+ * first spoon. `n` is the baby's name, or "your baby" when there is none yet.
+ */
+export const SETUP = {
+  title: 'Food setup',
   next: 'Next',
   back: 'Back',
-  finish: 'See the plan',
+  finish: 'Make the plan',
+  step: (n: number, of: number): string => `Step ${n} of ${of}`,
+  introTitle: (n: string): string => `Let’s plan ${n}’s first foods`,
+  introBody: (n: string, age: string, steps: number): string =>
+    `${n} is ${age}. ${steps} quick questions, then you see ${n}’s plan. You can change any answer later.`,
+  introLearn: 'Before you start, it helps to know two things.',
+  introLearnItems: [
+    'Gagging is common and noisy: your baby coughs, the tongue pushes forward, and the food comes back up. Choking is silent. Stay within arm’s reach at every meal.',
+    'A possible reaction can be hives, vomiting or swelling soon after a new food. Trouble breathing or swelling of the face, lips or tongue means call your emergency number.',
+  ],
+  start: 'Start',
+  tooYoungTitle: 'Solid food is for later',
+  tooYoungBody: (n: string, age: string, from4: string, around6: string): string =>
+    `${n} is ${age}. Babies can start solids from 4 months, on ${from4} for ${n}. Most start around 6 months, on ${around6}. Until then, milk is everything. Come back to this setup any time from ${from4}.`,
+  tooYoungDone: 'Back to Today',
+  whereTitle: (n: string): string => `Has ${n} had any solid food yet?`,
+  whereOptions: {
+    not_yet: 'Not yet',
+    started: 'Yes, we have just started',
+    lots: (n: string): string => `Yes, ${n} eats lots of foods`,
+  },
+  firstTaste: (n: string): string => `When was ${n}’s first taste?`,
+  firstTasteHint: 'Roughly is fine.',
+  fromLog: (meals: number, since: string): string =>
+    meals === 1
+      ? `We found 1 meal logged in CuddleCue on ${since}.`
+      : `We found ${meals} meals logged in CuddleCue since ${since}.`,
+  signsTitle: (n: string): string => `Which of these have you seen ${n} do?`,
+  signsHint:
+    'These are the signs published guidance looks for. Tick what you have seen so far. None yet is fine.',
+  signs: {
+    head: 'Holds the head steady and upright',
+    sits: 'Sits up with a little help, without slumping over',
+    mouthing: 'Grabs toys and brings them to the mouth',
+    interest: 'Watches you eat, or reaches for your food',
+  },
+  allSigns: 'You have seen all four signs.',
+  whenTitle: 'When would you like to start?',
+  whenOptions: {
+    today: 'Today',
+    day: 'On a day I choose',
+    signs: 'When I see the signs',
+  },
+  whenDay: 'Start on',
+  whenSignsHint: 'The plan waits. Today shows the signs to watch for, and you start with one tap.',
+  beforeSix: (n: string, six: string): string =>
+    `Most babies start around 6 months. ${n} turns 6 months on ${six}. If you plan to start before then, check with your pediatrician first. Until 6 months the plan offers smooth purées of single foods, and allergens start from 6 months.`,
+  beforeSixUK: (n: string, six: string): string =>
+    `The NHS suggests starting around 6 months. ${n} turns 6 months on ${six}. If you plan to start before then, check with your health visitor or doctor first. Until 6 months the plan offers smooth purées of single foods, and allergens start from 6 months.`,
+  approachTitle: (n: string): string => `How would you like to offer food to ${n}?`,
+  approachOptions: {
+    puree: 'On a spoon: purées and mashes',
+    blw: (n: string): string => `Finger foods ${n} picks up`,
+    mix: 'Some of each',
+  },
+  approachHints: {
+    puree: 'Sweet potato comes mashed, on a preloaded spoon.',
+    blw: 'Sweet potato comes as soft wedges the size of your finger.',
+    mix: 'Some days mashed, some days soft wedges.',
+  },
+  textureTitle: (n: string): string => `What does ${n} eat most easily right now?`,
+  textureOptions: {
+    smooth: 'Smooth purées',
+    lumps: 'Mashed, with soft lumps',
+    pieces: 'Soft pieces and finger foods',
+    family: 'Most of what we eat, cut up',
+  },
+  familyTitle: 'What does your family eat?',
+  rulesTitle: 'Any of these?',
+  cuisines: 'Add the foods you cook at home',
+  cuisinesHint: 'Optional. The plan leans toward them.',
+  veganLine: (n: string): string =>
+    `Iron in ${n}’s plan comes from beans, lentils, tofu and fortified cereal, with a vitamin C food beside it.`,
+  vegetarianLine: (n: string): string =>
+    `No meat or fish in ${n}’s plan. Iron comes from eggs, beans, lentils and fortified cereal.`,
+  triedTitle: (n: string): string => `Which foods has ${n} had?`,
+  triedHint: (n: string): string => `Tap the ones ${n} has tried. Skip any you are not sure of.`,
+  triedFromLog: 'From your log',
+  triedFruitVeg: 'Tick all the fruits and vegetables',
+  triedMore: 'Search for more',
+  triedCount: (k: number): string => (k === 1 ? '1 food ticked' : `${k} foods ticked`),
+  triedPick: 'Add a food',
+  doctorTitle: (n: string): string => `Has a doctor told you ${n} has a food allergy?`,
+  doctorOptions: { no: 'No', yes: 'Yes' },
+  doctorWhich: 'Which foods?',
+  doctorHint: 'These are never planned, whatever else is set.',
+  eczemaTitle: (n: string): string => `Does ${n} have eczema?`,
+  eczemaOptions: {
+    none: 'No',
+    mild: 'Yes, mild, or it comes and goes',
+    severe: 'Yes, a lot, and it keeps coming back even with prescription creams',
+    unsure: 'Not sure',
+  },
+  eczemaUnsure: 'You can change this after your next visit.',
+  peanutWaits: (n: string): string =>
+    `With eczema like this, or an egg allergy, guidance says to talk to your pediatrician before peanut. Peanut waits in ${n}’s plan until you tell us they said yes. The other allergens follow the plan.`,
+  introducedTitle: (n: string): string => `Which of these has ${n} had?`,
+  introducedHint: 'Ticked from the foods above: yogurt counts as milk, pasta as wheat.',
+  modeTitle: 'How would you like to introduce allergens?',
+  modeOptions: {
+    early: 'One at a time, starting soon',
+    pediatrician: 'Only the ones my pediatrician says yes to',
+    none: 'Not now',
+  },
+  modeHints: {
+    early: 'Current guidance is to introduce common allergens early and often.',
+    pediatrician: 'You mark each one as approved, from that day.',
+    none: 'No allergen is offered for the first time. You can change this any time.',
+  },
+  previewTitle: (n: string): string => `${n}’s plan so far`,
+  previewIf: (day: string): string => `If you start ${day}`,
+  previewEmpty: 'Answer the questions above and the first days appear here.',
+  previewDay: (k: number, day: string): string => `Day ${k}, ${day}`,
+  summaryTitle: (n: string): string => `${n}’s plan is ready`,
+  summaryWaitsTitle: (n: string): string => `${n}’s plan is ready when you are`,
+  startsToday: (day: string, n: string, age: string): string =>
+    `Starts today, ${day}. ${n} is ${age}.`,
+  startsOn: (day: string, n: string, age: string): string => `Starts ${day}. ${n} is ${age} today.`,
+  startedOn: (k: number, n: string, age: string): string =>
+    k === 1 ? `Day 1 of solids. ${n} is ${age}.` : `Day ${k} of solids. ${n} is ${age}.`,
+  waits: (n: string, six: string): string =>
+    `The plan waits for the signs. ${n} turns 6 months on ${six}. When you are ready, tap Start on Today and the first week appears.`,
+  firstWeek: 'First week',
+  firstAllergen: (a: string): string => `First ${a}`,
+  newFood: 'New',
+  allergensTitle: 'Allergens',
+  allergenStarts: (a: string, day: string): string => `${a} starts ${day}.`,
+  allergenOrder: (list: string): string =>
+    `Then one new allergen every few days, in this order: ${list}. Each one stays in the week, about twice a week, once it is started.`,
+  allergensNone:
+    'No allergen is offered for the first time. You can change this on the food profile.',
+  allergensAsk:
+    'Allergens are offered only once you mark them as approved by your pediatrician, on the Allergens page.',
+  peanutLine: 'Peanut waits until you tell us your pediatrician said yes.',
+  becauseTitle: 'Because you told us',
+  because: {
+    puree: 'Spoon: foods come as purées and mashes.',
+    blw: 'Finger foods: foods come as soft wedges and pieces.',
+    mix: 'Finger foods and spoon: foods alternate between soft wedges and mashes.',
+    smooth: 'Smooth purées for now. The plan suggests a little more texture when it fits.',
+    vegetarian: 'Vegetarian: no meat or fish in the plan.',
+    vegan: 'Vegan: no meat, fish, eggs or dairy in the plan.',
+    pescatarian: 'Pescatarian: no meat in the plan.',
+    tried: (k: number, n: string): string =>
+      k === 1
+        ? `${n} has tried 1 food: the plan will not offer it as new.`
+        : `${n} has tried ${k} foods: the plan will not offer them as new.`,
+  },
+  buyTitle: (k: number): string =>
+    k === 1 ? 'For the first days, 1 thing to buy' : `For the first days, ${k} things to buy`,
+  buyAdd: 'Add to grocery list',
+  buyDone: 'On your grocery list',
+  region: (r: string): string => `Using ${r} guidance.`,
+  regionChange: 'Change',
+  seeToday: 'See today',
+  saved: 'Your food plan is ready',
+  savedWaits: 'Saved. The plan waits for the signs.',
+} as const;
+
+export const PROFILE = {
+  title: 'Baby’s food profile',
   save: 'Save',
   saved: 'Saved. The plan is updated.',
-  step: (n: number, of: number): string => `Step ${n} of ${of}`,
   where: 'Where are you with solids?',
   whereOptions: {
     getting_ready: 'Not started yet',
@@ -275,15 +492,10 @@ export const PROFILE = {
     eating_many: 'Eating lots of foods',
   },
   startedOn: 'When did you start?',
-  readiness: 'Can your baby do all of these?',
-  readinessItems: [
-    'Holds the head steady',
-    'Sits with support',
-    'Opens the mouth for a spoon',
-    'Swallows food rather than pushing it out',
-  ],
-  readinessYes: 'Yes, all of them',
-  readinessNotYet: 'Not yet',
+  signs: 'Signs you have seen',
+  signsHint: 'Each can be seen before the first spoon. They never hold the plan back on their own.',
+  tried: 'Foods tried before the app',
+  triedHint: 'The plan never offers these as new. Tap one to take it off.',
   approach: 'How do you want to offer food?',
   approachOptions: {
     puree: 'Purées and mashes',
@@ -349,7 +561,6 @@ export const PROFILE = {
   meals: 'Meals a day',
   mealsAuto: 'Follow the plan',
   holdTexture: 'Keep the texture where it is for now',
-  done: 'Your first plan is ready',
 } as const;
 
 export const MORE = {
@@ -380,6 +591,30 @@ export const HELP_NIBBLE = {
   contactDetail: 'We read every message',
   notMedical:
     'General guidance, not medical advice. Follow your pediatrician’s advice for your baby.',
+} as const;
+
+/** The grocery list's card of the meal plan's foods (`FromPlanCard.tsx`). */
+export const GROCERY = {
+  title: 'From your meal plan',
+  lede: (days: number): string =>
+    days === 1 ? 'The foods on today’s plan.' : `The foods on the plan for the next ${days} days.`,
+  addAll: 'Add all to the list',
+  addOne: (name: string): string => `${name}, add to the list`,
+  added: (n: number): string =>
+    n === 1 ? '1 food added to the list' : `${n} foods added to the list`,
+  onList: 'On the list',
+  forDay: (day: string): string => `For ${day}`,
+  meals: (n: number): string => (n === 1 ? 'In 1 meal' : `In ${n} meals`),
+  allOn: 'Everything on the plan is on the list.',
+  more: `See the next two weeks with ${plus}`,
+  aisle: {
+    produce: 'Fruit and vegetables',
+    grains: 'Bread, grains and cereal',
+    protein: 'Meat and fish',
+    dairy: 'Dairy and eggs',
+    pantry: 'Pantry',
+    drinks: 'Drinks',
+  },
 } as const;
 
 /** A food's kind, in a parent's words. */
