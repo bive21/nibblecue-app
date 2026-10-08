@@ -295,15 +295,15 @@ describe('the three states', () => {
     for (const url of [PR.privacyPolicyUrl, PR.termsUrl, PR.accountDeletionUrl]) {
       expect(url.startsWith(`${PR.marketingUrl}/`), url).toBe(true);
     }
-    expect(PR.linkPath.startsWith(new URL(PR.marketingUrl).pathname)).toBe(true);
-    for (const address of [PR.supportEmail, D.transactionalFromAddress]) {
+    expect(D.linkPath.startsWith(new URL(PR.marketingUrl).pathname)).toBe(true);
+    for (const address of [D.supportEmail, D.transactionalFromAddress]) {
       expect(address).toMatch(/^[a-z0-9._-]+@/);
       expect(address.endsWith(`@${host}`), `${address} must be on ${host}`).toBe(true);
     }
-    expect(PR.urlScheme).toMatch(/^[a-z][a-z0-9+.-]*$/);
-    expect(PR.iosBundleId).toMatch(/^[a-z][a-z0-9-]*(\.[a-z][a-z0-9-]*)+$/);
-    expect(PR.androidApplicationId).toMatch(/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/);
-    expect(PR.iosAppGroup).toBe(`group.${PR.iosBundleId}`);
+    expect(D.urlScheme).toMatch(/^[a-z][a-z0-9+.-]*$/);
+    expect(D.iosBundleId).toMatch(/^[a-z][a-z0-9-]*(\.[a-z][a-z0-9-]*)+$/);
+    expect(D.androidApplicationId).toMatch(/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/);
+    expect(PR.iosAppGroup).toBe(`group.${D.iosBundleId}`);
     // the id `eas init` prints is a UUID; until the owner runs it, a placeholder
     if (!PLACEHOLDER.test(U.easProjectId)) {
       expect(U.easProjectId).toMatch(

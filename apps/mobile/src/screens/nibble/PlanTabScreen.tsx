@@ -41,6 +41,7 @@ import { usePlan } from '../../plan/PlanProvider';
 import { PLAN, TODAY } from './copy';
 import { FoodPickerSheet } from './FoodPickerSheet';
 import { ItemSheet, type OpenItem } from './ItemSheet';
+import { MakeItYours } from './MakeItYours';
 import { NotStartedCard } from './NotStarted';
 import { NotMedical, PlanItemRow, PlusLock, styles } from './parts';
 import { dayLabel } from './dates';
@@ -256,7 +257,12 @@ export function PlanTabScreen() {
                 <Body>{TODAY.emptyTitle}</Body>
               </Card>
             ) : (
-              shown.map(dayCard)
+              <>
+                {v.childId !== null && canLog && v.exposures.length > 0 ? (
+                  <MakeItYours childId={v.childId} name={v.childName.trim() || 'your baby'} />
+                ) : null}
+                {shown.map(dayCard)}
+              </>
             )}
             {!full && v.plan.length > FREE_PLAN_DAYS ? (
               <PlusLock

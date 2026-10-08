@@ -35,6 +35,12 @@ own dated line.
 | Food photos | "we need to add images (generated but looks like real images) for each food listed here" | Every food has a written photo prompt (`tools/foods/food-image-prompts.csv`, one style for all) and the app shows a photo wherever one is imported (`tools/foods/import-food-images.py`). The photos themselves still have to be made: see `docs/FOOD_IMAGES.md`. |
 | Grocery from the plan | "shopping/gorcery need to alreayd have pregenerated item according to the meal plan" | The Grocery tab opens on the plan's foods, by aisle, each one tap from the list, with "Add all". The setup summary and the getting-ready page offer the first days' foods too. |
 
+## 2026-10-08: grocery days
+
+| Question | The owner's words | What it means |
+|---|---|---|
+| Grocery days | "give free users 7 days but plus selectable range/days" | Every family's grocery list covers the next seven days of the plan. NibbleCue Plus chooses the days (three days, a week, two weeks, or any first and last day in the plan's two weeks): `groceryRange` in the plan matrix, gate `grocery.range`. On the free plan the control shows its lock before it is tapped. |
+
 ## Waiting on the owner
 
 These are proposals until the owner decides. Each is marked `proposed` or `unconfirmed` in
@@ -47,9 +53,6 @@ These are proposals until the owner decides. Each is marked `proposed` or `uncon
 - **The store copy**: the Apple subtitle, the marketing headline, the Play short description and
   the monogram.
 - **The EAS project** (its id goes in `unconfirmed.easProjectId`).
-- **Free grocery days**: the plan's foods on the Grocery tab cover the two days the free plan
-  shows, and a week with NibbleCue Plus. The research suggests a full week for every family
-  (`docs/research/MARKET_AND_SETUP.md` §4.4).
 - **Food photos**: generated, or a photo shoot (`docs/FOOD_IMAGES.md`).
 - **The sign-in sender**: set in the Supabase dashboard (Authentication, SMTP settings).
 - **Legal text**: `packages/brand/legal/*.json` are drafts adapted from CuddleCue's, for the

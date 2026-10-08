@@ -14,13 +14,13 @@
  * NibbleCue Plus is its own subscription with its own price (the owner, 2026-10-08: "this is a
  * different subscription called nibblecue plus, and its different price too").
  *
- * ── ONE FEATURE IS THE HOUSEHOLD'S CUDDLECUE PLUS ─────────────────────────────────────────────
+ * ── ONE FEATURE IS EITHER PLAN'S ──────────────────────────────────────────────────────────────
  * `caregivers`: inviting a caregiver or a viewer into the shared family is decided by CuddleCue's
- * server, which requires CuddleCue Plus for any seat that is not a parent (CuddleCue migration
- * 0140, `app.household_has_plus`). NibbleCue cannot sell it without a change to CuddleCue's
- * server, which is the owner's decision (docs/DECISIONS.md), so `plan: 'cuddlecue'` marks it and
- * the provider answers it from the household's CuddleCue plan. A control that offered it on
- * NibbleCue Plus would be refused by the server: the app never offers what the server refuses.
+ * server, which required CuddleCue Plus for any seat that is not a parent (CuddleCue migration
+ * 0140). The owner decided on 2026-10-08 that NibbleCue Plus counts too ("yes"), and migration
+ * 0163 (`app.household_seat_has_plus`, `cuddlecue-app` branch `nibblecue`) makes the server
+ * agree, so `plan: 'either'` marks it and the provider answers it from either plan. Until 0163 is
+ * deployed the server still asks for CuddleCue Plus, and a refused invite says so.
  */
 
 export type FeatureKey =
@@ -42,6 +42,7 @@ export type FeatureKey =
   | 'supplies'
   // NibbleCue Plus
   | 'fullPlan'
+  | 'groceryRange'
   | 'planIdeas'
   | 'caregiverSheet'
   | 'pediatricianSummary'
@@ -71,8 +72,9 @@ export type Feature = {
   rationale: string;
   /** Switched off: on no plan and on no list. */
   off?: string;
-  /** Whose plan decides it: NibbleCue Plus (the default) or the household's CuddleCue Plus. */
-  plan?: 'nibblecue' | 'cuddlecue';
+  /** Whose plan decides it: NibbleCue Plus (the default), the household's CuddleCue Plus, or
+   *  either of them. */
+  plan?: 'nibblecue' | 'cuddlecue' | 'either';
 };
 
 const OFF_CUDDLECUE =
@@ -197,6 +199,16 @@ export const FEATURES: Record<FeatureKey, Feature> = {
       'Depth, not access: today and tomorrow are free, and the plan is the same plan. ' +
       'Plus is planning the week, batch cooking and the shop around it.',
   },
+  groceryRange: {
+    label: 'The grocery list for the days you choose, up to two weeks ahead',
+    short: 'Grocery days',
+    free: false,
+    why: 'Shop for the days you choose, up to two weeks ahead',
+    rationale:
+      'Every family gets the next seven days of the plan on the grocery list (the owner, ' +
+      '2026-10-08: "give free users 7 days but plus selectable range/days"). Plus is choosing ' +
+      'the days, for a big shop or a week away.',
+  },
   planIdeas: {
     label: "More ideas for variety, suggested by AI and checked by the plan's safety rules",
     short: 'More ideas',
@@ -252,11 +264,11 @@ export const FEATURES: Record<FeatureKey, Feature> = {
     label: 'Caregivers and viewers in your family',
     short: 'Caregivers',
     free: false,
-    plan: 'cuddlecue',
+    plan: 'either',
     why: 'Invite a caregiver or a viewer',
     rationale:
-      "Decided by CuddleCue's server, which requires CuddleCue Plus for any seat that " +
-      'is not a parent (migration 0140). See the header.',
+      'Decided by the shared server: CuddleCue Plus or NibbleCue Plus opens a seat that ' +
+      'is not a parent (migrations 0140 and 0163). See the header.',
   },
   // ── CuddleCue's, off here ───────────────────────────────────────────────────────────────
   entryPhotos: {
@@ -301,6 +313,7 @@ export const GATES: { surface: string; feature: FeatureKey }[] = [
   { surface: 'plan.beyond_tomorrow', feature: 'fullPlan' },
   { surface: 'plan.pin_beyond_tomorrow', feature: 'fullPlan' },
   { surface: 'plan.ideas', feature: 'planIdeas' },
+  { surface: 'grocery.range', feature: 'groceryRange' },
   { surface: 'more.caregiver_sheet', feature: 'caregiverSheet' },
   { surface: 'more.pediatrician_summary', feature: 'pediatricianSummary' },
   { surface: 'more.milk', feature: 'milk' },
@@ -313,7 +326,7 @@ export const GATES: { surface: string; feature: FeatureKey }[] = [
 ];
 
 /** Whose plan answers a feature: NibbleCue Plus unless the table says the household's CuddleCue Plus. */
-export const planOf = (key: FeatureKey): 'nibblecue' | 'cuddlecue' =>
+export const planOf = (key: FeatureKey): 'nibblecue' | 'cuddlecue' | 'either' =>
   FEATURES[key]?.plan ?? 'nibblecue';
 
 /**

@@ -37,7 +37,7 @@ describe('the legal documents', () => {
     expect(() => renderLegalText('see {{appleTeamId}}')).toThrow('appleTeamId');
     expect(() => renderLegalText('see {{legalDecidedOn}}')).toThrow('legalDecidedOn');
     // proposed: a development build runs on it, a policy a parent accepts does not
-    expect(() => renderLegalText('write to {{supportEmail}}')).toThrow('supportEmail');
+    expect(() => renderLegalText('see {{marketingUrl}}')).toThrow('marketingUrl');
     expect(() => renderLegalText('see {{privacyPolicyUrl}}')).toThrow('privacyPolicyUrl');
     expect(renderLegalText('{{appDisplayName}} by {{developerName}}')).toBe(
       `${BRAND.appDisplayName} by ${BRAND.developerName}`,

@@ -111,6 +111,11 @@ export const SERVE = {
   eachFood: 'Rate each food',
   save: 'Save',
   saved: (meal: string): string => `${meal} logged`,
+  comesBack: (food: string, day: string): string => `${food} comes back ${day}.`,
+  comesBackAs: (food: string, day: string, form: string): string =>
+    `${food} comes back ${day}, as ${form} this time.`,
+  allergenInWeek: (allergen: string): string =>
+    `${allergen} is now part of the week, about twice a week.`,
   didntOffer: 'We did not offer it',
   when: 'When',
   now: 'Now',
@@ -594,6 +599,23 @@ export const HELP_NIBBLE = {
 } as const;
 
 /** The grocery list's card of the meal plan's foods (`FromPlanCard.tsx`). */
+export const MAKE_YOURS = {
+  title: 'Make the plan yours',
+  rows: {
+    cuisines: 'Foods you cook at home',
+    never: 'Foods never to serve',
+    meals: 'Meals a day and where you live',
+  },
+  caregivers: (name: string): string => `Who else feeds ${name}`,
+  details: {
+    cuisines: 'The plan leans toward them',
+    never: 'Open a food and tap Never plan this food',
+    caregivers: 'A one page sheet for daycare and grandparents',
+    meals: 'On the food profile',
+  },
+  dismiss: 'Not now',
+} as const;
+
 export const GROCERY = {
   title: 'From your meal plan',
   lede: (days: number): string =>
@@ -606,7 +628,13 @@ export const GROCERY = {
   forDay: (day: string): string => `For ${day}`,
   meals: (n: number): string => (n === 1 ? 'In 1 meal' : `In ${n} meals`),
   allOn: 'Everything on the plan is on the list.',
-  more: `See the next two weeks with ${plus}`,
+  none: 'No foods on the plan for these days.',
+  rangeTitle: 'Days',
+  range: (from: string, to: string): string => (from === to ? from : `${from} to ${to}`),
+  rangeLocked: `Choose the days with ${plus}`,
+  preset: (n: number): string => (n === 14 ? 'Two weeks' : n === 7 ? 'A week' : `${n} days`),
+  from: 'From',
+  to: 'To',
   aisle: {
     produce: 'Fruit and vegetables',
     grains: 'Bread, grains and cereal',

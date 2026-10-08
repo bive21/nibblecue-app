@@ -29,7 +29,7 @@ orange where CuddleCue's is blue.
 | **Today** | Today's meals from the plan, the serve flow, one guidance card for the stage, allergens due this week, a "Something you noticed" button, tomorrow at a glance. The raised **+** in the bar opens CuddleCue's own meal sheet to log anything else. |
 | **Plan** | The next 14 days, meal by meal, with "why" on every item. Pin a food, remove one, skip a day. A strip of what is changing this week (texture step, cups, a new allergen). |
 | **Foods** | The library: search, filters (first foods, allergens, iron-rich, not tried yet), each food with how to serve it at this age, the choking note, its allergens, and this baby's history with it. Add your own food. |
-| **Grocery** | CuddleCue's shopping list, the same list (one list, both apps), opening on the plan's foods by aisle: each one tap from the list, or "Add all". |
+| **Grocery** | CuddleCue's shopping list, the same list (one list, both apps), opening on the plan's foods by aisle for the next seven days: each one tap from the list, or "Add all". With NibbleCue Plus, choose the days. |
 | **More** | Allergens, Something you noticed (history), Milk and drinks, Caregiver sheet, Pediatrician summary, Baby's food profile, Family, Supplies, NibbleCue Plus, Help, About. Appearance, Account and privacy (with Download your data) and Sign out are in the account menu behind the avatar, as in CuddleCue. |
 
 ## Setup
@@ -112,6 +112,6 @@ is a real app, and **safety is never sold**:
 | Allergen tracking, keep-going counts | The caregiver and daycare sheet |
 | Something you noticed, the emergency card | The pediatrician summary (PDF and share) |
 | Both parents and caregivers, every child | Milk and drinks, read against CuddleCue's log |
-| Grocery list, light and dark, data download, account deletion, no ads | Color schemes |
+| Grocery list with the next seven days of the plan, light and dark, data download, account deletion, no ads | Choosing the grocery days, color schemes |
 
 Prices come from the stores at runtime; the target numbers are the owner's to set.

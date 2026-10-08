@@ -72,13 +72,12 @@ import {
 } from '../../nibble/setupAnswers';
 import { useNibble } from '../../nibble/useNibble';
 import { useNibbleWrites } from '../../nibble/useNibbleWrites';
-import { usePlan } from '../../plan/PlanProvider';
 import { DateField } from '../../ui/DateField';
 import { PROFILE, SETUP } from './copy';
 import { dayLabel } from './dates';
 import { FoodPickerSheet } from './FoodPickerSheet';
 import { FoodThumb } from './FoodThumb';
-import { groceryDays, useAddToGrocery } from './FromPlanCard';
+import { GROCERY_DAYS, useAddToGrocery } from './FromPlanCard';
 import { NotMedical, styles as shared } from './parts';
 import { PlanPreview } from './PlanPreview';
 
@@ -223,7 +222,6 @@ export function FoodSetupScreen() {
   const nav = useNavigation<Nav>();
   const v = useNibble();
   const writes = useNibbleWrites();
-  const fullPlan = usePlan().can('fullPlan');
   const addToGrocery = useAddToGrocery();
   const log = useMemo(() => preAnswerFromLog(v.exposures, v.today), [v.exposures, v.today]);
   const [a, setA] = useState<SetupAnswers | null>(null);
@@ -687,7 +685,7 @@ export function FoodSetupScreen() {
         six={six}
         today={v.today}
         foodById={v.foodById}
-        groceryDays={groceryDays(fullPlan)}
+        groceryDays={GROCERY_DAYS}
         bought={bought}
         onBuy={async items => {
           const n = await addToGrocery(items);

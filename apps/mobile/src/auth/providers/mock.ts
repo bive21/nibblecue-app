@@ -561,6 +561,21 @@ export class MockBackend {
     );
   }
 
+  /**
+   * `app.household_seat_has_plus` (migration 0163, `cuddlecue-app` branch `nibblecue`): the plan
+   * a caregiver's or a viewer's seat needs, CuddleCue Plus or NibbleCue Plus (the owner,
+   * 2026-10-08: "yes").
+   */
+  householdSeatHasPlus(householdId: string): boolean {
+    const now = this.now();
+    return (
+      this.householdHasPlus(householdId) ||
+      this.state.nibble_entitlements.some(
+        e => e.household_id === householdId && rowGrantsPlus(e, now),
+      )
+    );
+  }
+
   /** The household this account is a live member of, other than `except`, if any (0139). */
   /** Every live seat the person holds outside `except`, as 0153 counts them. */
   liveSeatsElsewhere(userId: string, except: string): MockMember[] {
@@ -1196,7 +1211,7 @@ export class MockAccountsApi implements AccountsApi {
     if (hit.role === 'PARENT' && elsewhere.some(m => m.role === 'OWNER' || m.role === 'PARENT'))
       return fail(409, 'admin_elsewhere');
     // a caregiver's or a viewer's seat is Plus, decided here and never on the inviter's phone (0139)
-    if (hit.role !== 'PARENT' && !this.backend.householdHasPlus(hit.household_id))
+    if (hit.role !== 'PARENT' && !this.backend.householdSeatHasPlus(hit.household_id))
       return fail(403, 'needs_plus');
     const h = this.backend.state.households.find(x => x.id === hit.household_id);
     if (!h) return fail(404, 'not_found');
@@ -1296,7 +1311,7 @@ export class MockAccountsApi implements AccountsApi {
       role: hit.role,
       seat_hours: hit.seat_hours ?? null,
     };
-    if (hit.role !== 'PARENT' && !this.backend.householdHasPlus(hit.household_id))
+    if (hit.role !== 'PARENT' && !this.backend.householdSeatHasPlus(hit.household_id))
       return { ok: false, status: 403, error: 'needs_plus', preview };
     if (hit.kind === 'LINK')
       return {

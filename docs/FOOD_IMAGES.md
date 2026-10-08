@@ -6,6 +6,7 @@ is `docs/research/MARKET_AND_SETUP.md` §5.
 
 ## What is already built
 
+- **The list for whoever makes them**: `docs/FOOD_PHOTO_LIST.md`, every food by group with how it is served and the brief.
 - **One prompt per food**, all in the same style: `tools/foods/food-image-prompts.csv` (178 rows:
   `id`, `name`, `prompt`). Each prompt is written from the food's own serving text for the first
   age band (`foods.data.ts`), so the photo shows the food the way the plan serves it. The prompts

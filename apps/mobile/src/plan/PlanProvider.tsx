@@ -4,7 +4,7 @@
  * TWO PLANS, ONE HOOK (NibbleCue, 2026-10-08; the owner: "this is a different subscription called
  * nibblecue plus"). Every NibbleCue feature is answered by the household's NibbleCue Plus row
  * (`account.nibblePlans`, the server's `nibble_my_plan`); the one key whose seat lives on the
- * shared server, caregivers, is answered by the household's CuddleCue plan (core's `planOf`).
+ * shared server, caregivers, is answered by either plan (core's `planOf`, the owner 2026-10-08).
  * NibbleCue has no welcome preview of its own, so the preview's card and its sheets never show.
  * The status is the server's word (welcome.ts): the snapshot is computed at server time and
  * only the day count moves on the device. No screen reads a status name to decide a gate;
@@ -18,6 +18,7 @@ import {
   planSnapshot,
   type FeatureKey,
   type PlanSnapshot,
+  type Tier,
   type WelcomeCard,
   type WelcomePrompt,
 } from '@nibblecue/core';
@@ -199,8 +200,8 @@ export function PlanProvider({ children }: { children: ReactNode }) {
       daysLeft,
       expiresAt,
       computedAt,
-      can: key => can(key, planOf(key) === 'cuddlecue' ? cuddleTier : tier),
-      limitFor: key => limitFor(key, planOf(key) === 'cuddlecue' ? cuddleTier : tier),
+      can: key => can(key, tierOf(key, tier, cuddleTier)),
+      limitFor: key => limitFor(key, tierOf(key, tier, cuddleTier)),
       previewTag: () => false,
       previewLimit: () => null,
       decides,
@@ -233,4 +234,12 @@ export function usePlan(): PlanValue {
   const v = useContext(PlanContext);
   if (!v) throw new Error('usePlan outside PlanProvider');
   return v;
+}
+
+/** Whose plan answers a feature: NibbleCue Plus, the household's CuddleCue Plus, or either. */
+function tierOf(key: FeatureKey, nibble: Tier, cuddle: Tier): Tier {
+  const by = planOf(key);
+  if (by === 'cuddlecue') return cuddle;
+  if (by === 'either') return nibble === 'PLUS' || cuddle === 'PLUS' ? 'PLUS' : 'FREE';
+  return nibble;
 }

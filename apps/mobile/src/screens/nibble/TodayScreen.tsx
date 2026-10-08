@@ -320,6 +320,7 @@ export function TodayScreen() {
         day={v.today}
         meal={serving}
         foodById={v.foodById}
+        planInput={v.planInput}
         onClose={() => setServing(null)}
       />
       <ItemSheet

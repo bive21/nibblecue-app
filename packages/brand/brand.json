@@ -20,10 +20,15 @@
     "universalLinkHost": "bpnc.app",
     "supportUrl": "https://bpnc.app/support",
     "transactionalFromAddress": "noreply@bpnc.app",
-    "$decidedOn": "2026-10-08, the owner answering the NibbleCue kickoff: the store title (\"NibbleCue - Baby Food Planner\") and a subscription of its own (\"this is a different subscription called nibblecue plus, and its different price too\"). The developer name, the legal entity, the studio domain, the support page and the sending address are the studio's own decided values, carried from CuddleCue's brand.json (2026-09-14, 2026-09-21, 2026-09-27): one company, one domain, and one account system both apps share."
+    "iosBundleId": "app.bpnc.nibblecue",
+    "androidApplicationId": "app.bpnc.nibblecue",
+    "urlScheme": "nibblecue",
+    "linkPath": "/nibblecue/app",
+    "supportEmail": "nibblecue@bpnc.app",
+    "$decidedOn": "2026-10-08, the owner answering the NibbleCue kickoff: the store title (\"NibbleCue - Baby Food Planner\") and a subscription of its own (\"this is a different subscription called nibblecue plus, and its different price too\"). The developer name, the legal entity, the studio domain, the support page and the sending address are the studio's own decided values, carried from CuddleCue's brand.json (2026-09-14, 2026-09-21, 2026-09-27): one company, one domain, and one account system both apps share. The bundle and package id, the URL scheme, the link path and the support address: the owner, 2026-10-08, \"confirmed\" (docs/DECISIONS.md)."
   },
   "proposed": {
-    "$note": "Proposed by the developer on 2026-10-08 in the kickoff (question 7) following CuddleCue's pattern; the owner has not confirmed them. Each is set ONCE by the owner and never changed after the first store submission.",
+    "$note": "Proposed by the developer on 2026-10-08 in the kickoff (question 7) following CuddleCue's pattern; the owner has not confirmed them. Each is set ONCE by the owner and never changed after the first store submission. The bundle id, the package id, the URL scheme, the link path and the support address were confirmed on 2026-10-08 and moved to `decided`; the App Group and the website URLs below are still proposals.",
     "appleSubtitle": "First foods, planned for you",
     "marketingHeadline": "The plan, not the encyclopedia.",
     "playShortDescription": "A day by day solid food plan for your baby, from first bite to toddler meals.",
@@ -32,12 +37,7 @@
     "privacyPolicyUrl": "https://bpnc.app/nibblecue/privacy",
     "termsUrl": "https://bpnc.app/nibblecue/terms",
     "accountDeletionUrl": "https://bpnc.app/nibblecue/delete-account",
-    "supportEmail": "nibblecue@bpnc.app",
-    "urlScheme": "nibblecue",
-    "iosBundleId": "app.bpnc.nibblecue",
-    "androidApplicationId": "app.bpnc.nibblecue",
-    "iosAppGroup": "group.app.bpnc.nibblecue",
-    "linkPath": "/nibblecue/app"
+    "iosAppGroup": "group.app.bpnc.nibblecue"
   },
   "tagline": "Your baby’s first foods, planned.",
   "$taglineNote": "Proposed by the developer on 2026-10-08; the owner has not confirmed it.",

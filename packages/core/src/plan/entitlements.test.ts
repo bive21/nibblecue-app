@@ -58,6 +58,7 @@ describe('NibbleCue Plus', () => {
       [
         'caregiverSheet',
         'fullPlan',
+        'groceryRange',
         'milk',
         'nightTheme',
         'pediatricianSummary',
@@ -72,8 +73,8 @@ describe('NibbleCue Plus', () => {
     }
   });
 
-  it('never lists what the household’s CuddleCue Plus decides', () => {
-    expect(planOf('caregivers')).toBe('cuddlecue');
+  it('never lists what either plan decides (caregiver seats, the owner 2026-10-08)', () => {
+    expect(planOf('caregivers')).toBe('either');
     expect(plusFeatures()).not.toContain('caregivers');
     expect(freeFeatures()).not.toContain('caregivers');
   });

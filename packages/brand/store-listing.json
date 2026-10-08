@@ -18,8 +18,7 @@
       "marketingUrl",
       "privacyPolicyUrl",
       "termsUrl",
-      "accountDeletionUrl",
-      "supportEmail"
+      "accountDeletionUrl"
     ],
     "$waitingOnOwnerNote": "The proposed brand.json keys this listing references. Each is the developer's proposal of 2026-10-08 (brand.json `proposed`) and becomes final only when the owner moves it to `decided`. Beside them, the copy itself is a draft: the descriptions, the keywords, the promotional text, the categories and the age rating, the website lines, the email footer and the in-app story lines marked in `inApp.$storyNote`."
   },

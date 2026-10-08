@@ -7,7 +7,13 @@
  * CuddleCue log too, with every food and how it went.
  */
 import { type FoodResponse } from '@nibblecue/core';
-import { MEAL_LABEL, REFUSAL_TEXT, type Food, type PlanMeal } from '@nibblecue/core/nibble';
+import {
+  MEAL_LABEL,
+  REFUSAL_TEXT,
+  type Food,
+  type PlanInput,
+  type PlanMeal,
+} from '@nibblecue/core/nibble';
 import {
   Body,
   BodyStrong,
@@ -24,6 +30,7 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNibbleWrites } from '../../nibble/useNibbleWrites';
 import { SERVE } from './copy';
+import { comesBack } from './comesBack';
 import { ResponseTiles } from './parts';
 
 /** When a meal is usually eaten: "Earlier today" logs it here, unless that is still to come. */
@@ -47,6 +54,7 @@ export function ServeSheet({
   day,
   meal,
   foodById,
+  planInput = null,
   onClose,
 }: {
   visible: boolean;
@@ -54,6 +62,8 @@ export function ServeSheet({
   day: string;
   meal: PlanMeal | null;
   foodById: (id: string) => Food | undefined;
+  /** The plan the meal came from: after a save, it says when the first food comes back. */
+  planInput?: PlanInput | null;
   onClose: () => void;
 }) {
   const t = useTheme();
@@ -99,6 +109,8 @@ export function ServeSheet({
       );
       if (out?.committed) {
         if (foods.some(f => f.response === 'DISLIKED')) writes.say(REFUSAL_TEXT, { queue: true });
+        const next = planInput ? comesBack(planInput, foods, day, at.toISOString(), meal) : null;
+        if (next !== null) writes.say(next, { queue: true });
         onClose();
       }
     } finally {

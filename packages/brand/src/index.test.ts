@@ -122,14 +122,22 @@ describe('proposed values', () => {
       'privacyPolicyUrl',
       'termsUrl',
       'accountDeletionUrl',
+      'iosAppGroup',
+    ]) {
+      expect(PROPOSED_KEYS, key).toContain(key);
+    }
+  });
+
+  it('hold none of the identifiers the owner confirmed on 2026-10-08 ("confirmed")', () => {
+    for (const key of [
       'supportEmail',
       'urlScheme',
       'iosBundleId',
       'androidApplicationId',
-      'iosAppGroup',
       'linkPath',
     ]) {
-      expect(PROPOSED_KEYS, key).toContain(key);
+      expect(PROPOSED_KEYS, key).not.toContain(key);
+      expect(BRAND[key as keyof typeof BRAND], key).toBeTruthy();
     }
   });
 });

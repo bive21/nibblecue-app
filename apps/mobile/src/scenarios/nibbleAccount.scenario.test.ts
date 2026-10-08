@@ -97,8 +97,8 @@ describe('a new parent', () => {
     expect(can('fullPlan', plus.tier)).toBe(true);
     // CuddleCue's plan is exactly what it was: a NibbleCue purchase is never CuddleCue Plus
     expect(after.entitlement).toEqual(cuddleBefore);
-    // and the caregiver seats are still CuddleCue's to answer
-    expect(planOf('caregivers')).toBe('cuddlecue');
+    // and a caregiver's seat is open on either plan (the owner, 2026-10-08; migration 0163)
+    expect(planOf('caregivers')).toBe('either');
   });
 
   it('gets 14 days of NibbleCue Plus once, which end by themselves and never come back', async () => {
@@ -143,10 +143,19 @@ describe('a new parent', () => {
     expect(plan.tier).toBe('FREE');
     expect(await api.startNibbleTrial(h)).toEqual({ ok: true, granted: false });
 
-    // and a purchase after it still works
+    // with neither plan, a caregiver's seat is refused by the server, not the phone
+    const seat = async () => {
+      const made = await api.createInvite(h, 'CAREGIVER', 'CODE');
+      if (!made.ok || made.kind !== 'CODE') throw new Error('no code');
+      return api.checkInvite({ code: made.code });
+    };
+    expect(await seat()).toMatchObject({ ok: false, error: 'needs_plus' });
+
+    // and a purchase after it still works, and NibbleCue Plus alone opens the seat (0163)
     const billing = new MockBillingProvider(backend, () => ({ userId: uid, householdId: h }));
     expect(await billing.purchase('nibble_plus_monthly')).toEqual({ kind: 'purchased' });
     state = await api.bootstrapState();
     expect(planSnapshot(state.nibblePlans?.[h] ?? null, state.serverNow).tier).toBe('PLUS');
+    expect(await seat()).toMatchObject({ ok: true });
   });
 });
