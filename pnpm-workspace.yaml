@@ -18,4 +18,3 @@ onlyBuiltDependencies:
   - unrs-resolver
 patchedDependencies:
   '@expo/ui@57.0.19': patches/@expo__ui@57.0.19.patch
-  react-native-android-widget@0.22.1: patches/react-native-android-widget@0.22.1.patch
