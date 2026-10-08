@@ -1,0 +1,1419 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>NibbleCue prototype</title>
+<!--
+  NibbleCue click-through prototype. One file, no build, no network.
+  Look and feel copied from CuddleCue (Paper ground, white cards, the floating tab bar),
+  painted in CuddleCue's Sunny scheme. Foods, guidance and every label come from
+  packages/core/src/nibble (foods.data.ts, guidance.data.ts, copy.ts). Demo data only.
+-->
+<style>
+/* ---------- tokens: packages/ui/src/theme/design-tokens.json (color.light + colorScheme.sunny.light) ---------- */
+:root{
+  --paper:#F6F3EC; --page:#FAE3D0; --page-warm:#FEE9DE; --page-cool:#F2EBCF; --app:#FDF6EB; --app-2:#FBF6E4;
+  --card:#FFFFFF; --chrome:rgba(255,255,255,.97); --surface-2:#E7F1F1;
+  --line:rgba(18,52,59,.15); --line-2:rgba(18,52,59,.30);
+  --text:#12343B; --text-2:#3D5F66; --text-3:#5C7C82;
+  --accent:#BA4400; --accent-2:#8B2D01; --accent-soft:#FFEDE0; --on-accent:#FFFFFF;
+  --grad:linear-gradient(135deg,#B85603 0%,#9D2F02 100%);
+  --milk:#B06E0C; --milk-soft:#FCEDD3;
+  --olive:#5F7F1F; --olive-soft:#EAF2D6; --on-olive:#FFFFFF; --solids-disc:#BDE3A7;
+  --diaper:#E51F00; --diaper-soft:#F7E6E3;
+  --health:#E90049; --health-soft:#F7E3EA;
+  --cyan:#1B77A8; --cyan-soft:#DAECF8;
+  --good:#16775A; --warn:#845304; --crit:#BE3A42; --danger-fill:#A93540;
+  --toast:#12343B; --toast-text:#F3FAFA; --toast-act:#FFA159;
+  --shadow:0 1px 2px rgba(47,31,110,.07), 0 10px 26px -16px rgba(47,31,110,.35);
+  --shadow-lift:0 2px 8px rgba(47,31,110,.10), 0 26px 50px -22px rgba(47,31,110,.45);
+  --cta-glow:0 12px 26px -14px rgba(186,68,0,.8);
+  --r-s:9px; --r-m:15px; --r-l:22px; --r-xl:30px;
+  --s1:4px; --s2:6px; --s3:8px; --s4:11px; --s5:14px; --s6:18px; --s7:26px;
+  --ui:"Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme:light;
+}
+/* color.dark + colorScheme.sunny.dark */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14110C; --page:#160902; --page-warm:#201103; --page-cool:#1B0C06; --app:#241308; --app-2:#2D1B0A;
+    --card:rgba(255,255,255,.055); --chrome:rgba(36,19,8,.97); --surface-2:#1B2E2F;
+    --line:rgba(255,255,255,.11); --line-2:rgba(255,255,255,.21);
+    --text:#E8F3F4; --text-2:#BFD5D8; --text-3:#8BA4A8;
+    --accent:#FFA159; --accent-2:#FEC598; --accent-soft:#3D1E05; --on-accent:#270E00;
+    --grad:linear-gradient(135deg,#B75901 0%,#993C02 100%);
+    --milk:#F2B663; --milk-soft:#3A2A12;
+    --olive:#AEC96F; --olive-soft:#252C13; --on-olive:#172005; --solids-disc:#BDE3A7;
+    --diaper:#EF573F; --diaper-soft:#3F1812;
+    --health:#F14D80; --health-soft:#3F1221;
+    --cyan:#63BCE6; --cyan-soft:#112A38;
+    --good:#4FC194; --warn:#E0AC55; --crit:#F0827F; --danger-fill:#8E2D35;
+    --toast:#3A2414; --toast-text:#FFF3E8; --toast-act:#FFA159;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 30px -18px rgba(0,0,0,.9);
+    --shadow-lift:0 2px 10px rgba(0,0,0,.5), 0 28px 56px -24px #000;
+    --cta-glow:0 12px 26px -14px rgba(0,0,0,.9);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14110C; --page:#160902; --page-warm:#201103; --page-cool:#1B0C06; --app:#241308; --app-2:#2D1B0A;
+  --card:rgba(255,255,255,.055); --chrome:rgba(36,19,8,.97); --surface-2:#1B2E2F;
+  --line:rgba(255,255,255,.11); --line-2:rgba(255,255,255,.21);
+  --text:#E8F3F4; --text-2:#BFD5D8; --text-3:#8BA4A8;
+  --accent:#FFA159; --accent-2:#FEC598; --accent-soft:#3D1E05; --on-accent:#270E00;
+  --grad:linear-gradient(135deg,#B75901 0%,#993C02 100%);
+  --milk:#F2B663; --milk-soft:#3A2A12;
+  --olive:#AEC96F; --olive-soft:#252C13; --on-olive:#172005; --solids-disc:#BDE3A7;
+  --diaper:#EF573F; --diaper-soft:#3F1812;
+  --health:#F14D80; --health-soft:#3F1221;
+  --cyan:#63BCE6; --cyan-soft:#112A38;
+  --good:#4FC194; --warn:#E0AC55; --crit:#F0827F; --danger-fill:#8E2D35;
+  --toast:#3A2414; --toast-text:#FFF3E8; --toast-act:#FFA159;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 30px -18px rgba(0,0,0,.9);
+  --shadow-lift:0 2px 10px rgba(0,0,0,.5), 0 28px 56px -24px #000;
+  --cta-glow:0 12px 26px -14px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+
+/* ---------- base ---------- */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0; color:var(--text); font-family:var(--ui); font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased;
+  background-color:var(--page);
+  background-image:radial-gradient(760px 520px at 88% -4%, var(--page-warm), transparent 72%), radial-gradient(700px 520px at 4% 8%, var(--page-cool), transparent 70%);
+  display:flex; align-items:center; justify-content:center; min-height:100vh}
+button{font:inherit; color:inherit; background:none; border:0; cursor:pointer; padding:0; text-align:inherit}
+input,textarea{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:6px}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+svg.i{width:20px; height:20px; flex:none; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+h1,h2,h3,h4,p{margin:0}
+
+/* ---------- the phone ---------- */
+.device{position:relative; width:390px; height:844px; border-radius:var(--r-xl); overflow:hidden; overflow:clip; background:var(--paper);
+  box-shadow:var(--shadow-lift); border:1px solid var(--line-2); isolation:isolate}
+@media (max-width:520px), (max-height:700px){
+  body{display:block}
+  .device{width:100%; height:100vh; height:100dvh; border-radius:0; border:0; box-shadow:none}
+}
+.statusbar{position:absolute; top:0; left:0; right:0; height:32px; display:flex; align-items:center; justify-content:space-between;
+  padding:6px 18px 0; font-family:var(--mono); font-size:11.5px; color:var(--text-2); z-index:5; background:var(--paper)}
+.demotag{font-family:var(--ui); font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--accent-soft); color:var(--accent-2)}
+.screen{position:absolute; top:32px; left:0; right:0; bottom:0; overflow-y:auto; overflow-x:hidden; padding:0 16px 120px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.screen::-webkit-scrollbar{display:none}
+.screen.withfab{padding-bottom:160px}
+.fadein{animation:fade .18s ease-out both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* ---------- top bar ---------- */
+.appbar{display:flex; align-items:center; gap:8px; padding:6px 0 10px}
+.babychip{display:flex; align-items:center; gap:9px; min-height:48px; padding:4px 12px 4px 4px; border-radius:999px; background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow)}
+.babychip b{display:block; font-size:15px; line-height:1.15}
+.babychip small{display:block; font-size:12px; color:var(--text-2); line-height:1.2}
+.av{width:38px; height:38px; border-radius:50%; background-image:var(--grad); color:#fff; display:grid; place-items:center; font-weight:800; font-size:15px; flex:none}
+.syncchip{margin-left:auto; display:flex; align-items:center; gap:6px; min-height:44px; padding:0 13px; border-radius:999px; background:var(--card); border:1px solid var(--line); font-size:12.5px; font-weight:600; color:var(--text-2)}
+.syncchip .dot{width:8px; height:8px; border-radius:50%; background:var(--good)}
+.me{width:44px; height:44px; border-radius:50%; background-image:var(--grad); color:#fff; display:grid; place-items:center; font-weight:800}
+.pushbar{position:sticky; top:0; z-index:4; display:flex; align-items:center; gap:6px; padding:6px 0 8px; margin:0 -16px; padding-left:8px; padding-right:16px; background:var(--paper)}
+.backbtn{display:flex; align-items:center; gap:2px; min-height:44px; min-width:44px; padding:0 10px 0 4px; border-radius:999px; color:var(--accent-2); font-weight:700; font-size:15px}
+.backbtn svg{width:22px; height:22px}
+.tabtitle{font-size:28px; font-weight:800; letter-spacing:-.025em; line-height:1.15; margin:4px 0 6px}
+.h1{font-size:23px; font-weight:800; letter-spacing:-.025em; line-height:1.2; margin:2px 0 6px}
+.lede{color:var(--text-2); font-size:14.5px; margin:0 0 12px}
+.titlerow{display:flex; align-items:center; gap:8px}
+.titlerow .tabtitle{flex:1}
+
+/* ---------- section captions ---------- */
+.cap{display:flex; align-items:center; justify-content:space-between; gap:8px; margin:20px 2px 8px; min-height:24px}
+.cap h2{font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-2)}
+.link{display:inline-flex; align-items:center; gap:3px; min-height:44px; padding:0 4px; color:var(--accent-2); font-weight:700; font-size:14px}
+.link svg{width:16px; height:16px}
+
+/* ---------- cards, rows ---------- */
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r-l); padding:var(--s5); box-shadow:var(--shadow); margin-bottom:var(--s4)}
+.card.flat{box-shadow:none}
+.card h3{font-size:16px; font-weight:800; letter-spacing:-.01em}
+.meta{font-size:12.5px; color:var(--text-2)}
+.muted{color:var(--text-2)}
+.small{font-size:13px}
+.note{font-size:12.5px; color:var(--text-2); line-height:1.45}
+.nma{font-size:12.5px; color:var(--text-2); text-align:center; padding:6px 10px 2px; line-height:1.45}
+.group{background:var(--card); border:1px solid var(--line); border-radius:var(--r-l); box-shadow:var(--shadow); overflow:hidden; margin-bottom:var(--s4)}
+.row{display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:10px 14px; text-align:left}
+.group .row + .row, .group .row + .sub, .group .sub + .row{border-top:1px solid var(--line)}
+.row .rb{flex:1; min-width:0}
+.row .rt{font-weight:700; font-size:15px; display:block}
+.row .rs{font-size:12.5px; color:var(--text-2); display:block; margin-top:1px}
+.row .chev{color:var(--text-3)}
+.row[aria-disabled="true"]{opacity:.6}
+.ico{width:36px; height:36px; border-radius:50%; display:grid; place-items:center; flex:none; background:var(--accent-soft); color:var(--accent-2)}
+.ico svg{width:19px; height:19px}
+.ico.olive{background:var(--olive-soft); color:var(--olive)}
+.ico.milk{background:var(--milk-soft); color:var(--milk)}
+.ico.health{background:var(--health-soft); color:var(--health)}
+.ico.cyan{background:var(--cyan-soft); color:var(--cyan)}
+.ico.neutral{background:var(--line); color:var(--text-2)}
+
+/* ---------- buttons, chips, badges ---------- */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:44px; padding:0 18px; border-radius:999px; font-weight:700; font-size:14.5px; white-space:nowrap}
+.btn svg{width:18px; height:18px}
+.btn.primary{background-image:var(--grad); color:#fff; box-shadow:var(--cta-glow)}
+.btn.olive{background:var(--olive); color:var(--on-olive)}
+.btn.ghost{background:var(--card); border:1px solid var(--line-2); color:var(--text)}
+.btn.soft{background:var(--accent-soft); color:var(--accent-2)}
+.btn.block{display:flex; width:100%; min-height:54px; font-size:16px}
+.btn[disabled]{opacity:.45; cursor:default; box-shadow:none}
+.btnrow{display:flex; gap:8px; flex-wrap:wrap}
+.btnrow .btn{flex:1}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chips.scroll{flex-wrap:nowrap; overflow-x:auto; margin:0 -16px; padding:2px 16px 4px; scrollbar-width:none}
+.chips.scroll::-webkit-scrollbar{display:none}
+.chip{display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 16px; border-radius:999px; border:1px solid var(--line-2); background:var(--card); font-size:14px; color:var(--text); white-space:nowrap; flex:none}
+.chip[aria-pressed="true"], .chip[aria-checked="true"]{background:var(--accent); color:var(--on-accent); border-color:transparent; font-weight:700}
+.chip.danger[aria-pressed="true"]{background:var(--danger-fill); color:#fff}
+.chip svg{width:16px; height:16px}
+.badges{display:flex; flex-wrap:wrap; gap:5px; margin-top:6px}
+.badge{display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:3px 7px; border-radius:7px; line-height:1.3; background:var(--line); color:var(--text-2)}
+.badge svg{width:11px; height:11px; stroke-width:2.4}
+.b-new{background:var(--accent-soft); color:var(--accent-2)}
+.b-first{background:var(--milk-soft); color:var(--milk)}
+.b-keep{background:var(--olive-soft); color:var(--olive)}
+.b-iron{background:var(--diaper-soft); color:var(--diaper)}
+.b-hold{background:var(--health-soft); color:var(--health)}
+.b-plus{background-image:var(--grad); color:#fff}
+.b-tried{background:var(--olive-soft); color:var(--olive)}
+.b-pin{background:var(--accent-soft); color:var(--accent-2)}
+
+/* ---------- guidance card ---------- */
+.guide{border-left:0; position:relative; overflow:hidden}
+.guide .eyebrow{display:flex; align-items:center; gap:6px; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-2); margin-bottom:6px}
+.guide .eyebrow svg{width:15px; height:15px}
+.guide p{font-size:14.5px; color:var(--text); margin-top:4px}
+.guide ul{margin:10px 0 0; padding-left:18px; font-size:13.5px; color:var(--text-2)}
+.guide ul li + li{margin-top:4px}
+.src{font-size:11.5px; color:var(--text-2); margin-top:10px}
+.guide .gfoot .link{margin-left:-4px}
+.guide .gfoot{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:4px}
+
+/* ---------- meals ---------- */
+.meal{padding:0; overflow:hidden}
+.mealhead{display:flex; align-items:center; gap:11px; padding:14px 14px 6px}
+.disc{width:40px; height:40px; border-radius:50%; background:var(--solids-disc); color:#2F4A0C; display:grid; place-items:center; flex:none}
+.disc svg{width:21px; height:21px}
+.mealhead h3{font-size:17px; font-weight:800}
+.mealhead .meta{margin-top:1px}
+.mealhead .state{margin-left:auto}
+.foods{list-style:none; margin:0; padding:0 6px}
+.foodrow{display:flex; align-items:flex-start; gap:11px; width:100%; min-height:56px; padding:10px 8px; border-radius:var(--r-m); text-align:left}
+.foodrow:active{background:var(--olive-soft)}
+.foods li + li .foodrow{border-top:1px solid var(--line); border-radius:0}
+.fdisc{width:36px; height:36px; border-radius:50%; background:var(--olive-soft); color:var(--olive); display:grid; place-items:center; flex:none; margin-top:1px}
+.fdisc svg{width:19px; height:19px}
+.fb{flex:1; min-width:0}
+.fname{display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 8px; font-weight:700; font-size:15.5px}
+.form{font-size:12.5px; font-weight:600; color:var(--olive)}
+.why{display:block; font-size:13px; color:var(--text-2); margin-top:2px; line-height:1.4}
+.foodrow .chev{color:var(--text-3); margin-top:8px}
+.tip{display:flex; gap:8px; margin:6px 14px 0; padding:10px 12px; border-radius:var(--r-m); background:var(--milk-soft); color:var(--text); font-size:13px; line-height:1.4}
+.tip svg{width:17px; height:17px; color:var(--milk); margin-top:1px}
+.mealacts{display:flex; gap:8px; padding:12px 14px 14px}
+.mealacts .btn.primary{flex:1}
+.served{display:flex; align-items:center; gap:10px; margin:6px 14px 14px; padding:8px 8px 8px 12px; border-radius:var(--r-m); background:var(--olive-soft); color:var(--text)}
+.served .tick{width:28px; height:28px; border-radius:50%; background:var(--olive); color:var(--on-olive); display:grid; place-items:center; flex:none}
+.served .tick svg{width:16px; height:16px; stroke-width:2.4}
+.served b{font-size:14.5px}
+.served .btn{margin-left:auto; min-height:44px; padding:0 12px; font-size:13.5px}
+.takenout{margin:2px 14px 4px; font-size:12.5px; color:var(--text-2)}
+
+/* allergen meter */
+.alrow{display:flex; align-items:center; gap:10px; min-height:52px; padding:8px 0}
+.alrow + .alrow{border-top:1px solid var(--line)}
+.alrow .an{font-weight:700; font-size:15px}
+.alrow .as{font-size:12.5px; color:var(--text-2)}
+.alrow .ac{margin-left:auto; text-align:right; font-size:12.5px; color:var(--text-2)}
+.pips{display:flex; gap:4px; margin-top:5px; justify-content:flex-end}
+.pip{width:16px; height:6px; border-radius:999px; background:var(--line-2)}
+.pip.on{background:var(--olive)}
+
+.noticebtn{display:flex; align-items:center; gap:12px; width:100%; min-height:64px; padding:12px 14px; border-radius:var(--r-l); background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); text-align:left; margin-bottom:var(--s4)}
+.noticebtn b{display:block; font-size:15.5px}
+.noticebtn span.sub{display:block; font-size:12.5px; color:var(--text-2)}
+
+.mini{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.mini .mm{border-radius:var(--r-m); background:var(--olive-soft); padding:10px 12px}
+.mini .mm h4{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--olive); margin-bottom:4px}
+.mini .mm p{font-size:13.5px; line-height:1.45}
+
+/* ---------- plan ---------- */
+.strip{display:flex; gap:10px; overflow-x:auto; margin:0 -16px; padding:2px 16px 18px; scrollbar-width:none}
+.strip::-webkit-scrollbar{display:none}
+.chg{flex:none; width:178px; border-radius:var(--r-l); background:var(--card); border:1px solid var(--line); padding:12px; box-shadow:var(--shadow)}
+.chg .ico{margin-bottom:8px}
+.chg b{display:block; font-size:14px; line-height:1.3}
+.chg > span:not(.ico){display:block; font-size:12.5px; color:var(--text-2); margin-top:3px; line-height:1.35}
+.day{padding:0; overflow:hidden}
+.dayhead{display:flex; align-items:center; gap:4px; padding:4px 4px 4px 0}
+.daytoggle{flex:1; display:flex; align-items:center; gap:11px; min-height:60px; padding:8px 6px 8px 14px; text-align:left}
+.daytoggle .dn{font-weight:800; font-size:16px}
+.daytoggle .dd{font-size:12.5px; color:var(--text-2)}
+.daytoggle .cv{margin-left:auto; color:var(--text-3); transition:transform .18s}
+.daytoggle[aria-expanded="true"] .cv{transform:rotate(180deg)}
+.dots{width:44px; height:44px; border-radius:50%; display:grid; place-items:center; color:var(--text-2)}
+.daybody{padding:0 14px 12px}
+.pmeal + .pmeal{margin-top:6px}
+.pmeal h4{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--olive); margin:6px 2px 2px}
+.pfood{display:flex; align-items:center; gap:10px; width:100%; min-height:48px; padding:7px 2px; text-align:left; border-radius:0}
+.pfood + .pfood{border-top:1px solid var(--line)}
+.pfood .fname{font-size:14.5px}
+.pfood .form{font-size:12px}
+.pfood .why{font-size:12.5px; margin-top:0}
+.skipped{display:flex; align-items:center; gap:10px; padding:4px 0}
+.locked .daytoggle .dn{color:var(--text-2)}
+.lockico{color:var(--text-2)}
+.skel{display:grid; gap:7px; padding:2px 0 4px}
+.skel .bar{height:12px; border-radius:999px; background:var(--line)}
+.skel .bar.s{width:46%} .skel .bar.m{width:64%} .skel .bar.l{width:80%}
+.skel h4{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-3); margin:6px 2px 0}
+.paywall{background:var(--accent-soft); border-color:transparent}
+.paywall h3{color:var(--text)}
+.paywall p{font-size:14px; color:var(--text); margin:6px 0 12px}
+
+/* ---------- foods ---------- */
+.search{display:flex; align-items:center; gap:8px; min-height:48px; padding:0 14px; border-radius:var(--r-m); border:1px solid var(--line-2); background:var(--card); margin-bottom:10px}
+.search input{flex:1; min-width:0; border:0; outline:0; background:transparent; font-size:15px; min-height:44px}
+.search svg{color:var(--text-2)}
+.frow{display:flex; align-items:center; gap:12px; width:100%; min-height:60px; padding:8px 14px; text-align:left}
+.group .frow + .frow{border-top:1px solid var(--line)}
+.frow .fb b{display:block; font-size:15px}
+.frow .fb span{display:block; font-size:12.5px; color:var(--text-2)}
+.frow .badge{flex:none}
+.empty{text-align:center; color:var(--text-2); padding:26px 10px; font-size:14px}
+.detailhead{display:flex; align-items:center; gap:12px; margin:4px 0 10px}
+.detailhead .fdisc{width:52px; height:52px}
+.detailhead .fdisc svg{width:26px; height:26px}
+.sec{margin-top:14px}
+.sec h4{font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-2); margin-bottom:6px}
+.sec p{font-size:14.5px}
+.sec ul{margin:0; padding-left:18px; font-size:14px}
+.formchips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px}
+.formchip{font-size:12.5px; font-weight:700; padding:5px 10px; border-radius:999px; background:var(--olive-soft); color:var(--olive)}
+.choke{display:flex; gap:9px; padding:11px 12px; border-radius:var(--r-m); background:var(--milk-soft); font-size:14px}
+.choke svg{color:var(--milk); margin-top:1px}
+.hist{display:flex; gap:9px; padding:11px 12px; border-radius:var(--r-m); background:var(--olive-soft); font-size:14px}
+.hist svg{color:var(--olive); margin-top:1px}
+.held{display:flex; gap:9px; padding:11px 12px; border-radius:var(--r-m); background:var(--health-soft); font-size:14px}
+.held svg{color:var(--health); margin-top:1px}
+.tick{display:flex; align-items:center; gap:12px; width:100%; min-height:48px; padding:4px 2px; text-align:left; font-size:15px}
+.tick .box{width:24px; height:24px; border-radius:7px; border:1.5px solid var(--line-2); display:grid; place-items:center; flex:none; background:var(--card)}
+.tick .box svg{width:15px; height:15px; stroke-width:2.6; opacity:0}
+.tick[aria-checked="true"] .box{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.tick[aria-checked="true"] .box svg{opacity:1}
+.ticks{display:grid; grid-template-columns:1fr 1fr; column-gap:10px}
+.field{width:100%; min-height:48px; padding:10px 14px; border-radius:var(--r-m); border:1px solid var(--line-2); background:var(--card); font-size:15px; outline:0}
+.field:focus{border-color:var(--accent)}
+textarea.field{min-height:84px; resize:none}
+.fieldlbl{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-2); margin:16px 2px 8px}
+.fieldlbl:first-child{margin-top:4px}
+
+/* ---------- shopping (CuddleCue's list) ---------- */
+.progress{height:8px; border-radius:999px; background:var(--accent-soft); overflow:hidden; margin:12px 0 10px}
+.progress i{display:block; height:100%; background:var(--accent); border-radius:999px; transition:width .18s}
+.addrow{display:flex; gap:8px}
+.addrow .field{flex:1}
+.shop{display:flex; align-items:center; gap:12px; padding:10px 8px 10px 12px; min-height:60px}
+.group .shop + .shop{border-top:1px solid var(--line)}
+.round{width:30px; height:30px; border-radius:50%; border:1.5px solid var(--line-2); display:grid; place-items:center; flex:none; background:var(--card)}
+.round svg{width:16px; height:16px; stroke-width:2.6; opacity:0}
+.roundbtn{width:44px; height:44px; display:grid; place-items:center; flex:none; margin:-7px}
+.roundbtn[aria-checked="true"] .round{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.roundbtn[aria-checked="true"] .round svg{opacity:1}
+.shop .sb{flex:1; min-width:0; padding-left:6px}
+.shop .sb b{display:block; font-size:15px}
+.shop .sb span{display:block; font-size:12.5px; color:var(--text-2)}
+.shop.done .sb b{text-decoration:line-through; color:var(--text-2)}
+.qty{display:flex; align-items:center; border-radius:999px; background:var(--accent-soft); padding:2px}
+.qty button{width:44px; height:44px; border-radius:50%; display:grid; place-items:center; color:var(--accent-2)}
+.qty button svg{width:16px; height:16px; stroke-width:2.4}
+.qty .n{min-width:22px; text-align:center; font-family:var(--mono); font-size:14px; font-weight:600}
+.xbtn{width:44px; height:44px; border-radius:50%; display:grid; place-items:center; color:var(--text-2)}
+
+/* ---------- plus, stats ---------- */
+.hero{border-radius:var(--r-l); padding:18px; background-image:var(--grad); color:#fff; margin-bottom:var(--s4); box-shadow:var(--cta-glow)}
+.hero h2{font-size:22px; font-weight:800; letter-spacing:-.02em}
+.hero p{font-size:14.5px; margin-top:6px; opacity:.95}
+.list{list-style:none; margin:0; padding:0}
+.list li{display:flex; gap:10px; padding:8px 0; font-size:14.5px; line-height:1.4}
+.list li + li{border-top:1px solid var(--line)}
+.list li svg{width:18px; height:18px; color:var(--olive); margin-top:1px; stroke-width:2.2}
+.list.plus li svg{color:var(--accent)}
+.price{display:flex; align-items:center; gap:10px; min-height:60px; padding:10px 14px}
+.price + .price{border-top:1px solid var(--line)}
+.price .pb{flex:1}
+.price .pb b{display:block}
+.price .pb span{display:block; font-size:12.5px; color:var(--text-2)}
+.stats{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0}
+.stat{border-radius:var(--r-m); background:var(--milk-soft); padding:12px}
+.stat .k{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-2)}
+.stat .v{font-family:var(--mono); font-size:22px; font-weight:600; letter-spacing:-.02em; color:var(--text); margin-top:3px}
+.stat .v small{font-family:var(--ui); font-size:13px; font-weight:600; color:var(--text-2); letter-spacing:0}
+.bars{display:flex; align-items:flex-end; gap:8px; height:84px; padding:6px 2px 0}
+.bars .b{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; font-size:11px; color:var(--text-2)}
+.bars .b i{display:block; width:100%; border-radius:6px 6px 3px 3px; background:var(--milk)}
+.blurred{filter:blur(6px); user-select:none; pointer-events:none}
+.lockover{position:relative}
+.lockover .lockmsg{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; padding:12px}
+.seg{display:flex; gap:4px; padding:4px; border-radius:999px; background:var(--line)}
+.seg button{flex:1; min-height:44px; border-radius:999px; font-weight:700; font-size:14px; color:var(--text-2)}
+.seg button[aria-pressed="true"]{background:var(--card); color:var(--accent-2); box-shadow:var(--shadow)}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{background:var(--accent-soft)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .seg button[aria-pressed="true"]{background:var(--accent-soft)} }
+.swatches{display:flex; flex-wrap:wrap; gap:10px}
+.swatch{display:flex; flex-direction:column; align-items:center; gap:4px; width:64px; min-height:72px; font-size:12px; font-weight:600; color:var(--text-2)}
+.swatch .sw{width:44px; height:44px; border-radius:50%; display:grid; place-items:center; color:#fff; border:2px solid transparent}
+.swatch[aria-pressed="true"] .sw{outline:2px solid var(--accent); outline-offset:2px}
+.swatch .sw svg{width:16px; height:16px}
+
+/* ---------- tab bar (CuddleCue's TabBar: pill inset 12, 10 above the foot, radius 30, 44 log button above) ---------- */
+.tabbar{position:absolute; left:12px; right:12px; bottom:10px; z-index:20; pointer-events:none}
+.fabrow{display:flex; justify-content:center; margin-bottom:8px; height:44px}
+.fab{pointer-events:auto; width:44px; height:44px; border-radius:50%; background-image:var(--grad); color:#fff; display:grid; place-items:center; box-shadow:0 10px 18px -6px rgba(186,68,0,.7); transition:opacity .18s}
+.fab svg{width:22px; height:22px; stroke-width:2.4}
+.fab[hidden]{display:grid; opacity:0; pointer-events:none}
+.bar{pointer-events:auto; position:relative; display:flex; align-items:stretch; gap:2px; padding:7px 10px; border-radius:var(--r-xl); background:var(--chrome); box-shadow:0 1px 2px rgba(47,31,110,.08), 0 20px 38px -22px rgba(23,16,54,.45); -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px)}
+.bar button{flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 0 11px; border-radius:var(--r-s); color:var(--text-2); font-size:10.5px; font-weight:700; line-height:1.15}
+.bar button svg{width:23px; height:23px; color:var(--text-3)}
+.bar button[aria-selected="true"]{background:var(--accent-soft); color:var(--accent-2); font-weight:800}
+.bar button[aria-selected="true"] svg{color:var(--accent-2)}
+.bar .tdot{position:absolute; bottom:8px; width:5px; height:5px; border-radius:50%; background:var(--accent-2); pointer-events:none}
+
+/* ---------- sheet, scrim, toast ---------- */
+.scrim{position:absolute; inset:0; z-index:40; background:rgba(20,10,2,.42); opacity:0; pointer-events:none; transition:opacity .18s}
+.scrim.on{opacity:1; pointer-events:auto}
+.sheet{position:absolute; left:0; right:0; bottom:0; z-index:50; max-height:90%; display:flex; flex-direction:column; background-color:var(--app);
+  background-image:radial-gradient(340px 200px at 88% 0%, var(--page-warm), transparent 70%);
+  border-radius:var(--r-xl) var(--r-xl) 0 0; box-shadow:0 -26px 60px -30px rgba(23,16,54,.42); transform:translateY(105%); transition:transform .22s cubic-bezier(.22,.8,.28,1); visibility:hidden}
+.sheet.on{transform:none; visibility:visible}
+.grab{width:40px; height:4px; border-radius:999px; background:var(--line-2); margin:9px auto 2px; flex:none}
+.shead{display:flex; align-items:center; gap:10px; padding:4px 12px 6px 18px; flex:none}
+.shead h2{font-size:18px; font-weight:800; letter-spacing:-.015em; flex:1}
+.x{width:44px; height:44px; border-radius:50%; display:grid; place-items:center; color:var(--text-2); background:var(--card); border:1px solid var(--line)}
+.sbody{padding:2px 18px 22px; overflow-y:auto}
+.sbody > .fadein{min-height:20px}
+.sheetfoot{margin-top:16px}
+.toast{position:absolute; left:12px; right:12px; bottom:96px; z-index:60; display:flex; align-items:center; gap:10px; min-height:52px; padding:6px 6px 6px 16px; border-radius:20px;
+  background:var(--toast); color:var(--toast-text); font-size:14px; font-weight:600; box-shadow:0 18px 40px -18px rgba(20,12,48,.8); opacity:0; transform:translateY(8px); transition:opacity .18s, transform .18s; pointer-events:none}
+.toast.on{opacity:1; transform:none; pointer-events:auto}
+.toast.high{bottom:150px}
+.sheet.on ~ .toast{bottom:auto; top:40px}
+.toast span{flex:1}
+.toast button{min-height:44px; padding:0 14px; border-radius:999px; color:var(--toast-act); font-weight:800}
+
+/* serve tiles (CuddleCue .gotiles: four equal tiles, a face over a short word, chosen = the module's color) */
+.gotiles{display:flex; gap:6px}
+.gotiles button{flex:1 1 0; min-width:0; min-height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:7px 3px;
+  border:1px solid var(--line-2); border-radius:var(--r-m); background:var(--card); font-size:12.5px; line-height:1.2; color:var(--text-2); text-align:center}
+.gotiles .face{width:26px; height:26px; color:var(--olive)}
+.gotiles button[aria-checked="true"]{padding:6px 2px; border:2px solid var(--olive); background:var(--olive-soft); color:var(--text); font-weight:700}
+.gotiles.small button{min-height:48px; padding:4px 2px}
+.gotiles.small .face{width:20px; height:20px}
+.perfood{padding:10px 0}
+.perfood + .perfood{border-top:1px solid var(--line)}
+.perfood b{display:block; margin-bottom:6px; font-size:14.5px}
+.switchrow{display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:6px 0; text-align:left}
+.switchrow .rb{flex:1}
+.switchrow b{display:block; font-size:15px}
+.switchrow span.s{display:block; font-size:12.5px; color:var(--text-2)}
+.switch{width:50px; height:30px; border-radius:999px; background:var(--line-2); position:relative; flex:none; transition:background .18s}
+.switch::after{content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .18s}
+[aria-checked="true"] > .switch{background:var(--accent)}
+[aria-checked="true"] > .switch::after{transform:translateX(20px)}
+.refusal{margin-top:10px; padding:10px 12px; border-radius:var(--r-m); background:var(--olive-soft); font-size:13.5px}
+.alt{display:flex; align-items:center; gap:11px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--r-l); background:var(--card); margin-bottom:8px}
+.alt .fb b{font-size:15px}
+.alt .btn{min-height:44px; padding:0 14px}
+.optcard{display:flex; align-items:center; gap:12px; width:100%; min-height:64px; padding:12px 14px; border-radius:var(--r-l); border:1px solid var(--line-2); background:var(--card); text-align:left; margin-bottom:8px}
+.optcard .rb{flex:1}
+.optcard b{display:block; font-size:15.5px}
+.optcard span.s{display:block; font-size:13px; color:var(--text-2); margin-top:2px}
+.optcard .radio{width:24px; height:24px; border-radius:50%; border:2px solid var(--line-2); flex:none; display:grid; place-items:center}
+.optcard[aria-checked="true"]{border:2px solid var(--accent); background:var(--accent-soft); padding:11px 13px}
+.optcard[aria-checked="true"] .radio{border-color:var(--accent)}
+.optcard[aria-checked="true"] .radio::after{content:""; width:12px; height:12px; border-radius:50%; background:var(--accent)}
+.danger-text{color:var(--crit)}
+
+/* ---------- emergency card ---------- */
+.emerg{position:absolute; inset:0; z-index:90; background:var(--danger-fill); color:#fff; display:flex; flex-direction:column; padding:56px 22px 28px; opacity:0; pointer-events:none; transition:opacity .18s; overflow-y:auto}
+.emerg.on{opacity:1; pointer-events:auto}
+.emerg .big{width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,.16); display:grid; place-items:center; margin-bottom:18px}
+.emerg .big svg{width:34px; height:34px; stroke-width:2}
+.emerg h2{font-size:38px; font-weight:800; letter-spacing:-.03em; line-height:1.05}
+.emerg p{font-size:16.5px; line-height:1.45; margin-top:12px}
+.emerg .call{display:flex; align-items:center; justify-content:center; gap:12px; width:100%; min-height:76px; margin-top:26px; border-radius:999px; background:#fff; color:#8E2D35; font-size:24px; font-weight:800; box-shadow:0 18px 40px -18px rgba(0,0,0,.6)}
+.emerg .call svg{width:28px; height:28px; stroke-width:2.2}
+.emerg ul{margin:22px 0 0; padding:0; list-style:none}
+.emerg li{padding:10px 0; border-top:1px solid rgba(255,255,255,.22); font-size:15px; line-height:1.4}
+.emerg .back{margin-top:auto; padding-top:20px}
+.emerg .back .btn{width:100%; min-height:54px; border:1.5px solid rgba(255,255,255,.7); color:#fff; font-size:16px}
+.emerg .demo{font-size:12.5px; opacity:.9; margin-top:10px; text-align:center}
+
+/* ---------- setup ---------- */
+.setup{position:absolute; inset:0; z-index:70; background:var(--paper); display:flex; flex-direction:column; opacity:0; pointer-events:none; transition:opacity .18s}
+.setup.on{opacity:1; pointer-events:auto}
+.sutop{display:flex; align-items:center; gap:8px; padding:40px 12px 6px 8px; flex:none}
+.sutop .pbar{flex:1; height:8px; border-radius:999px; background:var(--accent-soft); overflow:hidden}
+.sutop .pbar i{display:block; height:100%; background-image:var(--grad); border-radius:999px; transition:width .18s}
+.sutop .cnt{font-family:var(--mono); font-size:12px; color:var(--text-2); min-width:52px; text-align:right}
+.subody{flex:1; overflow-y:auto; padding:12px 20px 20px}
+.subody .eyebrow{font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-2)}
+.subody h2{font-size:26px; font-weight:800; letter-spacing:-.025em; line-height:1.15; margin:6px 0 8px}
+.subody .help{color:var(--text-2); font-size:14.5px; margin-bottom:16px}
+.sufoot{flex:none; padding:10px 20px 26px; display:grid; gap:4px; background:var(--paper)}
+.reveal .card{opacity:0; animation:fade .18s ease-out forwards}
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{animation-duration:.01ms !important; transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3 11.5h18a9 8.5 0 0 1-18 0zM8.5 20.5h7M9.5 7.5c0-1.6 1.6-1.6 1.6-3.5M13.6 7.5c0-1.6 1.6-1.6 1.6-3.5"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2.5l2.3 11h10.6l2.1-8H6.4"/><circle cx="9.3" cy="19.3" r="1.4"/><circle cx="17" cy="19.3" r="1.4"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="2"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-chevd" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M9 3.5h6l-1 6.5 3.2 3.2H6.8L10 10zM12 13.2v7.3"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M6 8h12l-3.5-3.5M18 16H6l3.5 3.5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 2.8 19.5h18.4zM12 10v4.5M12 17.2v.2"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5.5 3.5h3.3l1.8 4.6-2.3 1.5a11 11 0 0 0 6.1 6.1l1.5-2.3 4.6 1.8v3.3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 3.5 5.5a2 2 0 0 1 2-2z"/></symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2 2 0 0 1 6 3.5h13.5v14H6a2 2 0 0 0-2 2zM4 19.5a2 2 0 0 0 2 2h13.5v-4"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v6c0 4.3-3 7.4-7 8.5-4-1.1-7-4.2-7-8.5V6z"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3.5h9l4 4v13H6zM14.5 3.5V8H19M9 12.5h7M9 16h5"/></symbol>
+    <symbol id="i-cup" viewBox="0 0 24 24"><path d="M6 6.5h12l-1.5 13a1.5 1.5 0 0 1-1.5 1.5H9a1.5 1.5 0 0 1-1.5-1.5zM6.5 11h11"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 5.2a3.5 3.5 0 0 1 0 6.6M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3.5h9l4 4v13H6zM14.5 3.5V8H19"/><path d="M9 12h7M9 15.5h7M9 19h4"/></symbol>
+    <symbol id="i-baby" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9 11v.3M15 11v.3M9.5 15a3.5 3.5 0 0 0 5 0M12 3.5c1.5 0 2 1.6 1 2.5"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.9 1.4-1.9-.5-1.2.3-2.6 1.6-2.6h1.7a3.8 3.8 0 0 0 3.8-3.8c0-4.8-3.8-8.7-8.5-8.7z"/><circle cx="7.8" cy="11" r="1"/><circle cx="11" cy="7.5" r="1"/><circle cx="15.5" cy="8.5" r="1"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 2.1-2.4 3.6M12 16.6v.2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.2"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3.5v11.5M7.5 10.5 12 15l4.5-4.5M4.5 19.5h15"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4.5H6.5a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1H14M11 12h9.5M17 8.5l3.5 3.5-3.5 3.5"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l1.6-2.5h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.3"/></symbol>
+    <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 20.5V11M12 11c0-4 3-6.5 7.5-6.5 0 4-3 6.5-7.5 6.5zM12 13.5C12 10 9.5 8 5 8c0 3.5 2.5 5.5 7 5.5z"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5c.7 4.3 2.2 5.8 6.5 6.5-4.3.7-5.8 2.2-6.5 6.5-.7-4.3-2.2-5.8-6.5-6.5 4.3-.7 5.8-2.2 6.5-6.5zM18.5 15.5c.3 1.8.9 2.4 2.5 2.7-1.6.3-2.2.9-2.5 2.7-.3-1.8-.9-2.4-2.5-2.7 1.6-.3 2.2-.9 2.5-2.7z"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18.5a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.4 1.6A3.8 3.8 0 0 1 17.5 18.5z"/><path d="m9.5 13.5 2 2 3.5-3.5"/></symbol>
+    <!-- food categories -->
+    <symbol id="f-vegetable" viewBox="0 0 24 24"><path d="M14.5 9.5 5 19c-.8.8.2 1.8 1 1l9.5-9.5M14.5 9.5c-1.5-1.5-1.5-3 0-4.5l1.5 1.5M14.5 9.5c1.5 1.5 3 1.5 4.5 0L17.5 8M16 6.5l1.5 1.5M16 6.5 18.5 4M17.5 8 20 5.5"/></symbol>
+    <symbol id="f-fruit" viewBox="0 0 24 24"><path d="M12 7.5c-2-1.6-6.5-1.2-7 3.5-.6 5 2.8 9.5 5.2 9.5 1 0 1.2-.5 1.8-.5s.8.5 1.8.5c2.4 0 5.8-4.5 5.2-9.5-.5-4.7-5-5.1-7-3.5zM12 7.5c0-2 1-3.5 2.5-4"/></symbol>
+    <symbol id="f-grain" viewBox="0 0 24 24"><path d="M12 21V8M12 8c-1.8-1-1.8-3.5 0-4.5 1.8 1 1.8 3.5 0 4.5zM12 12.5c-1-2-3.5-2.5-5-1.5.8 2 3.3 2.6 5 1.5zM12 12.5c1-2 3.5-2.5 5-1.5-.8 2-3.3 2.6-5 1.5zM12 17c-1-2-3.5-2.5-5-1.5.8 2 3.3 2.6 5 1.5zM12 17c1-2 3.5-2.5 5-1.5-.8 2-3.3 2.6-5 1.5z"/></symbol>
+    <symbol id="f-meat" viewBox="0 0 24 24"><path d="M14 4.5c3.2 0 5.5 2.4 5.5 5.5 0 3.6-3.3 5.2-6 5.5l-3 3a1.8 1.8 0 1 1-2.4 2.4 1.8 1.8 0 1 1-2.5-2.5 1.8 1.8 0 1 1 2.4-2.4l3-3c.3-2.7 1.9-6 5.5-6"/></symbol>
+    <symbol id="f-fish" viewBox="0 0 24 24"><path d="M3.5 12c2.5-3.5 6-5 9-5 3.5 0 6 2.5 7.5 5-1.5 2.5-4 5-7.5 5-3 0-6.5-1.5-9-5zM3.5 12 2 8.5M3.5 12 2 15.5"/><circle cx="15.5" cy="11" r=".8"/></symbol>
+    <symbol id="f-egg" viewBox="0 0 24 24"><path d="M12 3.5c3.5 0 6.5 5.5 6.5 10a6.5 6.5 0 0 1-13 0c0-4.5 3-10 6.5-10z"/></symbol>
+    <symbol id="f-dairy" viewBox="0 0 24 24"><path d="M8.5 3.5h7M9 3.5v3L6.5 10v10.5h11V10L15 6.5v-3M6.5 13h11"/></symbol>
+    <symbol id="f-plant_protein" viewBox="0 0 24 24"><path d="M8 5.5c3-1.5 6.5 0 6.5 3 0 2 2.5 2.2 3.5 3.8 1.6 2.6-.4 7.2-5 7.2S5 16 4.5 12C4 8.5 5.5 6.8 8 5.5z"/><path d="M9.5 9.5c1 .3 1.5 1.2 1.3 2.2"/></symbol>
+    <symbol id="f-nut_seed" viewBox="0 0 24 24"><path d="M9 4c2.5 0 3.6 2.2 3 4.3-.4 1.4 1 2.4 2.5 2.2 2.6-.4 4.6 1.6 4.4 4.4-.2 3-3 5-5.9 4.6-2.2-.3-3.3-2-3-3.8.2-1.3-.9-2.3-2.2-2.3C5.2 13.4 4 11 4.2 8.7 4.4 6 6.5 4 9 4z"/></symbol>
+    <!-- how-did-it-go faces, drawn rather than emoji so they render the same everywhere -->
+    <symbol id="g-loved" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.2 4.2 0 0 1 12 7.2 4.2 4.2 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="g-liked" viewBox="0 0 24 24"><path d="M7.5 10.5v9H4.5v-9zM7.5 10.5l3.5-6.5c1.6 0 2.5 1.2 2.1 2.8L12.5 9.5h5.3a2 2 0 0 1 2 2.4l-1.3 6a2 2 0 0 1-2 1.6H7.5"/></symbol>
+    <symbol id="g-unsure" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 15h7M9 9.8v.3M15 9.8v.3"/></symbol>
+    <symbol id="g-disliked" viewBox="0 0 24 24"><path d="M16.5 13.5v-9h3v9zM16.5 13.5 13 20c-1.6 0-2.5-1.2-2.1-2.8l.6-2.7H6.2a2 2 0 0 1-2-2.4l1.3-6a2 2 0 0 1 2-1.6h9"/></symbol>
+  </defs>
+</svg>
+
+<div class="device" id="device">
+  <div class="statusbar"><span class="mono" aria-hidden="true">9:41</span><span class="demotag">Demo: sample data</span></div>
+  <main class="screen" id="screen" aria-live="off"></main>
+  <nav class="tabbar" aria-label="Tabs">
+    <div class="fabrow"><button class="fab" id="fab" data-act="logmeal" aria-label="Log a meal"><svg class="i"><use href="#i-plus"/></svg></button></div>
+    <div class="bar" role="tablist" id="bar"></div>
+  </nav>
+  <div class="scrim" id="scrim" data-act="closesheet"></div>
+  <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheettitle" aria-hidden="true">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="shead"><h2 id="sheettitle" tabindex="-1"></h2><button class="x" data-act="closesheet" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="sbody" id="sheetbody"></div>
+  </section>
+  <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastmsg"></span><button id="toastact" data-act="undo">Undo</button></div>
+  <section class="setup" id="setup" role="dialog" aria-modal="true" aria-label="Food setup" aria-hidden="true"></section>
+  <section class="emerg" id="emerg" role="alertdialog" aria-modal="true" aria-labelledby="emergtitle" aria-hidden="true"></section>
+</div>
+
+<script>
+"use strict";
+/* ===== real data, copied from packages/core/src/nibble at build time ===== */
+const DATA = {"foods":[{"id":"sweet-potato","name":"Sweet potato","cat":"vegetable","al":[],"risk":"low","ff":true,"iron":0,"forms":["puree","mashed","soft_stick"],"how":"Roast or steam until very soft. Mash it, or offer peeled wedges about the size of an adult finger.","choke":null,"ideas":["Mash with a little olive oil and a pinch of cinnamon.","Bake thin wedges until soft all the way through."],"src":["aap-starting-solids"]},{"id":"butternut-squash","name":"Butternut squash","cat":"vegetable","al":[],"risk":"low","ff":true,"iron":0,"forms":["puree","mashed","soft_stick"],"how":"Roast or steam until very soft. Mash it, or offer peeled wedges about the size of an adult finger.","choke":null,"ideas":["Mash with a pinch of cinnamon or cumin.","Stir into oatmeal or risotto."],"src":["aap-starting-solids"]},{"id":"carrot","name":"Carrot","cat":"vegetable","al":[],"risk":"high","ff":true,"iron":0,"forms":["puree","mashed","soft_stick"],"how":"Cook until it squashes easily between your fingers. Offer finger-size cooked sticks, or mash.","choke":"Raw carrot is a common choking risk. Cook it until it squashes easily, and avoid round coins.","ideas":["Roast sticks with a little olive oil until very soft.","Mash with cumin and a squeeze of orange."],"src":["aap-choking","aap-starting-solids"]},{"id":"peas","name":"Peas","cat":"vegetable","al":[],"risk":"medium","ff":true,"iron":1,"forms":["puree","mashed"],"how":"Cook until soft, then blend or mash well.","choke":"Whole peas are small and round. Mash or flatten them for younger babies.","ideas":["Mash with fresh mint and olive oil.","Stir into rice or dal."],"src":["aap-choking","aap-starting-solids"]},{"id":"broccoli","name":"Broccoli","cat":"vegetable","al":[],"risk":"low","ff":true,"iron":1,"forms":["puree","mashed","soft_stick"],"how":"Steam until very soft. Offer a large floret with the stalk as a handle, or blend.","choke":null,"ideas":["Serve with beans or lentils. Its vitamin C helps the body take in plant iron.","Roast with olive oil until tender."],"src":["aap-starting-solids","cdc-iron"]},{"id":"zucchini","name":"Zucchini","cat":"vegetable","al":[],"risk":"low","ff":true,"iron":0,"forms":["puree","mashed","soft_stick"],"how":"Steam or roast until soft. Offer spears with some skin left on for grip, or mash.","choke":null,"ideas":["Grate into fritters or soft muffins.","Stir into a tomato sauce."],"src":["aap-starting-solids"]},{"id":"spinach","name":"Spinach","cat":"vegetable","al":[],"risk":"low","ff":false,"iron":2,"forms":["puree","mixed_in"],"how":"Cook and blend finely, then stir into a puree or grain.","choke":null,"ideas":["Serve with tomato or orange. Vitamin C helps the body take in its iron.","Blend into a green sauce for pasta or rice."],"src":["cdc-iron","aap-starting-solids"]},{"id":"avocado","name":"Avocado","cat":"fruit","al":[],"risk":"low","ff":true,"iron":0,"forms":["puree","mashed","soft_stick"],"how":"Mash ripe avocado, or offer thick spears. Rolling spears in infant cereal makes them easier to hold.","choke":null,"ideas":["Mash with banana for a creamy mix.","Serve with black beans."],"src":["aap-starting-solids"]},{"id":"banana","name":"Banana","cat":"fruit","al":[],"risk":"low","ff":true,"iron":0,"forms":["puree","mashed","soft_stick"],"how":"Mash ripe banana, or offer a large piece of ripe banana to hold.","choke":null,"ideas":["Mash into oatmeal for natural sweetness.","A lot of banana can firm stools. Pears or prunes can help balance it."],"src":["aap-starting-solids","harvard-constipation"]},{"id":"pear","name":"Pear","cat":"fruit","al":[],"risk":"medium","ff":true,"iron":0,"forms":["puree","mashed","soft_stick"],"how":"Use very ripe pear, or cook it until soft. Offer peeled wedges that squash easily, or puree.","choke":"Firm, unripe pear can break into hard pieces. Choose very ripe pear, or cook it.","ideas":["Pears can help soften stools.","Mash with avocado or stir into oatmeal."],"src":["aap-choking","harvard-constipation"]},{"id":"peach","name":"Peach","cat":"fruit","al":[],"risk":"low","ff":true,"iron":0,"forms":["puree","mashed","soft_stick"],"how":"Offer ripe, peeled wedges with the pit removed, or puree.","choke":null,"ideas":["Peaches can help soften stools.","Frozen peaches work well thawed and mashed."],"src":["aap-starting-solids","harvard-constipation"]},{"id":"mango","name":"Mango","cat":"fruit","al":[],"risk":"low","ff":true,"iron":0,"forms":["puree","mashed","soft_stick"],"how":"Offer ripe, peeled spears, or mash.","choke":null,"ideas":["Serve with lentils or beans. Its vitamin C helps the body take in plant iron.","Freeze ripe mango puree in small portions."],"src":["aap-starting-solids","cdc-iron"]},{"id":"blueberry","name":"Blueberry","cat":"fruit","al":[],"risk":"high","ff":false,"iron":0,"forms":["mashed","finger"],"how":"Flatten each berry between your fingers until it bursts, or mash.","choke":"Whole blueberries are small and round. Flatten or halve them before serving.","ideas":["Frozen blueberries work well thawed and flattened.","Stir flattened berries into oatmeal."],"src":["aap-choking"]},{"id":"prune","name":"Prune","cat":"fruit","al":[],"risk":"medium","ff":false,"iron":1,"forms":["puree","mixed_in"],"how":"Soak or simmer pitted prunes until very soft, then blend.","choke":"Whole dried prunes are chewy and sticky. Soak and blend them, or chop them small.","ideas":["Prune puree is a common way to help soften stools.","Stir a spoonful into oatmeal."],"src":["harvard-constipation","aap-choking"]},{"id":"strawberry","name":"Strawberry","cat":"fruit","al":[],"risk":"medium","ff":false,"iron":0,"forms":["puree","mashed","finger"],"how":"Mash ripe strawberries, or cut them into thin slices.","choke":"Firm whole berries can be a choking risk. Mash them or cut them into small pieces.","ideas":["Its vitamin C pairs well with iron-fortified cereal.","Stir mashed berries into oatmeal."],"src":["aap-choking","cdc-iron"]},{"id":"infant-oat-cereal","name":"Iron-fortified oat cereal","cat":"grain","al":[],"risk":"low","ff":true,"iron":3,"forms":["puree","mixed_in"],"how":"Mix with breast milk, formula or water until smooth and runny, and offer from a spoon, never a bottle.","choke":null,"ideas":["Mix in a vitamin C fruit like mango or strawberry.","Thicken it a little more each week as your baby gets used to it."],"src":["cdc-iron","aap-starting-solids"]},{"id":"oatmeal","name":"Oatmeal","cat":"grain","al":[],"risk":"low","ff":true,"iron":1,"forms":["puree","mashed","mixed_in"],"how":"Cook oats until very soft, then blend or mash with breast milk, formula or water.","choke":null,"ideas":["Stir in mashed banana or berries.","Bake with mashed banana into soft oat fingers."],"src":["aap-starting-solids"]},{"id":"quinoa","name":"Quinoa","cat":"grain","al":[],"risk":"low","ff":false,"iron":1,"forms":["mashed","lumpy","mixed_in"],"how":"Rinse, cook until very soft and mash or mix into a puree.","choke":null,"ideas":["Rinse well before cooking to remove the bitter coating.","Mix with mashed black beans and avocado."],"src":["aap-starting-solids"]},{"id":"pasta","name":"Pasta","cat":"grain","al":["wheat"],"risk":"low","ff":false,"iron":1,"forms":["mashed","minced","soft_stick"],"how":"Cook until very soft. Offer large shapes like penne or fusilli, or chop finely.","choke":null,"ideas":["Check the label. Egg pasta also contains egg.","Toss with a vegetable puree as a sauce."],"src":["aap-allergens","aap-starting-solids"]},{"id":"beef","name":"Beef","cat":"meat","al":[],"risk":"medium","ff":true,"iron":3,"forms":["puree","mashed","minced","soft_stick"],"how":"Cook until no pink remains. Blend with cooking liquid, offer soft ground beef, or a large strip of slow-cooked beef to suck on.","choke":"Tough or dry chunks of meat are a choking risk. Cook until tender, then shred, grind or cut it small.","ideas":["Mix ground beef into a tomato sauce.","Slow cook until it falls apart."],"src":["cdc-iron","aap-choking","cdc-food-safety-under-5"]},{"id":"chicken-thigh","name":"Chicken thigh","cat":"meat","al":[],"risk":"medium","ff":true,"iron":2,"forms":["puree","mashed","minced","soft_stick"],"how":"Cook through, remove skin and bones, then blend, shred finely or offer a large tender strip.","choke":"Small bones and dry chunks are a choking risk. Remove every bone and shred or chop the meat.","ideas":["Thigh meat stays moister than breast, so it is easier to chew.","Dark meat has more iron than white meat."],"src":["cdc-iron","aap-choking","cdc-food-safety-under-5"]},{"id":"salmon","name":"Salmon","cat":"fish","al":["fish"],"risk":"medium","ff":false,"iron":1,"forms":["mashed","minced","soft_stick"],"how":"Cook until it flakes easily. Check carefully for bones, then flake or mash.","choke":"Fish can hide small bones. Flake it with your fingers and check carefully before serving.","ideas":["Mix flaked salmon with mashed potato into soft patties.","Salmon is low in mercury and rich in omega-3 fats."],"src":["aap-allergens","aap-choking","usda-dga"]},{"id":"egg","name":"Egg","cat":"egg","al":["egg"],"risk":"low","ff":false,"iron":2,"forms":["puree","mashed","mixed_in","soft_stick"],"how":"Cook until the white and yolk are fully firm. Mash hard-boiled egg with breast milk or formula, or cut a thin omelet into strips.","choke":null,"ideas":["For a first taste, mix a little mashed hard-boiled egg into a puree your baby already eats.","Once it is tolerated, keep offering egg a few times a week."],"src":["aap-allergens","cdc-food-safety-under-5","cdc-iron"]},{"id":"plain-yogurt","name":"Plain whole-milk yogurt","cat":"dairy","al":["milk"],"risk":"low","ff":false,"iron":0,"forms":["puree","mixed_in"],"how":"Choose plain, whole-milk yogurt with no added sugar. Offer from a preloaded spoon.","choke":null,"ideas":["Swirl in mashed fruit instead of buying flavored yogurt.","Once it is tolerated, keep offering milk foods a few times a week."],"src":["aap-allergens","usda-dga"]},{"id":"red-lentils","name":"Red lentils","cat":"plant_protein","al":[],"risk":"low","ff":true,"iron":2,"forms":["puree","mashed"],"how":"Cook until very soft and falling apart, then blend or mash.","choke":null,"ideas":["Pair with tomato or bell pepper. Vitamin C helps the body take in the iron.","Cook with cumin and turmeric for a mild dal."],"src":["cdc-iron","aap-starting-solids"]},{"id":"black-beans","name":"Black beans","cat":"plant_protein","al":[],"risk":"medium","ff":false,"iron":2,"forms":["puree","mashed"],"how":"Cook until very soft, or rinse canned beans, then mash or blend.","choke":"Whole beans can be slippery and firm. Mash or flatten them for younger babies.","ideas":["Choose canned beans with no added salt, and rinse them.","Serve with mango or bell pepper to help the body take in the iron."],"src":["cdc-iron","aap-choking"]},{"id":"tofu","name":"Tofu","cat":"plant_protein","al":["soy"],"risk":"low","ff":false,"iron":2,"forms":["puree","mashed","soft_stick","mixed_in"],"how":"Mash soft or silken tofu, or warm firm tofu and cut it into finger-size strips.","choke":null,"ideas":["Calcium-set tofu adds calcium. Check the label.","Pair with broccoli or bell pepper. Vitamin C helps the body take in the iron."],"src":["aap-allergens","cdc-iron"]},{"id":"peanut-butter","name":"Peanut butter","cat":"nut_seed","al":["peanut"],"risk":"high","ff":false,"iron":1,"forms":["mixed_in","spread"],"how":"Use smooth peanut butter. Thin it with warm water, breast milk or formula, or stir it into a puree. Spread only a thin layer.","choke":"Thick or chunky peanut butter and spoonfuls of it are a choking risk. Use it smooth, thinned or thinly spread.","ideas":["For a first taste, stir a little thinned peanut butter into a puree your baby already eats.","Once it is tolerated, keep offering peanut a few times a week."],"src":["aap-allergens","niaid-peanut","aap-choking"]},{"id":"peanut-powder","name":"Peanut powder","cat":"nut_seed","al":["peanut"],"risk":"low","ff":false,"iron":1,"forms":["mixed_in"],"how":"Stir a small amount into a smooth puree like oatmeal or applesauce until fully blended.","choke":null,"ideas":["Choose plain peanut powder with no added sugar or salt.","Once it is tolerated, keep offering peanut a few times a week."],"src":["aap-allergens","niaid-peanut"]},{"id":"hummus","name":"Hummus","cat":"plant_protein","al":["sesame"],"risk":"low","ff":false,"iron":2,"forms":["puree","spread","mixed_in"],"how":"Offer from a preloaded spoon, or spread thinly on a soft food. Choose one low in salt, or make your own.","choke":null,"ideas":["Hummus contains sesame from tahini, so it counts as a sesame food.","Thin with water for a smoother texture."],"src":["aap-allergens","cdc-iron"]},{"id":"tahini","name":"Tahini","cat":"nut_seed","al":["sesame"],"risk":"medium","ff":false,"iron":1,"forms":["mixed_in","spread"],"how":"Thin with warm water, or stir a little into a puree. Spread only a thin layer.","choke":"Thick spoonfuls of seed paste can be hard to swallow. Thin it, stir it in or spread it thinly.","ideas":["Stir into mashed sweet potato or lentils.","Once it is tolerated, keep offering sesame a few times a week."],"src":["aap-allergens","aap-choking"]},{"id":"cashew-butter","name":"Cashew butter","cat":"nut_seed","al":["cashew"],"risk":"high","ff":false,"iron":1,"forms":["mixed_in","spread"],"how":"Thin smooth cashew butter with warm water, or stir finely ground cashews into a puree. Spread only a thin layer.","choke":"Whole and chopped nuts and thick nut butter are choking risks. Use smooth, thinned butter or finely ground nuts.","ideas":["Introduce each tree nut on its own day.","Stir into a mild curry or oatmeal."],"src":["aap-allergens","aap-choking"]},{"id":"ground-flaxseed","name":"Ground flaxseed","cat":"nut_seed","al":[],"risk":"low","ff":false,"iron":1,"forms":["mixed_in"],"how":"Stir a small amount of ground flaxseed into oatmeal or a puree.","choke":null,"ideas":["A plant source of omega-3 fats, helpful for plant-based families.","Keep ground flax in the fridge so it stays fresh."],"src":["healthlink-vegan"]}],"guidance":[{"id":"readiness-signs","title":"Signs of readiness for solids","body":"Most babies are ready for solids around 6 months. Readiness is about skills, not the calendar: steady head control, sitting with support and real interest in food.","points":["Holds the head steady and upright.","Sits with support.","Opens the mouth when food comes near.","Swallows food rather than pushing it back out.","Reaches for things and brings them to the mouth.","Solids are not recommended before 4 months."],"src":["cdc-faqs","aap-starting-solids"]},{"id":"milk-is-main","title":"Milk is still the main food","body":"Until about 12 months, breast milk or formula gives most of what your baby needs. Food is for exploring and practice.","points":["Offering milk first, then food, is common in the early months.","Closer to 12 months, many families offer food first, then milk."],"src":["aap-starting-solids","usda-dga"]},{"id":"responsive-feeding","title":"You decide what, your baby decides how much","body":"You choose what to offer, and when and where. Your baby decides whether to eat and how much. Turning away, closing the mouth or pushing the spoon are common ways of saying \"all done.\"","points":["Follow your baby's pace, and stop when your baby shows signs of being full.","Skip praise or rewards for finishing, and skip pressure to take one more bite.","Eating amounts go up and down from day to day; that is common."],"src":["satter-sdor","cdc-mealtime"]},{"id":"how-much-to-start","title":"How much to offer at first","body":"Start with a teaspoon or two, once a day. Let your baby lead, and build slowly toward two or three meals a day over the next few months.","points":["Watch your baby, not the bowl.","Some days your baby will eat more, some days less.","Never add cereal or other food to a bottle."],"src":["raisingchildren-solids","unicef-6-12","aap-starting-solids"]},{"id":"gagging-vs-choking","title":"Gagging and choking are different","body":"Gagging is common while learning to eat. It is loud, with coughing, sputtering and watery eyes, and it moves food forward. Choking is silent: no cough, no cry, and the skin can turn pale or blue.","points":["Gagging is loud. Stay calm and let your baby work it out.","Choking is silent or near silent, with no strong cough.","Never sweep a finger through your baby's mouth.","If your baby is choking, call emergency services and start infant first aid.","An infant CPR and first aid course is worth taking before or soon after starting solids."],"src":["nhs-choking","aap-choking"]},{"id":"safe-shapes","title":"Shapes that lower choking risk","body":"Cut round foods like grapes and cherry tomatoes lengthwise into quarters. Cook hard vegetables until soft, spread nut butters thinly, and remove pits, bones and tough skins.","points":["Whole nuts, popcorn, hard candy and marshmallows stay off the menu until at least 4 years.","Cheese is shredded or thinly sliced, never cubed.","Raw hard vegetables and raw apple chunks wait until about 4 years.","Cut most foods to about 1/2 inch or smaller once your baby eats small pieces."],"src":["aap-choking"]},{"id":"allergen-basics","title":"Introducing common allergens","body":"Current guidance recommends introducing common allergens early and often. Offer one new allergen at a time, at home and earlier in the day, so you can watch for a few hours. Once it is tolerated, keep offering it a few times a week.","points":["The common ones are egg, peanut, milk, wheat, soy, sesame, tree nuts, fish and shellfish.","Start with a small amount mixed into a food your baby already eats.","Leave a few days between new allergens.","If your baby has severe eczema or an egg allergy, talk with your pediatrician about peanut around 4 to 6 months."],"src":["aap-allergens","niaid-peanut"]},{"id":"possible-reaction","title":"What a possible reaction can look like","body":"Milder signs often show in one place, like a few hives or redness around the mouth. Call emergency services right away for trouble breathing, swelling of the face, lips or tongue, repeated vomiting, or a baby who turns pale or floppy.","points":["Most reactions start within minutes to 2 hours of eating.","Repeated vomiting 2 to 4 hours after a food can also be a reaction. Call your pediatrician.","For milder signs, stop offering the food and call your pediatrician.","Note what you saw and when, with a photo if you can."],"src":["aap-allergens","niaid-peanut"]},{"id":"iron-often","title":"Iron-rich foods, often","body":"Babies need more iron from food starting around 6 months. Offer iron-rich foods often, like meat, beans, lentils, tofu, egg and iron-fortified cereal. Pair plant sources with a vitamin C food like tomato, orange or broccoli.","points":["Iron from meat, poultry and fish is the easiest for the body to take in.","Ask your pediatrician about iron if your baby is breastfed only."],"src":["cdc-iron","aap-vitamins"]},{"id":"first-cup","title":"Starting a cup","body":"From about 6 months, offer a few sips of water from an open cup or straw cup with meals. Skip valved sippy cups, which work like a bottle. Small amounts are plenty, up to about 8 oz of water a day.","points":["Hold the open cup at first and let your baby sip.","Spills are part of learning."],"src":["aap-bottle","cdc-faqs"]},{"id":"refusal-is-information","title":"A no today is information","body":"It's common for babies to refuse a new food many times before accepting it, and some foods take 10 to 15 tries. Keep offering small amounts in different ways, with no pressure.","points":["Try a new shape, texture or pairing next time.","Serve it next to a food your baby already enjoys.","Eating with your baby helps."],"src":["satter-sdor","cdc-mealtime"]},{"id":"daycare-handoff","title":"Sharing the plan with caregivers","body":"Share a short list with your caregivers: foods your baby eats, allergens in rotation, how you cut foods and which cup you use. Try new foods and new allergens at home first.","points":["Agree on a start date for solids together.","Ask how the daycare handles food allergies and new foods."],"src":["aap-allergens","aap-choking"]}],"sources":{"aap-starting-solids":{"p":"AAP (HealthyChildren.org)","t":"Starting solid foods","c":"2026-10-01"},"aap-allergens":{"p":"AAP (HealthyChildren.org)","t":"When to introduce egg, peanut butter and other common allergens","c":"2026-10-01"},"aap-choking":{"p":"AAP (HealthyChildren.org)","t":"Choking prevention","c":"2026-10-01"},"aap-bottle":{"p":"AAP (HealthyChildren.org)","t":"Discontinuing the bottle","c":"2026-10-01"},"aap-vitamins":{"p":"AAP (HealthyChildren.org)","t":"Vitamin D and iron supplements for babies","c":"2026-10-01"},"cdc-faqs":{"p":"CDC","t":"Infant and toddler nutrition: frequently asked questions","c":"2026-10-01"},"cdc-iron":{"p":"CDC","t":"Iron","c":"2026-10-01"},"cdc-mealtime":{"p":"CDC","t":"Mealtime routines","c":"2026-10-01"},"cdc-food-safety-under-5":{"p":"CDC","t":"Food safety for children under 5","c":"2026-10-01"},"usda-dga":{"p":"USDA and HHS","t":"Dietary Guidelines for Americans: infants and toddlers","c":"2026-10-01"},"niaid-peanut":{"p":"NIAID (via AAFP)","t":"Addendum guidelines for the prevention of peanut allergy","c":"2026-10-01"},"nhs-choking":{"p":"NHS","t":"Choking and gagging on food","c":"2026-10-01"},"raisingchildren-solids":{"p":"raisingchildren.net.au","t":"Introducing solids","c":"2026-10-01"},"unicef-6-12":{"p":"UNICEF","t":"Feeding your baby: 6 to 12 months","c":"2026-10-01"},"harvard-constipation":{"p":"Harvard Health","t":"Constipation in infants and children","c":"2026-10-01"},"satter-sdor":{"p":"Ellyn Satter Institute","t":"Division of responsibility in feeding","c":"2026-10-01"},"healthlink-vegan":{"p":"HealthLink BC","t":"Vegan feeding guidelines for babies and toddlers","c":"2026-10-01"}}};
+
+/* ===== copy.ts, verbatim ===== */
+const FORM_LABEL = { puree:'Smooth purée', mashed:'Mashed', lumpy:'Lumpy mash', soft_stick:'Soft sticks', finger:'Small soft pieces', minced:'Minced', chopped:'Chopped', family:'Family food, cut small', spread:'Thinly spread', mixed_in:'Stirred into a food they know', drink:'In an open cup' };
+const STATE_LABEL = { not_started:'Not offered yet', introduced:'Introduced', keeping_going:'Keeping it going', established:'Part of the week', held:'On hold', excluded:'Not planned', ask_first:'Talk to your pediatrician first', not_planned:'Not planned' };
+const SIGN_LABEL = { rash:'Rash or red skin', hives:'Hives', itchy_mouth:'Itchy mouth or lips', vomiting:'Vomiting', diarrhea:'Diarrhea', mucus_stool:'Mucus in stool', swelling:'Swelling of face, lips or tongue', breathing:'Trouble breathing or noisy breathing', pale_floppy:'Pale, blue or floppy', other:'Something else' };
+const EMERGENCY_SIGNS = ['swelling','breathing','pale_floppy'];
+const FIRST_ALLERGEN_TIP = 'Offer it at home, earlier in the day, with nothing else new. Watch for a few hours after.';
+const NOT_MEDICAL_ADVICE = "General guidance, not medical advice. Follow your pediatrician's advice for your baby.";
+const HELD_TEXT = 'On hold after something you noticed. Talk to your pediatrician before offering it again.';
+const NOTICED_TEXT = 'Possible reactions are worth writing down. Your notes, times and photos are kept for your pediatrician.';
+const REFUSAL_TEXT = 'Many babies need 10 to 15 tries before a food is accepted. It will come back in a new form.';
+const ALLERGEN_NAME = { egg:'Egg', peanut:'Peanut', milk:"Cow's milk", wheat:'Wheat', soy:'Soy', sesame:'Sesame', almond:'Almond', cashew:'Cashew', walnut:'Walnut', pecan:'Pecan', pistachio:'Pistachio', hazelnut:'Hazelnut', fish:'Fish', shellfish:'Shellfish' };
+const TREE_NUTS = ['cashew','almond','walnut','hazelnut','pecan','pistachio'];
+const lowerNames = ids => { const l = ids.map(a => ALLERGEN_NAME[a].toLowerCase()); return l.length <= 1 ? (l[0] || '') : l.slice(0,-1).join(', ') + ' and ' + l[l.length-1]; };
+function reasonText(r){
+  switch (r.reason){
+    case 'pinned': return 'You added this.';
+    case 'first_allergen': return r.firstAllergen ? 'A first taste of ' + ALLERGEN_NAME[r.firstAllergen].toLowerCase() + ': a small amount, at home, early in the day.' : 'A first taste: a small amount, at home, early in the day.';
+    case 'new_food': return 'Something new to try today.';
+    case 'keep_going': return r.keepGoing && r.keepGoing.length ? 'Keeps ' + lowerNames(r.keepGoing) + ' in the week.' : 'Keeps a familiar allergen in the week.';
+    case 'iron': return 'A good source of iron.';
+    case 'vitamin_c': return 'Vitamin C helps the body use iron from plant foods.';
+    case 'liked': return 'This went well before.';
+    case 'retry': return 'Back in a different form. Many tries is common.';
+    case 'familiar': return 'A familiar food at this meal.';
+    case 'variety': return 'For variety across the week.';
+    case 'softening': return 'Pears, prunes and peaches can help soften stools.';
+    case 'suggested': return r.note || 'An idea for variety.';
+  }
+  return '';
+}
+
+/* ===== lookups ===== */
+const FOODS = DATA.foods;
+const F = Object.fromEntries(FOODS.map(f => [f.id, f]));
+const G = Object.fromEntries(DATA.guidance.map(g => [g.id, g]));
+const SRC = DATA.sources;
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ic = (n, cls) => '<svg class="i' + (cls ? ' ' + cls : '') + '" aria-hidden="true"><use href="#' + n + '"/></svg>';
+const fglyph = f => ic('f-' + (f.cat === 'pouch_jar' ? 'fruit' : f.cat === 'herb_spice' || f.cat === 'fat' ? 'vegetable' : f.cat));
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DOW = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const dayDate = i => new Date(2026, 9, 8 + i);
+const dayShort = i => { const d = dayDate(i); return DOW[d.getDay()].slice(0,3) + ', ' + MONTHS[d.getMonth()] + ' ' + d.getDate(); };
+const dayName = i => i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : DOW[dayDate(i).getDay()];
+const fmtChecked = c => { const [y,m,d] = c.split('-').map(Number); return MONTHS[m-1] + ' ' + d + ', ' + y; };
+const srcLine = ids => { const s = SRC[ids[0]]; return s ? 'Source: ' + s.p + ', ' + s.t + '. Checked ' + fmtChecked(s.c) + '.' : ''; };
+
+/* ===== demo history: what CuddleCue's shared log would hold for Ada ===== */
+const HIST = {
+  'infant-oat-cereal':{n:9,last:'yesterday',resp:'loved it'}, 'pear':{n:3,last:'Tuesday',resp:'liked it'}, 'peanut-butter':{n:2,last:'Monday',resp:'liked it'},
+  'peanut-powder':{n:3,last:'Sep 28',resp:'liked it'}, 'broccoli':{n:4,last:'Saturday',resp:'not sure'}, 'sweet-potato':{n:2,last:'Sunday',resp:"didn't like it"},
+  'butternut-squash':{n:5,last:'Wednesday',resp:'loved it'}, 'avocado':{n:6,last:'Wednesday',resp:'loved it'}, 'banana':{n:8,last:'yesterday',resp:'loved it'},
+  'plain-yogurt':{n:4,last:'Wednesday',resp:'liked it'}, 'pasta':{n:2,last:'Monday',resp:'liked it'}, 'oatmeal':{n:3,last:'Sunday',resp:'liked it'},
+  'carrot':{n:3,last:'Sep 30',resp:'liked it'}, 'mango':{n:2,last:'Tuesday',resp:'loved it'}, 'hummus':{n:1,last:'Sep 30',resp:'not sure'},
+  'chicken-thigh':{n:2,last:'Tuesday',resp:'not sure'}, 'beef':{n:3,last:'Monday',resp:'liked it'}, 'prune':{n:1,last:'Sep 29',resp:'liked it'},
+  'zucchini':{n:2,last:'Sep 27',resp:'liked it'}, 'peach':{n:2,last:'Sep 26',resp:'loved it'}
+};
+const histText = id => { const h = HIST[id]; return h ? 'Offered ' + h.n + (h.n === 1 ? ' time' : ' times') + ', last ' + h.last + ', ' + h.resp + '.' : 'Not offered yet.'; };
+
+/* ===== the plan (what the rule planner would build; fixed demo values) ===== */
+const item = (id, form, reasons) => ({ id, form, r: reasons });
+const TODAY = {
+  breakfast: [ item('egg','mashed',[{reason:'first_allergen', firstAllergen:'egg'}]), item('infant-oat-cereal','puree',[{reason:'iron'}]), item('pear','puree',[{reason:'familiar'}]) ],
+  dinner: [ item('red-lentils','mashed',[{reason:'new_food'},{reason:'iron'}]), item('peanut-butter','mixed_in',[{reason:'keep_going', keepGoing:['peanut']}]),
+            item('broccoli','soft_stick',[{reason:'vitamin_c'}]), item('sweet-potato','soft_stick',[{reason:'retry'}]) ]
+};
+const TOMORROW = {
+  breakfast: [ item('oatmeal','mashed',[{reason:'liked'}]), item('peanut-powder','mixed_in',[{reason:'keep_going', keepGoing:['peanut']}]), item('banana','mashed',[{reason:'liked'}]) ],
+  dinner: [ item('beef','minced',[{reason:'iron'}]), item('avocado','soft_stick',[{reason:'liked'}]), item('pasta','soft_stick',[{reason:'keep_going', keepGoing:['wheat']}]) ]
+};
+function buildDay(i){
+  if (i === 0) return JSON.parse(JSON.stringify(TODAY));
+  if (i === 1) return JSON.parse(JSON.stringify(TOMORROW));
+  const grains = ['infant-oat-cereal','quinoa','oatmeal','infant-oat-cereal'];
+  const fruits = ['mango','blueberry','peach','strawberry','pear','banana','prune','avocado'];
+  const keeps = [['plain-yogurt','milk'],['peanut-powder','peanut'],['pasta','wheat'],['peanut-butter','peanut']];
+  const prots = ['chicken-thigh','black-beans','salmon','beef','red-lentils','tofu','egg'];
+  const vegs = ['butternut-squash','peas','zucchini','spinach','carrot','broccoli','sweet-potato'];
+  const pick = f => { const ff = F[f].forms; return ff.includes('mashed') ? 'mashed' : ff[0]; };
+  const fr = fruits[i % 8], g = grains[i % 4], k = keeps[i % 4];
+  const breakfast = [ item(g, pick(g), [{reason: F[g].iron >= 2 ? 'iron' : 'familiar'}]),
+                      item(fr, pick(fr), [{reason: HIST[fr] ? 'liked' : 'new_food'}]),
+                      item(k[0], F[k[0]].forms.includes('mixed_in') ? 'mixed_in' : pick(k[0]), [{reason:'keep_going', keepGoing:[k[1]]}]) ];
+  if (i === 2) breakfast.unshift(item('tofu','mashed',[{reason:'first_allergen', firstAllergen:'soy'}]));
+  const p = prots[i % 7], v = vegs[i % 7], f2 = fruits[(i + 3) % 8];
+  const dinner = [ item(p, pick(p), [{reason: HIST[p] ? 'iron' : 'new_food'},{reason:'iron'}]),
+                   item(v, pick(v), [{reason: ['broccoli','spinach'].includes(v) ? 'vitamin_c' : HIST[v] ? 'familiar' : 'variety'}]),
+                   item(f2, pick(f2), [{reason: f2 === 'prune' || f2 === 'pear' || f2 === 'peach' ? 'softening' : 'variety'}]) ];
+  return { breakfast, dinner };
+}
+
+/* ===== mutable state (the part Undo restores) ===== */
+const INITIAL = {
+  plan: Array.from({length:14}, (_, i) => buildDay(i)),
+  skipped: {}, served: {},
+  allergens: {
+    egg:{s:'not_started'}, peanut:{s:'keeping_going', wk:1, of:2}, milk:{s:'established', wk:2, of:2}, wheat:{s:'introduced', wk:1, of:2},
+    soy:{s:'not_started', next:'Saturday'}, sesame:{s:'held', why:'Hives, Sep 30, about 40 minutes after hummus'},
+    cashew:{s:'not_started'}, almond:{s:'not_started'}, walnut:{s:'not_started'}, hazelnut:{s:'not_started'}, pecan:{s:'not_started'}, pistachio:{s:'not_started'},
+    fish:{s:'not_started'}, shellfish:{s:'ask_first'}
+  },
+  notes: [ { when:'Sep 30, 12:40 PM', signs:['hives'], food:'hummus', text:'Three or four hives on the chin, gone by 2 PM. Photo taken.' } ],
+  shop: [ { id:'s1', name:'Bananas', meta:'Anywhere', q:1, done:false }, { id:'s2', name:'Plain whole-milk yogurt', meta:'Anywhere', q:2, done:true } ],
+  custom: []
+};
+let M = JSON.parse(JSON.stringify(INITIAL));
+const S = { tab:'today', stack:[], plus:false, theme:'system', open:{0:true}, filter:null, q:'', guideOpen:false, treeOpen:false, sheet:null, setup:null, emergFrom:null };
+let undoSnap = null;
+
+/* ===== small builders ===== */
+const isHeld = id => (F[id] || {}).al && F[id].al.some(a => M.allergens[a] && M.allergens[a].s === 'held');
+function badgesFor(it){
+  const f = F[it.id], out = [];
+  it.r.forEach(r => {
+    if (r.reason === 'first_allergen') out.push('<span class="badge b-first">First taste: ' + esc(ALLERGEN_NAME[r.firstAllergen].toLowerCase()) + '</span>');
+    if (r.reason === 'keep_going') out.push('<span class="badge b-keep">Keeps ' + esc(lowerNames(r.keepGoing)) + ' in the week</span>');
+    if (r.reason === 'new_food') out.push('<span class="badge b-new">New</span>');
+    if (r.reason === 'pinned') out.push('<span class="badge b-pin">' + ic('i-pin') + 'Pinned</span>');
+  });
+  if (f.iron >= 2) out.push('<span class="badge b-iron">Iron</span>');
+  return out.length ? '<span class="badges">' + out.join('') + '</span>' : '';
+}
+const allergenLine = f => f.al.length ? 'Contains ' + lowerNames(f.al) + '.' : 'None of the nine common allergens.';
+function statusBadge(id){
+  const f = F[id];
+  if (isHeld(id)) return '<span class="badge b-hold">On hold</span>';
+  if (f.custom) return '<span class="badge b-pin">Your food</span>';
+  if (HIST[id]) return '<span class="badge b-tried">' + ic('i-check') + 'Tried ' + HIST[id].n + 'x</span>';
+  if (M.plan[0].breakfast.concat(M.plan[0].dinner).some(x => x.id === id)) return '<span class="badge b-new">New today</span>';
+  return '<span class="badge">Not tried yet</span>';
+}
+function guideCard(g, opts){
+  opts = opts || {};
+  const open = opts.open;
+  return '<article class="card guide">' +
+    '<div class="eyebrow">' + ic('i-book') + esc(opts.eyebrow || 'Guidance for 7 months') + '</div>' +
+    '<h3>' + esc(g.title) + '</h3><p>' + esc(g.body) + '</p>' +
+    (open ? '<ul>' + g.points.map(p => '<li>' + esc(p) + '</li>').join('') + '</ul><p class="src">' + esc(srcLine(g.src)) + '</p>' : '') +
+    (opts.toggle ? '<div class="gfoot"><button class="link" data-act="' + opts.toggle + '" aria-expanded="' + !!open + '">' + (open ? 'Show less' : 'Read more') + '</button></div>' : '') +
+  '</article>';
+}
+const cap = (t, link) => '<div class="cap"><h2>' + esc(t) + '</h2>' + (link || '') + '</div>';
+
+/* ===== screens ===== */
+function appbar(){
+  return '<header class="appbar">' +
+    '<button class="babychip" data-act="babyswitch" aria-label="Ada, 7 months. Switch child"><span class="av" aria-hidden="true">A</span><span><b>Ada</b><small>7 months</small></span>' + ic('i-chevd') + '</button>' +
+    '<button class="syncchip" data-act="sync" aria-label="Synced with CuddleCue"><span class="dot" aria-hidden="true"></span>Synced</button>' +
+    '<button class="me" data-act="account" aria-label="Your account, Dana">D</button>' +
+  '</header>';
+}
+function pushbar(title, back){
+  return '<div class="pushbar"><button class="backbtn" data-act="back">' + ic('i-back') + esc(back) + '</button></div>' + (title ? '<h1 class="h1">' + esc(title) + '</h1>' : '');
+}
+
+function mealCard(dayIdx, meal){
+  const key = dayIdx + ':' + meal, served = M.served[key];
+  const items = M.plan[dayIdx][meal];
+  const held = !served ? items.filter(it => isHeld(it.id)) : [];
+  const shown = items.filter(it => served || !isHeld(it.id));
+  const hasFirst = shown.some(it => it.r.some(r => r.reason === 'first_allergen'));
+  const label = meal === 'breakfast' ? 'Breakfast' : 'Dinner';
+  return '<section class="card meal" aria-label="' + label + '">' +
+    '<header class="mealhead"><span class="disc" aria-hidden="true">' + ic('i-bowl') + '</span><div><h3>' + label + '</h3><div class="meta">' + (meal === 'breakfast' ? 'Usually around 8:00 AM' : 'Usually around 5:30 PM') + ' · ' + shown.length + ' foods</div></div></header>' +
+    '<ul class="foods">' + shown.map(it => { const f = F[it.id];
+      return '<li><button class="foodrow" data-act="food" data-id="' + it.id + '" data-day="' + dayIdx + '" data-meal="' + meal + '">' +
+        '<span class="fdisc" aria-hidden="true">' + fglyph(f) + '</span><span class="fb"><span class="fname">' + esc(f.name) + '<span class="form">' + esc(FORM_LABEL[it.form]) + '</span></span>' +
+        '<span class="why">' + esc(reasonText(it.r[0])) + '</span>' + badgesFor(it) + '</span>' + ic('i-chev','chev') + '</button></li>'; }).join('') + '</ul>' +
+    held.map(it => '<p class="takenout">' + esc(F[it.id].name) + ' was taken out of this meal. It is on hold.</p>').join('') +
+    (hasFirst && !served ? '<p class="tip">' + ic('i-info') + '<span>' + esc(FIRST_ALLERGEN_TIP) + '</span></p>' : '') +
+    (served
+      ? '<div class="served"><span class="tick" aria-hidden="true">' + ic('i-check') + '</span><span><b>Served' + (served.resp ? ' · ' + esc(RESP_WORD[served.resp]) : '') + '</b><span class="meta" style="display:block">Logged ' + esc(served.at) + ' by Dana</span></span><button class="btn ghost" data-act="serve" data-meal="' + meal + '">Change</button></div>'
+      : '<div class="mealacts"><button class="btn primary" data-act="serve" data-meal="' + meal + '">' + ic('i-check') + 'Served</button><button class="btn ghost" data-act="swap" data-day="' + dayIdx + '" data-meal="' + meal + '">' + ic('i-swap') + 'Swap</button></div>') +
+  '</section>';
+}
+
+function allergenWeekCard(){
+  const rows = [];
+  const fmt = (id, a) => {
+    if (a.s === 'not_started' && id === 'egg') return { s:'First taste today, at breakfast', c:'' };
+    if (a.s === 'not_started' && a.next) return { s:STATE_LABEL.not_started + '. First taste planned ' + a.next, c:'' };
+    if (a.s === 'held') return { s:STATE_LABEL.held, c:'', held:true };
+    return { s:STATE_LABEL[a.s], c: a.of ? a.wk + ' of ' + a.of + ' this week' : '', wk:a.wk, of:a.of };
+  };
+  ['peanut','milk','wheat','egg','soy','sesame'].forEach(id => {
+    const a = M.allergens[id], v = fmt(id, a);
+    rows.push('<div class="alrow"><div><div class="an">' + esc(ALLERGEN_NAME[id]) + (v.held ? ' <span class="badge b-hold">On hold</span>' : '') + '</div><div class="as">' + esc(v.s) + '</div></div>' +
+      (v.c ? '<div class="ac"><span class="mono">' + esc(v.c) + '</span><div class="pips" aria-hidden="true">' + Array.from({length:v.of}, (_, k) => '<i class="pip' + (k < v.wk ? ' on' : '') + '"></i>').join('') + '</div></div>' : '') + '</div>');
+  });
+  return '<section class="card" aria-label="Allergens this week">' + rows.join('') + '</section>';
+}
+
+function todayScreen(){
+  const g = G['how-much-to-start'];
+  const t = M.plan[1];
+  const names = arr => arr.filter(it => !isHeld(it.id)).map(it => F[it.id].name).join(', ');
+  return appbar() +
+    '<h1 class="tabtitle">Today</h1><p class="lede">Thursday, October 8 · Ada eats solids twice a day</p>' +
+    guideCard(g, { open:S.guideOpen, toggle:'guidetoggle' }) +
+    cap('Meals') + mealCard(0, 'breakfast') + mealCard(0, 'dinner') +
+    cap('Allergens this week', '<button class="link" data-act="push" data-p="allergens">All allergens' + ic('i-chev') + '</button>') + allergenWeekCard() +
+    '<button class="noticebtn" data-act="noticed"><span class="ico health" aria-hidden="true">' + ic('i-note') + '</span><span style="flex:1"><b>Something you noticed</b><span class="sub">Write down a possible reaction, with the time</span></span>' + ic('i-chev','chev') + '</button>' +
+    cap('Tomorrow', '<button class="link" data-act="tab" data-tab="plan">See the plan' + ic('i-chev') + '</button>') +
+    '<section class="card" aria-label="Tomorrow"><div class="mini"><div class="mm"><h4>Breakfast</h4><p>' + esc(names(t.breakfast)) + '</p></div><div class="mm"><h4>Dinner</h4><p>' + esc(names(t.dinner)) + '</p></div></div></section>' +
+    '<p class="nma">' + esc(NOT_MEDICAL_ADVICE) + '</p>';
+}
+
+function planScreen(){
+  const changes = [
+    ['i-bowl','olive','Lumpy mash from Monday','A little more texture, one step at a time.'],
+    ['i-cup','cyan','Sips from an open cup','A few sips of water with meals.'],
+    ['i-sprout','milk','First taste of soy','Planned for Saturday breakfast, as tofu.'],
+    ['i-shield','health','Sesame stays on hold','Until you take it off hold.']
+  ];
+  let days = '';
+  for (let i = 0; i < 14; i++){
+    const locked = !S.plus && i >= 2;
+    if (i === 2 && !S.plus) days += paywallCard();
+    days += dayCard(i, locked);
+  }
+  return appbar() +
+    '<h1 class="tabtitle">Plan</h1><p class="lede">The next 14 days, meal by meal. It changes as you log.</p>' +
+    cap("What's changing this week") +
+    '<div class="strip" role="list">' + changes.map(c => '<div class="chg" role="listitem"><span class="ico ' + c[1] + '" aria-hidden="true">' + ic(c[0]) + '</span><b>' + esc(c[2]) + '</b><span>' + esc(c[3]) + '</span></div>').join('') + '</div>' +
+    '<p class="nma">' + esc(NOT_MEDICAL_ADVICE) + '</p>' +
+    cap('14 days') + days;
+}
+function paywallCard(){
+  return '<section class="card paywall" aria-label="NibbleCue Plus"><h3>See all 14 days with NibbleCue Plus</h3>' +
+    '<p>Today and tomorrow are always free, with logging, allergens and the emergency card. Plus shows the next 12 days, with pins and swaps on any day.</p>' +
+    '<div class="btnrow"><button class="btn primary" data-act="push" data-p="plus">See NibbleCue Plus</button><button class="btn ghost" data-act="setplus" data-v="1">Demo: preview as Plus</button></div></section>';
+}
+function dayCard(i, locked){
+  const open = !!S.open[i];
+  const d = M.plan[i];
+  const n = d.breakfast.length + d.dinner.length;
+  const name = dayName(i), short = dayShort(i);
+  if (locked){
+    return '<section class="card day locked"><div class="dayhead"><button class="daytoggle" data-act="lockedday" aria-label="' + esc(name + ', ' + short + '. Locked, part of NibbleCue Plus') + '">' +
+      '<span class="lockico">' + ic('i-lock') + '</span><span><span class="dn">' + esc(name) + '</span><br><span class="dd">' + esc(short) + ' · 2 meals</span></span><span class="badge b-plus" style="margin-left:auto">Plus</span></button></div>' +
+      '<div class="daybody" aria-hidden="true"><div class="skel"><h4>Breakfast</h4><i class="bar l"></i><i class="bar m"></i><i class="bar s"></i><h4>Dinner</h4><i class="bar m"></i><i class="bar l"></i></div></div></section>';
+  }
+  const skipped = M.skipped[i];
+  let body = '';
+  if (open){
+    body = skipped
+      ? '<div class="daybody"><div class="skipped"><span class="ico neutral" aria-hidden="true">' + ic('i-cal') + '</span><span class="small" style="flex:1">Skipped. The plan moves its new foods to the next day.</span><button class="btn ghost" data-act="unskip" data-day="' + i + '">Undo skip</button></div></div>'
+      : '<div class="daybody">' + ['breakfast','dinner'].map(m => '<div class="pmeal"><h4>' + (m === 'breakfast' ? 'Breakfast' : 'Dinner') + (M.served[i + ':' + m] ? ' · served' : '') + '</h4>' +
+          d[m].filter(it => !isHeld(it.id)).map(it => '<button class="pfood" data-act="planfood" data-day="' + i + '" data-meal="' + m + '" data-id="' + it.id + '"><span class="fdisc" aria-hidden="true">' + fglyph(F[it.id]) + '</span><span class="fb"><span class="fname">' + esc(F[it.id].name) + '<span class="form">' + esc(FORM_LABEL[it.form]) + '</span></span><span class="why">' + esc(reasonText(it.r[0])) + '</span></span>' + ic('i-dots','chev') + '</button>').join('') + '</div>').join('') + '</div>';
+  }
+  return '<section class="card day"><div class="dayhead"><button class="daytoggle" data-act="toggleday" data-day="' + i + '" aria-expanded="' + open + '">' +
+    '<span class="ico olive" aria-hidden="true">' + ic('i-cal') + '</span><span><span class="dn">' + esc(name) + '</span><br><span class="dd">' + esc(short) + (skipped ? ' · skipped' : ' · ' + n + ' foods') + '</span></span>' + ic('i-chevd','cv') + '</button>' +
+    '<button class="dots" data-act="dayactions" data-day="' + i + '" aria-label="' + esc('Actions for ' + name) + '">' + ic('i-dots') + '</button></div>' + body + '</section>';
+}
+
+function foodsScreen(){
+  const filters = [['first','First foods'],['allergens','Allergens'],['iron','Iron-rich'],['untried','Not tried yet'],['tried','Tried']];
+  return appbar() +
+    '<div class="titlerow"><h1 class="tabtitle">Foods</h1><button class="btn soft" data-act="addfood">' + ic('i-plus') + 'Add your own food</button></div>' +
+    '<label class="search">' + ic('i-search') + '<span class="sr">Search foods</span><input id="foodq" type="search" placeholder="Search ' + (FOODS.length + M.custom.length) + ' foods" value="' + esc(S.q) + '" autocomplete="off"></label>' +
+    '<div class="chips scroll" role="group" aria-label="Filters">' + filters.map(f => '<button class="chip" data-act="filter" data-v="' + f[0] + '" aria-pressed="' + (S.filter === f[0]) + '">' + esc(f[1]) + '</button>').join('') + '</div>' +
+    '<div id="foodlist" style="margin-top:12px">' + foodList() + '</div>' +
+    '<p class="nma">Demo: ' + FOODS.length + ' of the 178 foods in the library.</p>';
+}
+function foodList(){
+  const q = S.q.trim().toLowerCase();
+  const all = M.custom.map(c => F[c.id]).concat(FOODS);
+  const list = all.filter(f => {
+    if (q && !f.name.toLowerCase().includes(q)) return false;
+    switch (S.filter){
+      case 'first': return f.ff;
+      case 'allergens': return f.al.length > 0;
+      case 'iron': return f.iron >= 2;
+      case 'untried': return !HIST[f.id];
+      case 'tried': return !!HIST[f.id];
+    }
+    return true;
+  });
+  if (!list.length) return '<p class="empty">No foods match. Try another word, or add your own food.</p>';
+  return '<div class="group">' + list.map(f => '<button class="frow" data-act="push" data-p="food" data-id="' + f.id + '"><span class="fdisc" aria-hidden="true">' + fglyph(f) + '</span>' +
+    '<span class="fb" style="flex:1;min-width:0"><b>' + esc(f.name) + '</b><span>' + esc((f.forms || []).slice(0,2).map((x, k) => k ? FORM_LABEL[x].toLowerCase() : FORM_LABEL[x]).join(' or ') + (f.al.length ? ' · ' + lowerNames(f.al) : '')) + '</span></span>' + statusBadge(f.id) + '</button>').join('') + '</div>';
+}
+
+function foodDetail(id, inSheet){
+  const f = F[id];
+  const forms = f.forms || [];
+  const riskWord = { low:'Low', medium:'Medium', high:'High' }[f.risk];
+  return (inSheet ? '' : '<div class="detailhead"><span class="fdisc" aria-hidden="true">' + fglyph(f) + '</span><div><h1 class="h1" style="margin:0 0 4px">' + esc(f.name) + '</h1><div class="badges" style="margin-top:0">' + statusBadge(id) + (f.iron >= 2 ? '<span class="badge b-iron">Iron</span>' : '') + (f.ff ? '<span class="badge">First food</span>' : '') + '</div></div></div>') +
+    (isHeld(id) ? '<div class="held">' + ic('i-shield') + '<span>' + esc(HELD_TEXT) + '</span></div>' : '') +
+    '<div class="sec"><h4>How to serve at 7 months</h4><div class="formchips">' + forms.map(x => '<span class="formchip">' + esc(FORM_LABEL[x]) + '</span>').join('') + '</div><p>' + esc(f.how) + '</p></div>' +
+    '<div class="sec"><h4>Choking risk: ' + riskWord.toLowerCase() + '</h4>' + (f.choke ? '<div class="choke">' + ic('i-alert') + '<span>' + esc(f.choke) + '</span></div>' : '<p class="muted small">No extra choking note for this food. Serve it as above, with your baby seated and you close by.</p>') + '</div>' +
+    '<div class="sec"><h4>Allergens</h4><p>' + esc(allergenLine(f)) + '</p></div>' +
+    '<div class="sec"><h4>Ada\'s history</h4><div class="hist">' + ic('i-cal') + '<span>' + esc(histText(id)) + '</span></div></div>' +
+    (f.ideas && f.ideas.length ? '<div class="sec"><h4>Ideas</h4><ul>' + f.ideas.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '') +
+    (f.src && f.src.length ? '<p class="src">' + esc(srcLine(f.src)) + '</p>' : '<p class="src">Added by your family.</p>');
+}
+function foodPage(id){
+  const f = F[id];
+  return pushbar(null, 'Foods') + foodDetail(id, false) +
+    '<div class="btnrow" style="margin-top:16px"><button class="btn primary" data-act="pinfood" data-id="' + id + '">' + ic('i-pin') + 'Add to tomorrow</button><button class="btn ghost" data-act="shopadd" data-id="' + id + '">' + ic('i-cart') + 'Add to shopping</button></div>';
+}
+
+function shoppingScreen(){
+  const done = M.shop.filter(s => s.done).length;
+  return appbar() +
+    '<div class="titlerow"><h1 class="tabtitle">Shopping list</h1><button class="btn ghost" data-act="share">Share</button></div>' +
+    '<section class="card"><h3><span class="mono">' + done + '</span> of ' + M.shop.length + ' in the basket</h3><div class="meta">One list, shared with CuddleCue</div>' +
+      '<div class="progress" role="progressbar" aria-label="In the basket" aria-valuemin="0" aria-valuemax="' + M.shop.length + '" aria-valuenow="' + done + '"><i style="width:' + (M.shop.length ? Math.round(done / M.shop.length * 100) : 0) + '%"></i></div>' +
+      '<div class="addrow"><label class="sr" for="shopin">Add a one-off</label><input class="field" id="shopin" placeholder="Add a one-off, like pears"><button class="btn primary" data-act="shoponeoff">Add</button></div>' +
+      '<div class="chips" style="margin-top:10px"><button class="chip" data-act="shopweek">' + ic('i-sparkle') + "Add this week's foods</button><button class=\"chip\" data-act=\"shopempty\">Empty the list</button></div></section>" +
+    cap('Anywhere', '<span class="meta mono">' + M.shop.length + '</span>') +
+    (M.shop.length ? '<div class="group">' + M.shop.map(s => '<div class="shop' + (s.done ? ' done' : '') + '"><button class="roundbtn" data-act="shoptick" data-id="' + s.id + '" role="checkbox" aria-checked="' + s.done + '" aria-label="' + esc((s.done ? 'In the basket: ' : 'Put in the basket: ') + s.name) + '"><span class="round">' + ic('i-check') + '</span></button>' +
+      '<div class="sb"><b>' + esc(s.name) + '</b><span>' + esc(s.meta) + '</span></div>' +
+      '<div class="qty"><button data-act="shopq" data-id="' + s.id + '" data-v="-1" aria-label="' + esc('One less ' + s.name) + '">' + ic('i-minus') + '</button><span class="n" aria-label="Quantity">' + s.q + '</span><button data-act="shopq" data-id="' + s.id + '" data-v="1" aria-label="' + esc('One more ' + s.name) + '">' + ic('i-plus') + '</button></div>' +
+      '<button class="xbtn" data-act="shopdel" data-id="' + s.id + '" aria-label="' + esc('Remove ' + s.name) + '">' + ic('i-x') + '</button></div>').join('') + '</div>'
+      : '<p class="empty">The list is empty. Add this week\'s foods to start.</p>');
+}
+
+const MORE_ROWS = [
+  ['allergens','i-shield','olive','Allergens','Introduced, keeping it going, on hold'],
+  ['notes','i-note','health','Something you noticed','Your notes, for your pediatrician'],
+  ['milk','i-cup','milk','Milk and drinks','Read from CuddleCue\'s log', true],
+  ['caregiver','i-users','cyan','Caregiver sheet','A one-page plan for daycare', true],
+  ['pediatrician','i-doc','cyan','Pediatrician summary','Foods, allergens and notes in order', true],
+  ['profile','i-baby','olive','Baby\'s food profile','Your setup answers'],
+  ['family','i-users','neutral','Family','Shared with CuddleCue'],
+  ['appearance','i-palette','neutral','Appearance','Light, dark and color schemes'],
+  ['plus','i-star','','NibbleCue Plus','What Free keeps, what Plus adds'],
+  ['help','i-help','neutral','Help',''],
+  ['about','i-info','neutral','About','Sources and version'],
+  ['download','i-download','neutral','Download your data','Every entry, always free'],
+];
+function moreScreen(){
+  return appbar() + '<h1 class="tabtitle">More</h1>' +
+    '<section class="card" aria-label="Demo controls"><div class="titlerow" style="margin-bottom:8px"><h3 style="flex:1">Demo controls</h3><span class="badge">Prototype only</span></div>' +
+      '<div class="seg" role="group" aria-label="Demo plan"><button data-act="setplus" data-v="0" aria-pressed="' + !S.plus + '">Free</button><button data-act="setplus" data-v="1" aria-pressed="' + S.plus + '">Plus</button></div>' +
+      '<button class="row" style="padding-left:2px;margin-top:6px" data-act="startsetup"><span class="ico" aria-hidden="true">' + ic('i-sparkle') + '</span><span class="rb"><span class="rt">Start setup (demo)</span><span class="rs">The ten questions, then your first plan</span></span>' + ic('i-chev','chev') + '</button></section>' +
+    '<div class="group">' + MORE_ROWS.map(r => '<button class="row" data-act="push" data-p="' + r[0] + '"><span class="ico ' + r[2] + '" aria-hidden="true">' + ic(r[1]) + '</span><span class="rb"><span class="rt">' + esc(r[3]) + '</span>' + (r[4] ? '<span class="rs">' + esc(r[4]) + '</span>' : '') + '</span>' +
+      (r[5] && !S.plus ? '<span class="badge b-plus">' + ic('i-lock') + 'Plus</span>' : '') + ic('i-chev','chev') + '</button>').join('') +
+      '<button class="row" data-act="signout"><span class="ico neutral" aria-hidden="true">' + ic('i-logout') + '</span><span class="rb"><span class="rt">Sign out</span></span></button></div>' +
+    '<p class="nma">NibbleCue shares its account, family and log with CuddleCue.</p>';
+}
+
+/* ----- pushed pages ----- */
+function allergensPage(){
+  const order = ['egg','peanut','milk','wheat','soy','sesame'];
+  const row = id => { const a = M.allergens[id];
+    let sub = STATE_LABEL[a.s];
+    if (a.of) sub += ' · ' + a.wk + ' of ' + a.of + ' this week';
+    if (id === 'egg' && a.s === 'not_started') sub += ' · First taste today';
+    if (a.next && a.s === 'not_started') sub += ' · First taste planned ' + a.next;
+    return '<div class="row" style="align-items:flex-start"><span class="ico ' + (a.s === 'held' ? 'health' : a.s === 'not_started' || a.s === 'ask_first' ? 'neutral' : 'olive') + '" aria-hidden="true">' + ic(a.s === 'held' ? 'i-shield' : a.s === 'not_started' || a.s === 'ask_first' ? 'i-sprout' : 'i-check') + '</span><span class="rb"><span class="rt">' + esc(ALLERGEN_NAME[id]) + '</span><span class="rs">' + esc(sub) + '</span>' +
+      (a.s === 'held' ? '<div class="held" style="margin-top:8px">' + ic('i-shield') + '<span>' + esc(HELD_TEXT) + (a.why ? '<br><span class="meta">Noticed: ' + esc(a.why) + '</span>' : '') + '</span></div><div style="margin-top:8px"><button class="btn ghost" data-act="unhold" data-id="' + id + '">Take off hold</button></div>' : '') +
+      '</span></div>';
+  };
+  const nutsOpen = S.treeOpen;
+  return pushbar('Allergens', 'More') +
+    '<p class="lede">The nine common allergens, one at a time, then kept going a few times a week.</p>' +
+    '<div class="group">' + order.map(row).join('') +
+      '<button class="row" data-act="treetoggle" aria-expanded="' + nutsOpen + '"><span class="ico neutral" aria-hidden="true">' + ic('i-sprout') + '</span><span class="rb"><span class="rt">Tree nuts</span><span class="rs">6 nuts, one at a time · ' + STATE_LABEL.not_started + '</span></span>' + ic('i-chevd','chev') + '</button>' +
+      (nutsOpen ? '<div class="sub" style="padding:0 14px 6px 62px">' + TREE_NUTS.map(n => '<div class="alrow"><div><div class="an" style="font-size:14.5px">' + esc(ALLERGEN_NAME[n]) + '</div><div class="as">' + esc(STATE_LABEL[M.allergens[n].s]) + '</div></div></div>').join('') + '</div>' : '') +
+      row('fish') + row('shellfish') + '</div>' +
+    guideCard(G['allergen-basics'], { open:true, eyebrow:'Published guidance' }) +
+    '<p class="nma">' + esc(NOT_MEDICAL_ADVICE) + '</p>';
+}
+function notesPage(){
+  return pushbar('Something you noticed', 'More') +
+    '<p class="lede">' + esc(NOTICED_TEXT) + '</p>' +
+    '<button class="btn primary block" data-act="noticed">' + ic('i-plus') + 'Write a new note</button>' +
+    cap('Your notes') +
+    (M.notes.length ? '<div class="group">' + M.notes.map(n => '<div class="row" style="align-items:flex-start"><span class="ico health" aria-hidden="true">' + ic('i-note') + '</span><span class="rb"><span class="rt">' + esc(n.signs.map(s => SIGN_LABEL[s]).join(', ')) + '</span><span class="rs">' + esc(n.when + (n.food ? ' · after ' + F[n.food].name.toLowerCase() : '')) + '</span>' + (n.text ? '<span class="rs" style="margin-top:4px;color:var(--text)">' + esc(n.text) + '</span>' : '') + '</span></div>').join('') + '</div>' : '<p class="empty">No notes yet.</p>') +
+    guideCard(G['possible-reaction'], { open:true, eyebrow:'Published guidance' }) +
+    '<p class="nma">' + esc(NOT_MEDICAL_ADVICE) + '</p>';
+}
+function plusGate(content, what){
+  if (S.plus) return content;
+  return '<div class="lockover"><div class="blurred" aria-hidden="true">' + content + '</div><div class="lockmsg"><span class="ico" aria-hidden="true">' + ic('i-lock') + '</span><b>' + esc(what) + ' is part of NibbleCue Plus</b><div class="btnrow"><button class="btn primary" data-act="push" data-p="plus">See NibbleCue Plus</button></div><button class="link" data-act="setplus" data-v="1">Demo: preview as Plus</button></div></div>';
+}
+function milkPage(){
+  const days = [['Thu',4,21],['Fri',4,23],['Sat',5,24],['Sun',3,20],['Mon',4,22],['Tue',4,22],['Wed',4,22]];
+  const max = 5;
+  const stats = '<section class="card"><h3>Last 7 days</h3><p class="meta">From CuddleCue\'s log. Arithmetic only.</p>' +
+    '<div class="stats"><div class="stat"><div class="k">Bottles a day</div><div class="v">4 <small>on average</small></div></div><div class="stat"><div class="k">Milk a day</div><div class="v">22 <small>oz, about</small></div></div></div>' +
+    '<div class="bars" role="img" aria-label="Bottles each day: 4, 4, 5, 3, 4, 4, 4">' + days.map(d => '<div class="b"><span class="mono">' + d[1] + '</span><i style="height:' + Math.round(d[1] / max * 46) + 'px"></i><span>' + d[0] + '</span></div>').join('') + '</div>' +
+    '<p class="small" style="margin-top:10px">Last 7 days: 4 bottles a day on average, about 22 oz a day, from 28 bottles logged in CuddleCue.</p></section>';
+  return pushbar('Milk and drinks', 'More') +
+    '<p class="lede">Bottles come from CuddleCue. NibbleCue adds them up and shows the guidance beside them.</p>' +
+    plusGate(stats, 'Milk and drinks') +
+    guideCard(G['milk-is-main'], { open:true, eyebrow:'Guidance for 7 months' }) +
+    guideCard(G['first-cup'], { open:true, eyebrow:'Guidance for 7 months' }) +
+    '<p class="nma">' + esc(NOT_MEDICAL_ADVICE) + '</p>';
+}
+function plusPage(){
+  const free = ["Today's and tomorrow's plan, logging, the serve flow", 'The whole food library and serving guidance, custom foods', 'Allergen tracking, keep-going counts', 'Something you noticed, the emergency card', 'Both parents and caregivers, every child', 'Shopping list, light and dark, data download, account deletion, no ads'];
+  const plus = ['The full 14-day plan, pins and swaps on any day', 'Plan ideas for variety', 'The caregiver and daycare sheet', 'The pediatrician summary (PDF and share)', "Milk and drinks, read against CuddleCue's log", 'Color schemes'];
+  return pushbar('NibbleCue Plus', 'More') +
+    '<section class="hero"><h2>More plan, same safety</h2><p>NibbleCue Plus adds the next 12 days and the sheets you share. Safety is never sold.</p></section>' +
+    '<section class="card"><h3>Free, always</h3><ul class="list" style="margin-top:6px">' + free.map(x => '<li>' + ic('i-check') + '<span>' + esc(x) + '</span></li>').join('') + '</ul></section>' +
+    '<section class="card"><h3>Plus adds</h3><ul class="list plus" style="margin-top:6px">' + plus.map(x => '<li>' + ic('i-plus') + '<span>' + esc(x) + '</span></li>').join('') + '</ul></section>' +
+    '<div class="group"><div class="price"><span class="pb"><b>Monthly</b><span>Price from the App Store</span></span><button class="btn primary" data-act="buy" data-v="monthly">Choose monthly</button></div>' +
+      '<div class="price"><span class="pb"><b>Yearly</b><span>Price from the App Store</span></span><button class="btn ghost" data-act="buy" data-v="yearly">Choose yearly</button></div></div>' +
+    '<button class="btn ghost block" data-act="restore">Restore purchases</button>' +
+    '<p class="nma">NibbleCue Plus is its own subscription, separate from CuddleCue Plus. Cancel any time in your App Store settings.</p>';
+}
+function caregiverPage(){
+  const body = '<section class="card"><h3>Ada\'s food sheet</h3><p class="meta">For Rosa and daycare · updated today</p>' +
+    '<div class="sec"><h4>Foods Ada eats</h4><p>Banana, avocado, infant oat cereal, butternut squash, pear, mango, plain yogurt, pasta, beef</p></div>' +
+    '<div class="sec"><h4>Allergens in rotation</h4><p>Peanut, cow\'s milk and wheat. New allergens are tried at home first.</p></div>' +
+    '<div class="sec"><h4>On hold</h4><p>Sesame: please do not offer.</p></div>' +
+    '<div class="sec"><h4>How we serve</h4><p>Mashed or soft sticks. Peanut butter only thinned or stirred in. Water in an open cup.</p></div></section>';
+  return pushbar('Caregiver sheet', 'More') + '<p class="lede">One page for a nanny, grandparent or daycare, from your own plan and log.</p>' + plusGate(body, 'The caregiver sheet') +
+    guideCard(G['daycare-handoff'] || G['first-cup'], { open:false, eyebrow:'Published guidance' });
+}
+function pediatricianPage(){
+  const body = '<section class="card"><h3>Ada · 7 months</h3><p class="meta">Prepared Oct 8, 2026 from your log · solids since Sep 1</p>' +
+    '<div class="sec"><h4>Foods offered</h4><p><span class="mono">24</span> foods over <span class="mono">38</span> days, <span class="mono">71</span> meals logged</p></div>' +
+    '<div class="sec"><h4>Allergens</h4><p>Peanut: 6 times, last Monday. Cow\'s milk: 9 times, last Wednesday. Wheat: 3 times, last Monday. Egg: first taste planned today. Sesame: on hold since Sep 30.</p></div>' +
+    '<div class="sec"><h4>Something you noticed</h4><p>Sep 30, 12:40 PM: hives, about 40 minutes after hummus. Photo attached.</p></div></section>';
+  return pushbar('Pediatrician summary', 'More') + '<p class="lede">Your own record, in the order a pediatrician asks for it. Facts and counts, never a verdict.</p>' + plusGate(body, 'The pediatrician summary') +
+    (S.plus ? '<div class="btnrow"><button class="btn primary" data-act="demo" data-v="Demo: the PDF would be made on the phone and shared from here.">' + ic('i-download') + 'Share as PDF</button></div>' : '');
+}
+function profilePage(){
+  const rows = [['Where you are','Just started, Sep 1'],['How you start','A mix of purées and finger foods'],['Family diet','No rules'],['Foods your family cooks','American, Mexican'],['Allergy history','Eczema'],['Allergens','Early and often'],['Already offered','Peanut, cow\'s milk, wheat, sesame'],['Never serve','None'],['Region','US']];
+  return pushbar("Baby's food profile", 'More') + '<p class="lede">Your setup answers. The plan reads them; change any of them here.</p>' +
+    '<div class="group">' + rows.map((r, i) => '<button class="row" data-act="startsetup" data-step="' + (i < 1 ? 0 : i + 1) + '"><span class="rb"><span class="rs">' + esc(r[0]) + '</span><span class="rt">' + esc(r[1]) + '</span></span><span class="link" aria-hidden="true">Change</span></button>').join('') + '</div>';
+}
+function familyPage(){
+  const p = [['D','Dana','You · parent'],['M','Mia','Parent'],['R','Rosa','Caregiver · Mondays to Thursdays']];
+  return pushbar('Family', 'More') + '<p class="lede">The same family as CuddleCue. A meal logged in either app is one entry in both.</p>' +
+    '<div class="group">' + p.map(x => '<div class="row"><span class="av" aria-hidden="true">' + x[0] + '</span><span class="rb"><span class="rt">' + x[1] + '</span><span class="rs">' + x[2] + '</span></span></div>').join('') + '</div>' +
+    '<button class="btn ghost block" data-act="demo" data-v="Demo: invites are sent from CuddleCue\'s family screen.">' + ic('i-plus') + 'Invite someone</button>';
+}
+function appearancePage(){
+  const schemes = [['sunny','Sunny','#BA4400'],['ocean','Ocean','#1668A8'],['lilac','Lilac','#704BD5'],['rose','Rose','#C0356B'],['reef','Reef','#20777B'],['slate','Slate','#414C68']];
+  return pushbar('Appearance', 'More') +
+    '<div class="fieldlbl">Theme</div><div class="seg" role="group" aria-label="Theme">' + [['system','Automatic'],['light','Light'],['dark','Dark']].map(t => '<button data-act="theme" data-v="' + t[0] + '" aria-pressed="' + (S.theme === t[0]) + '">' + t[1] + '</button>').join('') + '</div>' +
+    '<p class="note" style="margin-top:8px">Automatic follows your phone. Light and dark are always free.</p>' +
+    '<div class="fieldlbl">Color scheme</div><div class="swatches">' + schemes.map((s, i) => '<button class="swatch" data-act="scheme" data-v="' + s[0] + '" aria-pressed="' + (i === 0) + '" aria-label="' + esc(s[1] + (i === 0 ? ', on' : S.plus ? '' : ', part of NibbleCue Plus')) + '"><span class="sw" style="background:' + s[2] + '">' + (i === 0 ? ic('i-check') : S.plus ? '' : ic('i-lock')) + '</span>' + s[1] + '</button>').join('') + '</div>' +
+    '<p class="note" style="margin-top:8px">Sunny is NibbleCue\'s own. The other schemes come with Plus.</p>';
+}
+function helpPage(){
+  const q = [['Why is this food in the plan?','Every food says why on its row: a first taste, keeping an allergen in the week, iron, or variety.'],['What if my baby refuses a food?',REFUSAL_TEXT],['Where do my notes go?',NOTICED_TEXT]];
+  return pushbar('Help', 'More') + '<div class="group">' + q.map(x => '<div class="row" style="align-items:flex-start;flex-direction:column;gap:4px"><span class="rt">' + esc(x[0]) + '</span><span class="rs" style="color:var(--text)">' + esc(x[1]) + '</span></div>').join('') + '</div>' +
+    '<button class="btn ghost block" data-act="demo" data-v="Demo: this opens a message to support.">Contact support</button>';
+}
+function aboutPage(){
+  return pushbar('About', 'More') + '<section class="card"><h3>NibbleCue</h3><p class="meta">The solid-food companion to CuddleCue · prototype</p><p class="small" style="margin-top:8px">The plan is built on your phone from your answers and your log. Every food, rule and card cites published guidance with its date.</p></section>' +
+    cap('Sources') + '<div class="group">' + Object.values(SRC).map(s => '<div class="row"><span class="rb"><span class="rt" style="font-size:14px">' + esc(s.t) + '</span><span class="rs">' + esc(s.p + ' · checked ' + fmtChecked(s.c)) + '</span></span></div>').join('') + '</div>' +
+    '<p class="nma">' + esc(NOT_MEDICAL_ADVICE) + '</p>';
+}
+function downloadPage(){
+  return pushbar('Download your data', 'More') + '<section class="card"><h3>Every entry, always free</h3><p class="small" style="margin-top:6px">Meals, ratings, allergens, notes and photos, as one file you can keep. The same file CuddleCue makes, because it is the same log.</p></section>' +
+    '<button class="btn primary block" data-act="demo" data-v="Demo: the file would be saved to your phone here.">' + ic('i-download') + 'Download your data</button>';
+}
+const PAGES = { food: s => foodPage(s.id), allergens: allergensPage, notes: notesPage, milk: milkPage, plus: plusPage, caregiver: caregiverPage, pediatrician: pediatricianPage, profile: profilePage, family: familyPage, appearance: appearancePage, help: helpPage, about: aboutPage, download: downloadPage };
+const ROOTS = { today: todayScreen, plan: planScreen, foods: foodsScreen, shopping: shoppingScreen, more: moreScreen };
+
+/* ===== render ===== */
+const $ = id => document.getElementById(id);
+const scrollMem = {};
+function render(opts){
+  opts = opts || {};
+  const sc = $('screen');
+  const top = S.stack[S.stack.length - 1];
+  const key = top ? top.p + (top.id || '') : S.tab;
+  const keep = !opts.fade ? sc.scrollTop : (scrollMem[key] || 0);
+  sc.innerHTML = '<div class="' + (opts.fade ? 'fadein' : '') + '">' + (top ? PAGES[top.p](top) : ROOTS[S.tab]()) + '</div>';
+  sc.classList.toggle('withfab', !top && S.tab === 'today');
+  sc.scrollTop = keep;
+  renderBar();
+}
+const TABS = [['today','Today','i-home'],['plan','Plan','i-cal'],['foods','Foods','i-bowl'],['shopping','Shopping','i-cart'],['more','More','i-grid']];
+function renderBar(){
+  const bar = $('bar');
+  if (!bar.childElementCount){
+    bar.innerHTML = TABS.map(t => '<button role="tab" data-act="tab" data-tab="' + t[0] + '" aria-label="' + t[1] + '">' + ic(t[2]) + '<span aria-hidden="true">' + t[1] + '</span></button>').join('') + '<i class="tdot" aria-hidden="true"></i>';
+  }
+  const btns = [...bar.querySelectorAll('button')];
+  btns.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === S.tab)));
+  const cur = btns.find(b => b.dataset.tab === S.tab);
+  const dot = bar.querySelector('.tdot');
+  if (cur){ dot.style.left = (cur.offsetLeft + cur.offsetWidth / 2 - 2.5) + 'px'; }
+  const fab = $('fab');
+  const showFab = S.tab === 'today' && !S.stack.length;
+  fab.hidden = !showFab; fab.tabIndex = showFab ? 0 : -1;
+}
+function go(fn){ const sc = $('screen'); const top = S.stack[S.stack.length - 1]; scrollMem[top ? top.p + (top.id || '') : S.tab] = sc.scrollTop; fn(); render({ fade:true }); }
+
+/* ===== sheets ===== */
+const RESP = [['loved','Loved it','g-loved'],['liked','Liked it','g-liked'],['unsure','Not sure','g-unsure'],['disliked',"Didn't like it",'g-disliked']];
+const RESP_WORD = { loved:'Loved it', liked:'Liked it', unsure:'Not sure', disliked:"Didn't like it" };
+function tiles(sel, act, extra, small){
+  return '<div class="gotiles' + (small ? ' small' : '') + '" role="radiogroup" aria-label="How did it go?">' + RESP.map(r => '<button role="radio" aria-checked="' + (sel === r[0]) + '" aria-label="' + esc(r[1]) + '" data-act="' + act + '" data-v="' + r[0] + '"' + (extra || '') + '>' + ic(r[2], 'face') + '<span aria-hidden="true">' + esc(r[1]) + '</span></button>').join('') + '</div>';
+}
+const SHEETS = {
+  serve(sh){
+    const items = M.plan[0][sh.meal].filter(it => !isHeld(it.id));
+    const anyNo = sh.per ? Object.values(sh.perResp).includes('disliked') : sh.resp === 'disliked';
+    return { title: (sh.meal === 'breakfast' ? 'Breakfast' : 'Dinner') + ' served',
+      body: '<p class="meta" style="margin-bottom:4px">' + esc(items.map(it => F[it.id].name).join(', ')) + '</p>' +
+        '<div class="fieldlbl">How did it go?</div>' +
+        (sh.per ? items.map(it => '<div class="perfood"><b>' + esc(F[it.id].name) + '</b>' + tiles(sh.perResp[it.id], 'servefood', ' data-id="' + it.id + '"', true) + '</div>').join('') : tiles(sh.resp, 'serveresp')) +
+        '<button class="switchrow" role="switch" aria-checked="' + !!sh.per + '" data-act="serveper"><span class="rb"><b>Rate each food</b><span class="s">One answer for the whole meal, or one per food</span></span><span class="switch" aria-hidden="true"></span></button>' +
+        (anyNo ? '<p class="refusal">' + esc(REFUSAL_TEXT) + '</p>' : '') +
+        '<div class="sheetfoot"><button class="btn olive block" data-act="servesave">Save</button>' +
+        '<button class="link" style="width:100%;justify-content:center" data-act="noticed">Something you noticed?</button></div>' };
+  },
+  swap(sh){
+    const items = M.plan[sh.day][sh.meal];
+    if (!sh.id){
+      return { title:'Swap a food', body:'<p class="lede">Which food at ' + (sh.meal === 'breakfast' ? 'breakfast' : 'dinner') + '?</p><div class="group">' + items.filter(it => !isHeld(it.id)).map(it => '<button class="row" data-act="swappick" data-id="' + it.id + '"><span class="fdisc" aria-hidden="true">' + fglyph(F[it.id]) + '</span><span class="rb"><span class="rt">' + esc(F[it.id].name) + '</span><span class="rs">' + esc(FORM_LABEL[it.form]) + '</span></span>' + ic('i-chev','chev') + '</button>').join('') + '</div>' };
+    }
+    const alts = altsFor(sh.id, items.map(x => x.id));
+    const cur = items.find(x => x.id === sh.id);
+    const isFirst = cur && cur.r.some(r => r.reason === 'first_allergen');
+    return { title:'Swap ' + F[sh.id].name.toLowerCase(),
+      body: (isFirst ? '<p class="tip" style="margin:0 0 10px">' + ic('i-info') + '<span>The first taste of ' + esc(ALLERGEN_NAME[cur.r[0].firstAllergen].toLowerCase()) + ' moves to another morning at home.</span></p>' : '') +
+        '<p class="lede">Three ideas that fit this meal:</p>' +
+        alts.map(a => '<div class="alt"><span class="fdisc" aria-hidden="true">' + fglyph(F[a.id]) + '</span><span class="fb" style="flex:1;min-width:0"><b>' + esc(F[a.id].name) + '</b> <span class="form">' + esc(FORM_LABEL[a.form]) + '</span><span class="why">' + esc(reasonText(a.r[0])) + '</span></span><button class="btn soft" data-act="swapuse" data-id="' + a.id + '" aria-label="' + esc('Use ' + F[a.id].name) + '">Use</button></div>').join('') };
+  },
+  food(sh){
+    const f = F[sh.id];
+    const inPlan = sh.day != null;
+    return { title: f.name, body: foodDetail(sh.id, true) +
+      '<div class="btnrow" style="margin-top:16px">' + (inPlan && !M.served[sh.day + ':' + sh.meal] ? '<button class="btn ghost" data-act="swapfrom" data-id="' + sh.id + '">' + ic('i-swap') + 'Swap this food</button>' : '') + '<button class="btn ghost" data-act="shopadd" data-id="' + sh.id + '">' + ic('i-cart') + 'Add to shopping</button></div>' };
+  },
+  noticed(sh){
+    const foods = M.plan[0].breakfast.concat(M.plan[0].dinner).map(x => x.id).filter((v, i, a) => a.indexOf(v) === i);
+    return { title:'Something you noticed', body:
+      '<p class="lede" style="margin-bottom:4px">' + esc(NOTICED_TEXT) + '</p>' +
+      '<div class="fieldlbl">What did you see?</div><div class="chips" role="group" aria-label="What did you see?">' + Object.keys(SIGN_LABEL).map(k => '<button class="chip' + (EMERGENCY_SIGNS.includes(k) ? ' danger' : '') + '" data-act="sign" data-v="' + k + '" aria-pressed="' + sh.signs.includes(k) + '">' + esc(SIGN_LABEL[k]) + '</button>').join('') + '</div>' +
+      '<div class="fieldlbl">After which food?</div><div class="chips">' + foods.map(id => '<button class="chip" data-act="nfood" data-v="' + id + '" aria-pressed="' + (sh.food === id) + '">' + esc(F[id].name) + '</button>').join('') + '<button class="chip" data-act="nfood" data-v="" aria-pressed="' + (sh.food === '') + '">Not sure</button></div>' +
+      '<div class="fieldlbl">When</div><div class="chips">' + [['now','Just now'],['30','30 min ago'],['60','1 hour ago'],['120','2 hours ago']].map(w => '<button class="chip" data-act="nwhen" data-v="' + w[0] + '" aria-pressed="' + (sh.when === w[0]) + '">' + w[1] + '</button>').join('') + '</div>' +
+      '<div class="fieldlbl">In your own words</div><label class="sr" for="ntext">In your own words</label><textarea class="field" id="ntext" placeholder="Optional, kept exactly as you write it">' + esc(sh.text || '') + '</textarea>' +
+      '<button class="btn ghost" style="margin-top:10px" data-act="demo" data-v="Demo: the camera opens here.">' + ic('i-camera') + 'Add a photo</button>' +
+      '<div class="sheetfoot"><button class="btn primary block" data-act="notesave"' + (sh.signs.length ? '' : ' disabled') + '>Save the note</button></div>' +
+      '<p class="nma">' + esc(NOT_MEDICAL_ADVICE) + '</p>' };
+  },
+  dayactions(sh){
+    const name = dayName(sh.day);
+    return { title: name + ', ' + dayShort(sh.day).split(', ')[1], body:'<div class="group">' +
+      '<button class="row" data-act="pinpicker"><span class="ico" aria-hidden="true">' + ic('i-pin') + '</span><span class="rb"><span class="rt">Pin a food to this day</span><span class="rs">It stays in the plan on ' + esc(name === 'Today' || name === 'Tomorrow' ? name.toLowerCase() : name) + '</span></span>' + ic('i-chev','chev') + '</button>' +
+      (M.skipped[sh.day] ? '<button class="row" data-act="unskip" data-day="' + sh.day + '"><span class="ico neutral" aria-hidden="true">' + ic('i-cal') + '</span><span class="rb"><span class="rt">Undo skip</span></span></button>'
+        : '<button class="row" data-act="skipask"><span class="ico neutral" aria-hidden="true">' + ic('i-cal') + '</span><span class="rb"><span class="rt">Skip this day</span><span class="rs">Travel, a sick day, or a day off</span></span>' + ic('i-chev','chev') + '</button>') + '</div>' };
+  },
+  skipask(sh){
+    const name = dayName(sh.day);
+    return { title:'Skip ' + (name === 'Today' || name === 'Tomorrow' ? name.toLowerCase() : name) + '?', body:'<p class="lede">The plan moves this day\'s new foods and first tastes to the next day. Nothing you logged changes.</p>' +
+      '<div class="btnrow" style="flex-direction:column"><button class="btn primary block" data-act="skipdo">Skip ' + esc(name === 'Today' || name === 'Tomorrow' ? name.toLowerCase() : name) + '</button><button class="btn ghost block" data-act="closesheet">Keep the day</button></div>' };
+  },
+  pinpicker(sh){
+    const opts = ['banana','avocado','mango','butternut-squash','black-beans','salmon','quinoa','plain-yogurt'];
+    return { title:'Pin a food', body:'<p class="lede">Pick a food to keep on ' + esc(dayName(sh.day) === 'Today' ? 'today' : dayName(sh.day) === 'Tomorrow' ? 'tomorrow' : dayName(sh.day)) + '. It joins dinner.</p><div class="group">' +
+      opts.map(id => '<button class="row" data-act="pindo" data-id="' + id + '"><span class="fdisc" aria-hidden="true">' + fglyph(F[id]) + '</span><span class="rb"><span class="rt">' + esc(F[id].name) + '</span><span class="rs">' + esc(histText(id)) + '</span></span>' + ic('i-pin','chev') + '</button>').join('') + '</div>' };
+  },
+  planfood(sh){
+    const f = F[sh.id];
+    const it = M.plan[sh.day][sh.meal].find(x => x.id === sh.id);
+    const pinned = it && it.r.some(r => r.reason === 'pinned');
+    return { title: f.name, body:'<p class="lede">' + esc(dayName(sh.day) + ', ' + (sh.meal === 'breakfast' ? 'breakfast' : 'dinner') + '. ' + (it ? reasonText(it.r[0]) : '')) + '</p><div class="group">' +
+      '<button class="row" data-act="planpin"><span class="ico" aria-hidden="true">' + ic('i-pin') + '</span><span class="rb"><span class="rt">' + (pinned ? 'Unpin this food' : 'Pin this food') + '</span><span class="rs">' + (pinned ? 'The plan may change it again' : 'Keep it here when the plan changes') + '</span></span></button>' +
+      '<button class="row" data-act="swapfrom" data-id="' + sh.id + '"><span class="ico" aria-hidden="true">' + ic('i-swap') + '</span><span class="rb"><span class="rt">Swap for something else</span><span class="rs">Three ideas that fit this meal</span></span>' + ic('i-chev','chev') + '</button>' +
+      '<button class="row" data-act="planremove"><span class="ico neutral" aria-hidden="true">' + ic('i-x') + '</span><span class="rb"><span class="rt">Remove from this meal</span><span class="rs">You can undo it</span></span></button>' +
+      '<button class="row" data-act="planserve"><span class="ico olive" aria-hidden="true">' + ic('i-book') + '</span><span class="rb"><span class="rt">How to serve it</span></span>' + ic('i-chev','chev') + '</button></div>' };
+  },
+  addfood(sh){
+    const al = ['egg','peanut','milk','wheat','soy','sesame','tree_nut','fish','shellfish'];
+    const alName = { milk:'Dairy', tree_nut:'Tree nuts' };
+    return { title:'Add your own food', body:
+      '<div class="fieldlbl">Name</div><label class="sr" for="cfname">Food name</label><input class="field" id="cfname" placeholder="Like grandma\'s dal" value="' + esc(sh.name || '') + '">' +
+      '<div class="fieldlbl">What kind of food?</div><div class="chips">' + [['vegetable','Vegetable'],['fruit','Fruit'],['grain','Grain'],['meat','Meat'],['plant_protein','Beans and lentils'],['dairy','Dairy']].map(c => '<button class="chip" data-act="cfcat" data-v="' + c[0] + '" aria-pressed="' + (sh.cat === c[0]) + '">' + c[1] + '</button>').join('') + '</div>' +
+      '<div class="fieldlbl">Which allergens are in it?</div><div class="ticks">' + al.map(a => '<button class="tick" role="checkbox" data-act="cfal" data-v="' + a + '" aria-checked="' + sh.al.includes(a) + '"><span class="box" aria-hidden="true">' + ic('i-check') + '</span>' + esc(alName[a] || ALLERGEN_NAME[a]) + '</button>').join('') + '</div>' +
+      '<p class="note">Tick every one, even in small amounts. The plan treats it like the allergen itself.</p>' +
+      '<div class="fieldlbl">Choking risk</div><div class="chips">' + [['low','Low'],['medium','Medium'],['high','High']].map(c => '<button class="chip" data-act="cfrisk" data-v="' + c[0] + '" aria-pressed="' + (sh.risk === c[0]) + '">' + c[1] + '</button>').join('') + '</div>' +
+      '<p class="note" style="margin-top:6px">Hard, round, sticky or chewy foods are high. The plan then offers it only mashed or stirred in.</p>' +
+      '<div class="sheetfoot"><button class="btn primary block" data-act="cfsave">Add the food</button></div>' };
+  },
+  shopempty(){ return { title:'Empty the list?', body:'<p class="lede">This clears the list in NibbleCue and CuddleCue for everyone in the family.</p><div class="btnrow" style="flex-direction:column"><button class="btn primary block" data-act="shopemptydo">Empty the list</button><button class="btn ghost block" data-act="closesheet">Keep the list</button></div>' }; },
+  unhold(sh){ const n = ALLERGEN_NAME[sh.id]; return { title:'Take ' + n.toLowerCase() + ' off hold?', body:'<div class="held">' + ic('i-shield') + '<span>' + esc(HELD_TEXT) + '</span></div><p class="lede" style="margin-top:12px">' + esc(STATE_LABEL.ask_first) + '. Once it is off hold, the plan can bring ' + esc(n.toLowerCase()) + ' back.</p><div class="btnrow" style="flex-direction:column"><button class="btn primary block" data-act="closesheet">Keep it on hold</button><button class="btn ghost block" data-act="unholddo">We talked with our pediatrician, take it off hold</button></div>' }; },
+  signout(){ return { title:'Sign out?', body:'<p class="lede">You will be signed out of NibbleCue on this phone. Your log stays safe in your account.</p><div class="btnrow" style="flex-direction:column"><button class="btn primary block" data-act="demo" data-v="Demo: you would be signed out here.">Sign out</button><button class="btn ghost block" data-act="closesheet">Stay signed in</button></div>' }; },
+  logmeal(sh){ return { title:'Log a meal', body:'<p class="meta">CuddleCue\'s own meal sheet. It saves to the same log.</p>' +
+      '<div class="fieldlbl">Meal</div><div class="chips">' + ['Breakfast','Lunch','Snack','Dinner'].map(m => '<button class="chip" data-act="lmmeal" data-v="' + m + '" aria-pressed="' + (sh.meal === m) + '">' + m + '</button>').join('') + '</div>' +
+      '<div class="fieldlbl">What they ate</div><label class="sr" for="lmfood">What they ate</label><input class="field" id="lmfood" placeholder="Oat cereal and pear">' +
+      '<div class="fieldlbl">How did it go?</div>' + tiles(sh.resp, 'lmresp') +
+      '<div class="sheetfoot"><button class="btn olive block" data-act="lmsave">Save</button></div>' }; },
+  babyswitch(){ return { title:'Switch child', body:'<div class="group"><button class="row" data-act="closesheet"><span class="av" aria-hidden="true">A</span><span class="rb"><span class="rt">Ada</span><span class="rs">7 months · eating solids</span></span>' + ic('i-check','chev') + '</button></div><p class="nma">Demo: one child in this family.</p>' }; },
+};
+function altsFor(id, exclude){
+  const f = F[id];
+  let pool = FOODS.filter(x => x.id !== id && !exclude.includes(x.id) && !isHeld(x.id) && x.al.length === 0);
+  const same = pool.filter(x => x.cat === f.cat);
+  const iron = pool.filter(x => x.iron >= 2 && x.cat !== f.cat);
+  const list = (same.length >= 3 ? same : same.concat(iron)).slice(0, 3);
+  return list.map(x => { const form = x.forms.includes('mashed') ? 'mashed' : x.forms[0];
+    const reason = HIST[x.id] && /lov|lik/.test(HIST[x.id].resp) ? 'liked' : !HIST[x.id] ? 'new_food' : x.iron >= 2 ? 'iron' : 'variety';
+    return item(x.id, form, [{ reason }]); });
+}
+function openSheet(k, data){
+  const fresh = !S.sheet;
+  S.sheet = Object.assign({ k }, data || {});
+  renderSheet(true);
+  if (fresh){
+    $('sheet').classList.add('on'); $('scrim').classList.add('on'); $('sheet').setAttribute('aria-hidden','false');
+    setTimeout(() => $('sheettitle').focus({ preventScroll:true }), 60);
+  }
+}
+function renderSheet(fade){
+  if (!S.sheet) return;
+  const r = SHEETS[S.sheet.k](S.sheet);
+  $('sheettitle').textContent = r.title;
+  const b = $('sheetbody');
+  const keep = fade ? 0 : b.scrollTop;
+  b.innerHTML = '<div class="' + (fade ? 'fadein' : '') + '">' + r.body + '</div>';
+  b.scrollTop = keep;
+}
+function closeSheet(){
+  S.sheet = null;
+  $('sheet').classList.remove('on'); $('scrim').classList.remove('on'); $('sheet').setAttribute('aria-hidden','true');
+}
+
+/* ===== toast + undo ===== */
+let toastTimer = null;
+function snap(){ undoSnap = JSON.stringify(M); }
+function toast(msg, undoable){
+  const t = $('toast');
+  $('toastmsg').textContent = msg;
+  $('toastact').style.display = undoable ? '' : 'none';
+  t.classList.toggle('high', S.tab === 'today' && !S.stack.length);
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), undoable ? 5000 : 3200);
+  if (!undoable) undoSnap = null;
+}
+
+/* ===== emergency ===== */
+function showEmergency(){
+  $('emerg').innerHTML = '<div class="big" aria-hidden="true">' + ic('i-phone') + '</div>' +
+    '<h2 id="emergtitle">Call 911 now</h2>' +
+    '<p>Call emergency services right away for trouble breathing, swelling of the face, lips or tongue, repeated vomiting, or a baby who turns pale or floppy.</p>' +
+    '<button class="call" data-act="call911">' + ic('i-phone') + 'Call 911</button>' +
+    '<p class="demo">Demo: this button would dial 911. It needs no data connection.</p>' +
+    '<ul><li>If your baby is choking, call emergency services and start infant first aid.</li><li>Never sweep a finger through your baby\'s mouth.</li><li>Your note is kept. Finish it when your baby is safe.</li></ul>' +
+    '<div class="back"><button class="btn" data-act="emergback">Back to the note</button></div>';
+  const e = $('emerg'); e.classList.add('on'); e.setAttribute('aria-hidden','false');
+  setTimeout(() => e.querySelector('.call').focus({ preventScroll:true }), 60);
+}
+function hideEmergency(){ const e = $('emerg'); e.classList.remove('on'); e.setAttribute('aria-hidden','true'); }
+
+/* ===== setup (docs/PRODUCT.md, ten steps) ===== */
+const STEPS = [
+  { k:'where', q:'Where are you with solids?', help:'Every answer is a choice. You can change any of them later.', type:'one', opts:[['not','Not started yet','We have not offered any food'],['just','Just started','A first taste in the last few weeks'],['lots','Already eating lots','Meals most days']] , then:{ just:{ k:'since', label:'When did you start?', opts:['This week','Last week','2 to 4 weeks ago','Over a month ago'] } } },
+  { k:'ready', q:'Signs of readiness', help:'Shown when a baby under 6 months has not started. Demo: shown here so you can see it.', type:'many', opts:G['readiness-signs'] ? G['readiness-signs'].points.slice(0,5).map(p => [p,p]) : [['Holds the head steady and upright.','Holds the head steady and upright.'],['Sits with support.','Sits with support.'],['Opens the mouth when food comes near.','Opens the mouth when food comes near.'],['Swallows food rather than pushing it back out.','Swallows food rather than pushing it back out.'],['Reaches for things and brings them to the mouth.','Reaches for things and brings them to the mouth.']], optional:true },
+  { k:'style', q:'How do you want to start?', help:'The plan offers the forms that fit.', type:'one', opts:[['puree','Purées','Smooth, then lumpier over time, from a spoon'],['blw','Baby-led','Soft finger foods your baby feeds themselves'],['mix','A mix of both','Some of each, most families do this']] },
+  { k:'diet', q:"Your family's diet and rules", help:'Pick any that apply.', type:'many', opts:[['none','No rules'],['vegetarian','Vegetarian'],['vegan','Vegan'],['halal','Halal'],['kosher','Kosher'],['nopork','No pork'],['nobeef','No beef'],['jain','Jain'],['pescatarian','Pescatarian']] },
+  { k:'cuisine', q:'Foods your family cooks', help:'Optional. The plan leans toward foods from your own kitchen.', type:'many', optional:true, opts:[['american','American'],['mexican','Mexican'],['indian','Indian'],['chinese','Chinese'],['caribbean','Caribbean'],['west_african','West African'],['middle_eastern','Middle Eastern'],['mediterranean','Mediterranean'],['japanese','Japanese'],['korean','Korean'],['filipino','Filipino']] },
+  { k:'history', q:'Allergy history in the family', help:'Pick any that apply. It changes how carefully the plan starts.', type:'many', opts:[['eczema','Eczema'],['severe_eczema','Severe eczema'],['family','A parent or sibling with a food allergy'],['doctor','A food allergy confirmed by a doctor'],['none','None of these']] },
+  { k:'allergens', q:'How do you want allergens introduced?', help:'You can change this at any time.', type:'one', opts:[['early','Early and often','Current guidance: one at a time, then a few times a week'],['ped','As our pediatrician directs','The plan waits for you to add each one'],['notplanned','Not planned for now','No allergens in the plan']] },
+  { k:'offered', q:'Allergens and foods already offered', help:'So the plan does not start over.', type:'many', opts:[['egg','Egg'],['peanut','Peanut'],['milk','Dairy'],['wheat','Wheat'],['soy','Soy'],['sesame','Sesame'],['tree_nut','Tree nuts'],['fish','Fish'],['shellfish','Shellfish'],['noneyet','None yet']] },
+  { k:'never', q:'Foods never to serve', help:'Optional. These never appear in the plan.', type:'many', optional:true, opts:[['pork','Pork'],['beef','Beef'],['shellfish','Shellfish'],['mushroom','Mushroom'],['eggplant','Eggplant'],['spinach','Spinach']] },
+  { k:'region', q:'Where do you live?', help:'For the emergency number and the guidance you see.', type:'one', opts:[['US','United States','Emergency number 911'],['UK','United Kingdom','Emergency number 999'],['CA','Canada','Emergency number 911'],['AU','Australia','Emergency number 000']] }
+];
+function startSetup(step){
+  S.setup = { i: step || 0, a:{ where:'just', since:'2 to 4 weeks ago', style:'mix', diet:['none'], cuisine:['american','mexican'], history:['eczema'], allergens:'early', offered:['peanut','milk','wheat','sesame'], never:[], region:'US', ready:[] }, done:false };
+  if (!step) S.setup.a = { diet:[], cuisine:[], history:[], offered:[], never:[], ready:[] };
+  renderSetup(true);
+  const s = $('setup'); s.classList.add('on'); s.setAttribute('aria-hidden','false');
+}
+function renderSetup(fade){
+  const st = S.setup, el = $('setup');
+  if (st.done){
+    const t = M.plan[0];
+    el.innerHTML = '<div class="sutop"><span style="width:44px"></span><div class="pbar"><i style="width:100%"></i></div><span class="cnt">Done</span></div>' +
+      '<div class="subody reveal"><div class="eyebrow">Your first plan</div><h2>Ada\'s first plan is ready</h2><p class="help">Built on your phone from your answers. It changes as you log each meal.</p>' +
+      ['breakfast','dinner'].map((m, k) => '<section class="card" style="animation-delay:' + (k * 120 + 60) + 'ms"><div class="mealhead" style="padding:0 0 6px"><span class="disc" aria-hidden="true">' + ic('i-bowl') + '</span><div><h3>' + (m === 'breakfast' ? 'Breakfast' : 'Dinner') + '</h3><div class="meta">Today</div></div></div>' +
+        t[m].map(it => '<div class="pfood" style="min-height:40px"><span class="fb"><span class="fname">' + esc(F[it.id].name) + '<span class="form">' + esc(FORM_LABEL[it.form]) + '</span></span><span class="why">' + esc(reasonText(it.r[0])) + '</span></span></div>').join('') + '</section>').join('') +
+      '<section class="card" style="animation-delay:300ms"><h3>Allergens</h3><p class="small" style="margin-top:4px">Egg first, at breakfast today. Peanut, cow\'s milk and wheat keep going a few times a week.</p></section>' +
+      '<p class="nma">' + esc(NOT_MEDICAL_ADVICE) + '</p></div>' +
+      '<div class="sufoot"><button class="btn primary block" data-act="setupdone">Open Today</button></div>';
+    return;
+  }
+  const step = STEPS[st.i], a = st.a;
+  const val = a[step.k];
+  const answered = step.type === 'one' ? !!val && (!step.then || !step.then[val] || !!a[step.then[val].k]) : (val && val.length > 0);
+  let opts;
+  if (step.type === 'one'){
+    opts = step.opts.map(o => '<button class="optcard" role="radio" aria-checked="' + (val === o[0]) + '" data-act="supick" data-v="' + esc(o[0]) + '"><span class="rb"><b>' + esc(o[1]) + '</b>' + (o[2] ? '<span class="s">' + esc(o[2]) + '</span>' : '') + '</span><span class="radio" aria-hidden="true"></span></button>').join('');
+    opts = '<div role="radiogroup" aria-label="' + esc(step.q) + '">' + opts + '</div>';
+    if (step.then && step.then[val]){ const t = step.then[val];
+      opts += '<div class="fieldlbl">' + esc(t.label) + '</div><div class="chips">' + t.opts.map(o => '<button class="chip" data-act="suthen" data-v="' + esc(o) + '" aria-pressed="' + (a[t.k] === o) + '">' + esc(o) + '</button>').join('') + '</div>'; }
+  } else if (step.k === 'ready'){
+    opts = step.opts.map(o => '<button class="tick" role="checkbox" data-act="sumany" data-v="' + esc(o[0]) + '" aria-checked="' + val.includes(o[0]) + '"><span class="box" aria-hidden="true">' + ic('i-check') + '</span>' + esc(o[1]) + '</button>').join('') + '<p class="src">' + esc(srcLine(['aap-starting-solids'])) + '</p>';
+  } else {
+    opts = '<div class="chips" role="group" aria-label="' + esc(step.q) + '">' + step.opts.map(o => '<button class="chip" data-act="sumany" data-v="' + esc(o[0]) + '" aria-pressed="' + val.includes(o[0]) + '">' + esc(o[1]) + '</button>').join('') + '</div>';
+  }
+  el.innerHTML = '<div class="sutop"><button class="backbtn" data-act="suback" aria-label="' + (st.i ? 'Back to the previous question' : 'Close setup') + '">' + ic(st.i ? 'i-back' : 'i-x') + '</button>' +
+      '<div class="pbar" role="progressbar" aria-label="Setup progress" aria-valuemin="1" aria-valuemax="10" aria-valuenow="' + (st.i + 1) + '"><i style="width:' + ((st.i + 1) * 10) + '%"></i></div><span class="cnt">' + (st.i + 1) + ' of 10</span></div>' +
+    '<div class="subody"><div class="' + (fade ? 'fadein' : '') + '"><div class="eyebrow">Step ' + (st.i + 1) + '</div><h2>' + esc(step.q) + '</h2><p class="help">' + esc(step.help) + '</p>' + opts + '</div></div>' +
+    '<div class="sufoot"><button class="btn primary block" data-act="sunext"' + (answered || step.optional ? '' : ' disabled') + '>' + (st.i === 9 ? 'Show my first plan' : 'Continue') + '</button>' +
+      (step.optional ? '<button class="link" style="justify-content:center" data-act="sunext">Skip this question</button>' : '') + '</div>';
+}
+
+/* ===== actions ===== */
+const curDayMeal = () => S.sheet;
+const ACT = {
+  tab(d){ go(() => { S.tab = d.tab; S.stack = []; }); },
+  push(d){ go(() => { if (d.p === 'food' || PAGES[d.p]) S.stack.push({ p:d.p, id:d.id }); }); closeSheet(); },
+  back(){ go(() => { S.stack.pop(); }); },
+  guidetoggle(){ S.guideOpen = !S.guideOpen; render(); },
+  treetoggle(){ S.treeOpen = !S.treeOpen; render(); },
+  setplus(d){ S.plus = d.v === '1'; render(); toast(S.plus ? 'Demo: showing NibbleCue Plus' : 'Demo: showing the free plan'); },
+  food(d){ openSheet('food', { id:d.id, day:+d.day, meal:d.meal }); },
+  serve(d){ const prev = M.served['0:' + d.meal]; openSheet('serve', { meal:d.meal, resp: prev ? prev.resp : null, per:false, perResp:{} }); },
+  serveresp(d){ S.sheet.resp = S.sheet.resp === d.v ? null : d.v; renderSheet(); },
+  servefood(d){ S.sheet.perResp[d.id] = S.sheet.perResp[d.id] === d.v ? undefined : d.v; renderSheet(); },
+  serveper(){ S.sheet.per = !S.sheet.per; renderSheet(); },
+  servesave(){
+    const sh = S.sheet; snap();
+    const key = '0:' + sh.meal, first = !M.served[key];
+    let resp = sh.resp;
+    if (sh.per){ const v = Object.values(sh.perResp).filter(Boolean); resp = v.length ? v[0] : sh.resp; }
+    M.served[key] = { resp, per: sh.per ? sh.perResp : null, at: sh.meal === 'breakfast' ? '8:14 AM' : '5:41 PM' };
+    if (first) M.plan[0][sh.meal].forEach(it => { if (isHeld(it.id)) return; F[it.id].al.forEach(a => { const s = M.allergens[a]; if (!s) return;
+      if (s.s === 'not_started'){ s.s = 'introduced'; s.wk = 1; s.of = 2; }
+      else if (s.of){ s.wk = Math.min(s.of, (s.wk || 0) + 1); } }); });
+    closeSheet(); render();
+    toast('Saved: ' + (sh.meal === 'breakfast' ? 'Breakfast' : 'Dinner') + (resp ? ' · ' + RESP_WORD[resp] : ''), true);
+  },
+  swap(d){ openSheet('swap', { day:+d.day, meal:d.meal, id:null }); },
+  swappick(d){ S.sheet.id = d.id; renderSheet(true); },
+  swapfrom(d){ const sh = S.sheet; openSheet('swap', { day: sh.day != null ? sh.day : 0, meal: sh.meal, id: d.id }); },
+  swapuse(d){
+    const sh = S.sheet; snap();
+    const list = M.plan[sh.day][sh.meal], idx = list.findIndex(x => x.id === sh.id);
+    const alt = altsFor(sh.id, list.map(x => x.id)).find(a => a.id === d.id);
+    const old = F[sh.id].name;
+    if (idx >= 0 && alt) list[idx] = alt;
+    closeSheet(); render();
+    toast('Swapped ' + old.toLowerCase() + ' for ' + F[d.id].name.toLowerCase(), true);
+  },
+  noticed(){ openSheet('noticed', { signs:[], food: M.served['0:breakfast'] ? 'egg' : null, when:'now', text:'' }); },
+  sign(d){ const s = S.sheet.signs, i = s.indexOf(d.v); const t = $('ntext'); if (t) S.sheet.text = t.value;
+    if (i >= 0) s.splice(i, 1); else { s.push(d.v); if (EMERGENCY_SIGNS.includes(d.v)) { renderSheet(); return showEmergency(); } }
+    renderSheet(); },
+  nfood(d){ const t = $('ntext'); if (t) S.sheet.text = t.value; S.sheet.food = S.sheet.food === d.v ? null : d.v; renderSheet(); },
+  nwhen(d){ const t = $('ntext'); if (t) S.sheet.text = t.value; S.sheet.when = d.v; renderSheet(); },
+  notesave(){
+    const sh = S.sheet; const t = $('ntext'); snap();
+    const whenTxt = { now:'Oct 8, 9:20 AM', '30':'Oct 8, 8:50 AM', '60':'Oct 8, 8:20 AM', '120':'Oct 8, 7:20 AM' }[sh.when];
+    M.notes.unshift({ when: whenTxt, signs: sh.signs.slice(), food: sh.food || null, text: t ? t.value.trim() : '' });
+    let held = [];
+    if (sh.food && F[sh.food]) F[sh.food].al.forEach(a => { if (M.allergens[a] && M.allergens[a].s !== 'held'){ M.allergens[a] = { s:'held', why: sh.signs.map(s => SIGN_LABEL[s]).join(', ') + ', ' + whenTxt + ', after ' + F[sh.food].name.toLowerCase() }; held.push(ALLERGEN_NAME[a]); } });
+    closeSheet(); render();
+    toast('Note saved.' + (held.length ? ' ' + held.join(' and ') + ' is on hold.' : ''), true);
+  },
+  call911(){ toast('Demo: this would call 911.'); },
+  emergback(){ hideEmergency(); setTimeout(() => { const b = document.querySelector('#sheetbody [data-act="notesave"]'); if (b) b.focus({ preventScroll:true }); }, 60); },
+  toggleday(d){ S.open[d.day] = !S.open[d.day]; render(); },
+  lockedday(){ go(() => { S.stack.push({ p:'plus' }); }); },
+  dayactions(d){ if (!S.plus && +d.day >= 2) return ACT.lockedday(); openSheet('dayactions', { day:+d.day }); },
+  skipask(){ openSheet('skipask', { day:S.sheet.day }); },
+  skipdo(){ snap(); const day = S.sheet.day; M.skipped[day] = true; S.open[day] = true; closeSheet(); render(); toast(dayName(day) + ' skipped', true); },
+  unskip(d){ snap(); delete M.skipped[+d.day]; closeSheet(); render(); toast('The day is back in the plan', true); },
+  pinpicker(){ openSheet('pinpicker', { day:S.sheet.day }); },
+  pindo(d){ snap(); const day = S.sheet.day; const list = M.plan[day].dinner;
+    if (!list.some(x => x.id === d.id)) list.push(item(d.id, F[d.id].forms.includes('mashed') ? 'mashed' : F[d.id].forms[0], [{ reason:'pinned' }]));
+    S.open[day] = true; closeSheet(); render(); toast(F[d.id].name + ' pinned to ' + (day < 2 ? dayName(day).toLowerCase() : dayName(day)), true); },
+  pinfood(d){ snap(); const list = M.plan[1].dinner; if (!list.some(x => x.id === d.id)) list.push(item(d.id, F[d.id].forms.includes('mashed') ? 'mashed' : F[d.id].forms[0], [{ reason:'pinned' }])); render(); toast(F[d.id].name + ' added to tomorrow\'s dinner', true); },
+  planfood(d){ if (!S.plus && +d.day >= 2) return ACT.lockedday(); openSheet('planfood', { day:+d.day, meal:d.meal, id:d.id }); },
+  planpin(){ snap(); const sh = S.sheet; const it = M.plan[sh.day][sh.meal].find(x => x.id === sh.id);
+    const pinned = it.r.some(r => r.reason === 'pinned');
+    if (pinned) it.r = it.r.filter(r => r.reason !== 'pinned'); else it.r.unshift({ reason:'pinned' });
+    if (!it.r.length) it.r = [{ reason:'variety' }];
+    closeSheet(); render(); toast(F[sh.id].name + (pinned ? ' unpinned' : ' pinned'), true); },
+  planremove(){ snap(); const sh = S.sheet; M.plan[sh.day][sh.meal] = M.plan[sh.day][sh.meal].filter(x => x.id !== sh.id); closeSheet(); render(); toast(F[sh.id].name + ' removed from ' + dayName(sh.day).toLowerCase().replace(/^(\w)/, c => sh.day < 2 ? c : c.toUpperCase()), true); },
+  planserve(){ const sh = S.sheet; openSheet('food', { id:sh.id, day:sh.day, meal:sh.meal }); },
+  filter(d){ S.filter = S.filter === d.v ? null : d.v; render(); },
+  addfood(){ openSheet('addfood', { name:'', cat:null, al:[], risk:'low' }); },
+  cfcat(d){ S.sheet.name = $('cfname').value; S.sheet.cat = d.v; renderSheet(); },
+  cfal(d){ S.sheet.name = $('cfname').value; const a = S.sheet.al, i = a.indexOf(d.v); if (i >= 0) a.splice(i, 1); else a.push(d.v); renderSheet(); },
+  cfrisk(d){ S.sheet.name = $('cfname').value; S.sheet.risk = d.v; renderSheet(); },
+  cfsave(){
+    const name = $('cfname').value.trim();
+    if (!name){ $('cfname').focus(); return toast('Add a name first'); }
+    snap();
+    const id = 'custom-' + Date.now(), sh = S.sheet;
+    const al = sh.al.flatMap(a => a === 'tree_nut' ? ['cashew'] : [a]);
+    const forms = sh.risk === 'high' ? ['mashed','mixed_in'] : ['mashed','soft_stick'];
+    F[id] = { id, name, cat: sh.cat || 'vegetable', al, risk: sh.risk, ff:false, iron:0, forms, how:'Your own food. Serve it the way your family makes it, cooked soft for now.', choke:null, ideas:[], src:[], custom:true };
+    M.custom.unshift({ id });
+    closeSheet(); S.filter = null; S.q = ''; render(); toast(name + ' added to your foods', true);
+  },
+  shoptick(d){ const s = M.shop.find(x => x.id === d.id); s.done = !s.done; render(); },
+  shopq(d){ const s = M.shop.find(x => x.id === d.id); s.q = Math.max(1, s.q + +d.v); render(); },
+  shopdel(d){ snap(); const s = M.shop.find(x => x.id === d.id); M.shop = M.shop.filter(x => x.id !== d.id); render(); toast(s.name + ' removed', true); },
+  shoponeoff(){ const v = $('shopin').value.trim(); if (!v){ $('shopin').focus(); return; } snap(); M.shop.push({ id:'s' + Date.now(), name:v, meta:'Anywhere', q:1, done:false }); render(); toast(v + ' added', true); },
+  shopweek(){
+    snap();
+    const want = [['Eggs','For egg, first taste today'],['Red lentils','For dinner today'],['Smooth peanut butter','Keeps peanut in the week'],['Broccoli','For dinner today'],['Ripe pears','For breakfast'],['Infant oat cereal','Iron-fortified'],['Firm tofu','For soy on Saturday']];
+    let n = 0;
+    want.forEach(w => { if (!M.shop.some(s => s.name === w[0])){ M.shop.push({ id:'w' + n + Date.now(), name:w[0], meta:w[1], q:1, done:false }); n++; } });
+    render(); toast(n ? 'Added ' + n + " foods from this week's plan" : "This week's foods are already on the list", !!n);
+  },
+  shopadd(d){ snap(); const name = F[d.id].name; if (!M.shop.some(s => s.name === name)) M.shop.push({ id:'a' + Date.now(), name, meta:'From the food library', q:1, done:false }); closeSheet(); render(); toast(name + ' added to the shopping list', true); },
+  shopempty(){ openSheet('shopempty'); },
+  shopemptydo(){ snap(); M.shop = []; closeSheet(); render(); toast('The list is empty', true); },
+  share(){ toast('Demo: the share sheet opens here.'); },
+  unhold(d){ openSheet('unhold', { id:d.id }); },
+  unholddo(){ snap(); const id = S.sheet.id; M.allergens[id] = { s:'introduced' }; closeSheet(); render(); toast(ALLERGEN_NAME[id] + ' is off hold', true); },
+  signout(){ openSheet('signout'); },
+  logmeal(){ openSheet('logmeal', { meal:'Lunch', resp:null }); },
+  lmmeal(d){ S.sheet.meal = d.v; renderSheet(); },
+  lmresp(d){ S.sheet.resp = S.sheet.resp === d.v ? null : d.v; renderSheet(); },
+  lmsave(){ const f = $('lmfood').value.trim() || 'Solids'; const m = S.sheet.meal, r = S.sheet.resp; closeSheet(); toast('Saved: ' + m + ' · ' + f + (r ? ' · ' + RESP_WORD[r] : '')); },
+  babyswitch(){ openSheet('babyswitch'); },
+  sync(){ toast('Synced with CuddleCue a moment ago'); },
+  account(){ go(() => { S.tab = 'more'; S.stack = []; }); },
+  theme(d){ S.theme = d.v; if (d.v === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', d.v); render(); },
+  scheme(d){ if (d.v === 'sunny') return; if (!S.plus) return go(() => { S.stack.push({ p:'plus' }); }); toast('Demo: other color schemes are not wired in this prototype.'); },
+  buy(){ toast('Demo: the App Store sheet opens here with the real price.'); },
+  restore(){ toast('Demo: purchases would be restored from the store.'); },
+  demo(d){ closeSheet(); toast(d.v); },
+  closesheet(){ closeSheet(); },
+  undo(){ if (!undoSnap) return; M = JSON.parse(undoSnap); undoSnap = null; $('toast').classList.remove('on'); render(); },
+  startsetup(d){ closeSheet(); startSetup(d.step ? +d.step : 0); },
+  supick(d){ S.setup.a[STEPS[S.setup.i].k] = d.v; renderSetup(); },
+  suthen(d){ const st = STEPS[S.setup.i]; const t = st.then[S.setup.a[st.k]]; S.setup.a[t.k] = d.v; renderSetup(); },
+  sumany(d){ const k = STEPS[S.setup.i].k, a = S.setup.a[k], i = a.indexOf(d.v);
+    const solo = ['none','noneyet'];
+    if (i >= 0) a.splice(i, 1); else { if (solo.includes(d.v)) a.length = 0; else { const j = a.findIndex(x => solo.includes(x)); if (j >= 0) a.splice(j, 1); } a.push(d.v); }
+    renderSetup(); },
+  sunext(){ const st = S.setup; if (st.i < 9){ st.i++; renderSetup(true); } else { st.done = true; renderSetup(true); } },
+  suback(){ const st = S.setup; if (st.i > 0){ st.i--; renderSetup(true); } else ACT.setupclose(); },
+  setupclose(){ const s = $('setup'); s.classList.remove('on'); s.setAttribute('aria-hidden','true'); S.setup = null; },
+  setupdone(){ ACT.setupclose(); go(() => { S.tab = 'today'; S.stack = []; }); toast('Demo: setup answers are not saved in this prototype.'); }
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el || el.disabled) return;
+  const fn = ACT[el.dataset.act];
+  if (fn){ e.preventDefault(); fn(el.dataset, el); }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'foodq'){ S.q = e.target.value; $('foodlist').innerHTML = foodList(); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if ($('emerg').classList.contains('on')) return ACT.emergback();
+  if (S.sheet) return closeSheet();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'shopin') ACT.shoponeoff(); });
+window.addEventListener('resize', () => renderBar());
+
+/* hooks for the screenshot script, harmless in a browser */
+window.NC = { S, ACT, render, openSheet, showEmergency, startSetup, go };
+render({ fade:true });
+</script>
+</body>
+</html>

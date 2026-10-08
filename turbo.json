@@ -1,0 +1,13 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["NODE_ENV", "EXPO_PUBLIC_*"],
+  "globalPassThroughEnv": ["CI", "EXPO_NO_TELEMETRY", "EXPO_TOKEN"],
+  "tasks": {
+    "typecheck": {},
+    "test": {},
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

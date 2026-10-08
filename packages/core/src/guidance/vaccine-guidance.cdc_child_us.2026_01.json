@@ -1,0 +1,107 @@
+{
+  "profile": "CDC_CHILD_US",
+  "version": "2026_01",
+  "source": "CDC Child and Adolescent Immunization Schedule, United States",
+  "sourceUrl": "https://www.cdc.gov/vaccines/hcp/imz-schedules/child-adolescent-age.html",
+  "effectiveDate": "2026-01-15",
+  "coverage": "birth through 6 years (routine doses); later adolescent doses are out of scope for v1",
+  "disclaimer": "This is the published routine schedule for record keeping, not advice about your child. Your pediatrician's plan always takes priority, and you can edit every date here.",
+  "rules": [
+    "Never tell a parent their child is behind, at risk, or needs a catch-up plan.",
+    "Never compute or display a vaccine dose, volume or product choice.",
+    "Windows are shown as published age ranges; status is descriptive only (given / due / upcoming / past published window).",
+    "Every dose is editable, skippable and can be marked declined with a free-text reason recorded verbatim.",
+    "Optional and seasonal immunisations are OFF until the household turns them on.",
+    "Guidance lives in this versioned file only — never in code, never generated."
+  ],
+  "statusLabels": {
+    "GIVEN": "Given",
+    "DUE": "Due now",
+    "UPCOMING": "Upcoming",
+    "PAST_WINDOW": "Past published window",
+    "SKIPPED": "Skipped",
+    "DECLINED": "Declined",
+    "NOT_APPLICABLE": "Not tracked"
+  },
+  "visits": [
+    { "key": "birth",  "label": "Birth",        "anchorMonths": 0 },
+    { "key": "m2",     "label": "2 month visit","anchorMonths": 2 },
+    { "key": "m4",     "label": "4 month visit","anchorMonths": 4 },
+    { "key": "m6",     "label": "6 month visit","anchorMonths": 6 },
+    { "key": "m12",    "label": "12 month visit","anchorMonths": 12 },
+    { "key": "m15",    "label": "15 month visit","anchorMonths": 15 },
+    { "key": "m18",    "label": "18 month visit","anchorMonths": 18 },
+    { "key": "y4_6",   "label": "4–6 year visit","anchorMonths": 48 },
+    { "key": "annual", "label": "Seasonal",     "anchorMonths": 6 }
+  ],
+  "vaccines": {
+    "HEPB": { "name": "Hepatitis B", "short": "HepB" },
+    "RV":   { "name": "Rotavirus", "short": "RV", "note": "2-dose (RV1) or 3-dose (RV5) series depending on the product used" },
+    "DTAP": { "name": "Diphtheria, tetanus, pertussis", "short": "DTaP" },
+    "HIB":  { "name": "Haemophilus influenzae type b", "short": "Hib", "note": "3- or 4-dose primary series depending on the product used" },
+    "PCV":  { "name": "Pneumococcal conjugate", "short": "PCV" },
+    "IPV":  { "name": "Polio", "short": "IPV" },
+    "MMR":  { "name": "Measles, mumps, rubella", "short": "MMR" },
+    "VAR":  { "name": "Varicella (chickenpox)", "short": "Varicella" },
+    "HEPA": { "name": "Hepatitis A", "short": "HepA" },
+    "FLU":  { "name": "Influenza", "short": "Flu", "note": "Annual, from 6 months of age" },
+    "COVID":{ "name": "COVID-19", "short": "COVID-19", "note": "Per current season; product and number of doses vary" },
+    "RSV":  { "name": "RSV immunisation (nirsevimab)", "short": "RSV", "note": "Seasonal, for infants; some mothers are immunised in pregnancy instead" }
+  },
+  "doses": [
+    { "id":"hepb_1", "vaccine":"HEPB", "dose":1, "visit":"birth", "fromMonths":0,  "toMonths":1,  "type":"routine", "note":"Usually within 24 hours of birth" },
+    { "id":"hepb_2", "vaccine":"HEPB", "dose":2, "visit":"m2",    "fromMonths":1,  "toMonths":2,  "type":"routine" },
+    { "id":"hepb_3", "vaccine":"HEPB", "dose":3, "visit":"m6",    "fromMonths":6,  "toMonths":18, "type":"routine" },
+
+    { "id":"rv_1",   "vaccine":"RV",   "dose":1, "visit":"m2",    "fromMonths":2,  "toMonths":3.5,"type":"routine", "note":"Series is started before 15 weeks of age" },
+    { "id":"rv_2",   "vaccine":"RV",   "dose":2, "visit":"m4",    "fromMonths":4,  "toMonths":5,  "type":"routine" },
+    { "id":"rv_3",   "vaccine":"RV",   "dose":3, "visit":"m6",    "fromMonths":6,  "toMonths":8,  "type":"conditional", "note":"3-dose (RV5) product only" },
+
+    { "id":"dtap_1", "vaccine":"DTAP", "dose":1, "visit":"m2",    "fromMonths":2,  "toMonths":3,  "type":"routine" },
+    { "id":"dtap_2", "vaccine":"DTAP", "dose":2, "visit":"m4",    "fromMonths":4,  "toMonths":5,  "type":"routine" },
+    { "id":"dtap_3", "vaccine":"DTAP", "dose":3, "visit":"m6",    "fromMonths":6,  "toMonths":7,  "type":"routine" },
+    { "id":"dtap_4", "vaccine":"DTAP", "dose":4, "visit":"m15",   "fromMonths":15, "toMonths":18, "type":"routine" },
+    { "id":"dtap_5", "vaccine":"DTAP", "dose":5, "visit":"y4_6",  "fromMonths":48, "toMonths":72, "type":"routine" },
+
+    { "id":"hib_1",  "vaccine":"HIB",  "dose":1, "visit":"m2",    "fromMonths":2,  "toMonths":3,  "type":"routine" },
+    { "id":"hib_2",  "vaccine":"HIB",  "dose":2, "visit":"m4",    "fromMonths":4,  "toMonths":5,  "type":"routine" },
+    { "id":"hib_3",  "vaccine":"HIB",  "dose":3, "visit":"m6",    "fromMonths":6,  "toMonths":7,  "type":"conditional", "note":"4-dose product only" },
+    { "id":"hib_4",  "vaccine":"HIB",  "dose":4, "visit":"m12",   "fromMonths":12, "toMonths":15, "type":"routine", "note":"Booster" },
+
+    { "id":"pcv_1",  "vaccine":"PCV",  "dose":1, "visit":"m2",    "fromMonths":2,  "toMonths":3,  "type":"routine" },
+    { "id":"pcv_2",  "vaccine":"PCV",  "dose":2, "visit":"m4",    "fromMonths":4,  "toMonths":5,  "type":"routine" },
+    { "id":"pcv_3",  "vaccine":"PCV",  "dose":3, "visit":"m6",    "fromMonths":6,  "toMonths":7,  "type":"routine" },
+    { "id":"pcv_4",  "vaccine":"PCV",  "dose":4, "visit":"m12",   "fromMonths":12, "toMonths":15, "type":"routine" },
+
+    { "id":"ipv_1",  "vaccine":"IPV",  "dose":1, "visit":"m2",    "fromMonths":2,  "toMonths":3,  "type":"routine" },
+    { "id":"ipv_2",  "vaccine":"IPV",  "dose":2, "visit":"m4",    "fromMonths":4,  "toMonths":5,  "type":"routine" },
+    { "id":"ipv_3",  "vaccine":"IPV",  "dose":3, "visit":"m6",    "fromMonths":6,  "toMonths":18, "type":"routine" },
+    { "id":"ipv_4",  "vaccine":"IPV",  "dose":4, "visit":"y4_6",  "fromMonths":48, "toMonths":72, "type":"routine" },
+
+    { "id":"mmr_1",  "vaccine":"MMR",  "dose":1, "visit":"m12",   "fromMonths":12, "toMonths":15, "type":"routine" },
+    { "id":"mmr_2",  "vaccine":"MMR",  "dose":2, "visit":"y4_6",  "fromMonths":48, "toMonths":72, "type":"routine" },
+
+    { "id":"var_1",  "vaccine":"VAR",  "dose":1, "visit":"m12",   "fromMonths":12, "toMonths":15, "type":"routine" },
+    { "id":"var_2",  "vaccine":"VAR",  "dose":2, "visit":"y4_6",  "fromMonths":48, "toMonths":72, "type":"routine" },
+
+    { "id":"hepa_1", "vaccine":"HEPA", "dose":1, "visit":"m12",   "fromMonths":12, "toMonths":23, "type":"routine" },
+    { "id":"hepa_2", "vaccine":"HEPA", "dose":2, "visit":"m18",   "fromMonths":18, "toMonths":29, "type":"routine", "note":"At least 6 months after dose 1" },
+
+    { "id":"flu_annual",   "vaccine":"FLU",   "dose":null, "visit":"annual", "fromMonths":6, "toMonths":null, "type":"seasonal", "repeats":"annual", "defaultOn":false },
+    { "id":"covid_season", "vaccine":"COVID", "dose":null, "visit":"annual", "fromMonths":6, "toMonths":null, "type":"seasonal", "repeats":"season", "defaultOn":false },
+    { "id":"rsv_season",   "vaccine":"RSV",   "dose":null, "visit":"birth",  "fromMonths":0, "toMonths":8,    "type":"optional", "repeats":"season", "defaultOn":false, "note":"May not apply if the mother was immunised during pregnancy" }
+  ],
+  "statusRules": {
+    "GIVEN": "a record exists with a given_date",
+    "DUE": "no record and today >= window start (and window end is null or today <= window end)",
+    "UPCOMING": "no record and today < window start",
+    "PAST_WINDOW": "no record and window end is not null and today > window end — displayed neutrally, never as a warning",
+    "nextVisit": "the earliest visit key whose doses are not all GIVEN/SKIPPED/DECLINED; its due date is the earliest window start among its unrecorded doses"
+  },
+  "reminders": {
+    "grouping": "one reminder per visit, listing the doses it covers — never one per dose",
+    "offsetsDays": [14, 2],
+    "copyTemplate": "{{visitLabel}} is coming up — {{n}} doses in the published schedule. Check the plan with your pediatrician.",
+    "deepLink": "{{URL_SCHEME}}://vaccines?child={{childId}}"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "profile": "US_PUBLISHED",
+  "topic": "stool",
+  "version": "2026_09",
+  "retrievedOn": "2026-09-17",
+  "locale": "en-US",
+  "$note": "The disclaimer is the general published line only (the owner, 2026-10-03). WHAT A PARENT ASKED FOR AND WHAT THE PUBLICATIONS ACTUALLY SAY ARE DIFFERENT, and this file is the record of the difference. The request was a rule: 'a baby needs to poo daily; flag it after X days.' No publication here states that rule for a breastfed baby. The AAP states the opposite in as many words, and every source keys on what the stool is like and how the baby is doing rather than on a day count. So the app counts days (its own arithmetic, its own log) and this file supplies the CONTEXT and the ASK-ABOUT list. There is no threshold number in this file because there is no threshold number in the sources.",
+  "disclaimer": "General published information about babies, not advice about yours.",
+  "reviewRule": "This file is the ONLY place a published sentence about stools may live. New guidance means a new version file, never an edit to a sentence here or a sentence written into code or a component.",
+  "$retrieval": {
+    "channel": "search",
+    "why": "The build network blocks healthychildren.org, cdc.gov and nih.gov at the egress proxy, so the pages below could not be opened directly. Each sentence was retrieved through search and kept only where independently phrased queries returned it in the same words. That is weaker than opening the page, and this block exists so nobody mistakes one for the other.",
+    "ownerAction": "Open each url, confirm the sentence in `quote` word for word, then set `verified` to the date you checked. Anything that does not match is a new version file, not an edit here.",
+    "verified": null
+  },
+  "sources": {
+    "aap_infant_constipation": {
+      "name": "AAP HealthyChildren — How Can I Tell If My Baby is Constipated?",
+      "url": "https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Infant-Constipation.aspx"
+    },
+    "aap_first_days": {
+      "name": "AAP HealthyChildren — Baby's First Days: Bowel Movements & Urination",
+      "url": "https://www.healthychildren.org/English/ages-stages/baby/Pages/babys-first-days-bowel-movements-and-urination.aspx"
+    },
+    "niddk_constipation_children": {
+      "name": "NIDDK (National Institute of Diabetes and Digestive and Kidney Diseases) — Symptoms & Causes of Constipation in Children",
+      "url": "https://www.niddk.nih.gov/health-information/digestive-diseases/constipation-children/symptoms-causes"
+    }
+  },
+  "spacing": {
+    "$note": "The heart of it. Read in order, these two say: a long gap is a fact about a breastfed baby and not by itself a problem, and a formula-fed baby is published differently. The app picks which one to show from how the household actually feeds, and shows neither when it cannot tell.",
+    "breast": {
+      "sourceId": "aap_infant_constipation",
+      "quote": "Infrequent stools should not be considered a problem in breastfed babies as long as the stools are soft, and your infant is otherwise normal, gaining weight steadily and nursing regularly.",
+      "alsoQuote": "By three to six weeks of age, some breastfed babies have only one bowel movement a week.",
+      "$why": "This is the single sentence most likely to be new to a first-time parent, and it lowers alarm rather than raising it. It is also why the app has no day threshold for a breastfed baby: the publication declines to set one."
+    },
+    "formula": {
+      "sourceId": "aap_infant_constipation",
+      "quote": "Formula-fed infants should have at least one bowel movement a day, and if they have fewer than this and appear to be straining, they may be constipated.",
+      "$why": "The one published frequency in the whole topic, and it is conditional — fewer than daily AND straining. The app never applies the condition itself; it shows the sentence and the count and stops."
+    },
+    "straining": {
+      "sourceId": "aap_infant_constipation",
+      "quote": "Infants normally work really hard to have a bowel movement, so straining at the stool isn't necessarily alarming, even when the infant cries or gets red in the face.",
+      "$why": "Straining is the thing a new parent reads as an emergency at 3 a.m. and it is the thing the source most directly says is not one on its own."
+    }
+  },
+  "askAbout": {
+    "$note": "What the publications key on INSTEAD of a day count. The app shows the list beside the fact it has counted; it never matches a list item against anything the household logged, because it holds none of these — the app has never seen a stool, only a tap on a button.",
+    "sourceIds": ["aap_infant_constipation", "niddk_constipation_children"],
+    "items": [
+      {
+        "id": "hard_dry",
+        "text": "stools that are hard, dry, or like small pellets",
+        "sourceId": "aap_infant_constipation",
+        "quote": "Some children have small, dry rabbit-pellet-like stools."
+      },
+      {
+        "id": "blood",
+        "text": "blood, mucus, or a lot of water in the stool",
+        "sourceId": "aap_infant_constipation",
+        "quote": "If there are large amounts of blood, mucus, or water in the stool, call your pediatrician immediately."
+      },
+      {
+        "id": "rectal_bleeding",
+        "text": "bleeding from the bottom, or a swollen belly",
+        "sourceId": "niddk_constipation_children",
+        "quote": "See a doctor if your child has bleeding from the rectum, blood in his or her stool, or bloating."
+      },
+      {
+        "id": "two_weeks",
+        "text": "constipation that has been going on for more than two weeks",
+        "sourceId": "niddk_constipation_children",
+        "quote": "Talk with your child's doctor if your child's constipation does not go away with at-home treatment or if your child has had constipation for more than 2 weeks."
+      }
+    ]
+  },
+  "firstDays": {
+    "$note": "The newborn stretch is the one place a count IS published, and it is about the transition off meconium rather than about constipation. Days are days of life, inclusive.",
+    "sourceId": "aap_first_days",
+    "bands": [
+      {
+        "id": "meconium",
+        "fromDays": 0,
+        "toDays": 2,
+        "label": "the first couple of days",
+        "text": "the first bowel movements are meconium — thick, black or dark green",
+        "quote": "For the first few days after birth, your baby's first bowel movements will be a substance known as meconium. This thick black or dark green substance filled their intestines before birth, and once passed, the stools turn yellow-green."
+      }
+    ]
+  }
+}

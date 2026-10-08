@@ -1,0 +1,105 @@
+{
+  "$note": "NIBBLECUE DRAFT (2026-10-08). Adapted from CuddleCue's text for NibbleCue: the logbook paragraphs describe solid food, allergens and what a parent noticed; the coins and the community are not part of NibbleCue and were taken out; the AI paragraph says what the plan ideas send and that every idea is checked by the plan's safety rules. Every name and address is a {{key}} reference to a DECIDED value in brand.json. The contact line points at the decided support page, because NibbleCue's own support email is still a proposal. The owner reads and approves this text, in their own words, before release (docs/DECISIONS.md). Version 1: nothing has been published or accepted yet.",
+  "id": "privacy",
+  "version": 1,
+  "effectiveDate": "2026-10-08",
+  "title": "Privacy Policy",
+  "summary": [
+    "We collect what you type into the app and what is needed to run your account. We do not sell it, we show no ads, and we never use it to advertise to you.",
+    "Your household’s entries are shared with the people you invite, with the companies that host and deliver the service for us, and with nobody else unless the law requires it.",
+    "You can download everything and delete your account from inside the app. Deletion is permanent after a 14-day window."
+  ],
+  "sections": [
+    {
+      "heading": "1. Who we are",
+      "paragraphs": [
+        "{{legalEntity}} is responsible for the personal information handled by {{appDisplayName}} and by our website. Write to us at the support page at {{supportUrl}}, or visit {{universalLinkHost}}."
+      ]
+    },
+    {
+      "heading": "2. What we collect",
+      "paragraphs": [
+        "Your account: your email address, your display name, how you sign in (with your email address, your Apple account or your Google account), your time zone, your units and your appearance choices. Your password is handled by our sign-in provider; we never see it and we never store it.",
+        "Your household: its name, the name, date of birth and, if you enter it, the due date of each child in your care, the roles of the people you invite, and the invitations you send.",
+        "Your entries: the meals you log and how each food went, your baby’s food profile (the stage, your family’s diet and rules, allergy history you choose to enter, the allergens already offered, the region you live in), foods you add yourself, changes you make to the plan, and anything you noticed after a meal, with the time, the signs you chose and your own words. If your family also uses CuddleCue, the same household’s entries are shared between the two apps.",
+        "Your photos: a photo of each child, and a photo of you for your profile picture, each only if you add one. They are shared only with the people in your household, and the app removes a photo’s location and camera details on your phone before it is uploaded.",
+        "Your device: a push notification token, the phone model and operating system version, the app version, and your notification preferences.",
+        "Purchases: whether you have {{plusTierName}}, from which store, and when it renews or ends, as reported to us by the store through our subscription processor. We never receive your card number.",
+        "Support: what you send us when you write to us.",
+        "What we do not collect: analytics about how you use the app, your location, or your contacts. If we ever add aggregate counts of which features are used, we will update this policy first, and those counts will never contain an entry, a name or a photo, or measure the sign-in screens."
+      ]
+    },
+    {
+      "heading": "3. Why we use it",
+      "paragraphs": [
+        "To provide the app: to store your entries, keep them in sync between the members of your household on their own phones, show totals and schedules, and deliver the reminders you asked for.",
+        "To run your account and subscription, to answer your support requests, and to keep the service safe, for example with rate limits.",
+        "To meet our legal obligations.",
+        "Where European or UK data protection law applies, our legal bases are: performing our contract with you; our legitimate interest in running a safe, working service; your consent for notifications and for any photo you add, of a child or of yourself, which you can withdraw at any time; and legal obligation.",
+        "Meal ideas. When you ask for more meal ideas, a summary of food ids, allergen states and counts is sent to our AI provider, Anthropic, to suggest foods. No name, date of birth, note or contact detail is sent, and the provider does not use it to train its models."
+      ]
+    },
+    {
+      "heading": "4. About the information about your baby",
+      "paragraphs": [
+        "Entries about a child’s food, allergens and anything noticed after a meal are sensitive, and you decide what to enter. We use them only to show them back to your household, to plan meals and to do the arithmetic you see in the app. We do not diagnose, we do not profile you or your child, and we never use them for advertising or sell them.",
+        "The app never calculates a dose and never sets an amount your baby should eat."
+      ]
+    },
+    {
+      "heading": "5. Who can see it",
+      "paragraphs": [
+        "The people in your household, according to the role you gave them.",
+        "Service providers that process information for us, under contract and only on our instructions: hosting and database (Supabase), sign-in (Supabase Auth, and Apple or Google when you sign in with them), app distribution and payment (Apple and Google), app updates (Expo), subscription processing (RevenueCat), push notification delivery (Google Firebase Cloud Messaging on Android; on iPhone, your reminders are scheduled by the phone itself), and email delivery for account messages.",
+        "Authorities, when the law requires it. A buyer, if our business is sold or merged, in which case we tell you first.",
+        "Nobody else. We do not sell personal information, we use no advertising networks, and we do not share with data brokers."
+      ]
+    },
+    {
+      "heading": "6. Where it is stored",
+      "paragraphs": [
+        "Your information is stored on servers in the United States operated by our hosting provider. If you use the app from elsewhere, your information is transferred there; where the law requires it, we rely on standard contractual safeguards for the transfer."
+      ]
+    },
+    {
+      "heading": "7. How long we keep it",
+      "paragraphs": [
+        "For as long as your account exists. When you delete your account, everything is removed after a 14-day window during which you can change your mind by signing in again. After the window, your account, your household’s entries (where you were the only member), photos, devices and preferences are permanently deleted.",
+        "A few records keep only identifiers for as long as the law requires, with your entries removed: payment events for financial record-keeping and security logs.",
+        "A household with other members continues without you: the entries stay with the household, marked as logged by a member who has left."
+      ]
+    },
+    {
+      "heading": "8. Your choices and rights",
+      "paragraphs": [
+        "Inside the app you can download everything you have logged, in a machine-readable format, free of charge and on every plan; correct or delete any entry; change or remove a child’s photo or your own profile picture; turn notifications on and off; and delete your account.",
+        "Where European or UK data protection law applies, you have the right to access, correct, erase, restrict and port your information, to object to some processing, and to complain to your data protection authority. Where California law applies, you have the right to know, correct and delete, and to not be discriminated against for using those rights; we do not sell or share personal information for advertising.",
+        "To use any of these rights, write to the support page at {{supportUrl}}. We will answer within the time the law sets, and we may ask you to confirm it is your account."
+      ]
+    },
+    {
+      "heading": "9. Children",
+      "paragraphs": [
+        "The app is made for the people who care for a baby, and anyone 13 or older can use it. Anyone under the age of majority where they live needs a parent or guardian to agree to our terms for them. The app is not directed to young children, and we do not knowingly let a child under 13 create an account or collect personal information from one. The information about a baby in the app is entered by the people caring for them. If you believe a child under 13 has created an account, write to us and we will delete it."
+      ]
+    },
+    {
+      "heading": "10. Security",
+      "paragraphs": [
+        "Your information is encrypted in transit. Access to every household’s data is enforced in the database itself, so one household cannot read another’s. Passwords are never stored by us. No system is perfectly secure, and if we learn of a breach that affects you we will tell you as the law requires."
+      ]
+    },
+    {
+      "heading": "11. Changes to this policy",
+      "paragraphs": [
+        "When we change this policy we update the date at the top. If a change is material, we show it in the app and ask you to accept it before you continue."
+      ]
+    },
+    {
+      "heading": "12. Contact",
+      "paragraphs": [
+        "{{legalEntity}}. Email the support page at {{supportUrl}}. The current version of this policy is always in the app, under Account and privacy, and at {{universalLinkHost}}."
+      ]
+    }
+  ]
+}

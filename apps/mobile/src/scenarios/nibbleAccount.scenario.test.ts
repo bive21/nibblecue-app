@@ -1,0 +1,103 @@
+/**
+ * A NEW PARENT, FROM SIGN-UP TO NIBBLECUE PLUS, against the in-app test backend
+ * (`auth/providers/mock.ts`, `billing/mock.ts`): the account, the one-page setup sent through
+ * CuddleCue's own bootstrap (`onboarding/sendFinish.ts`), the free plan, and NibbleCue Plus bought
+ * as its own subscription, leaving the household's CuddleCue plan exactly as it was.
+ */
+import { can, initialDraft, planOf, planSnapshot, zonedToUtc } from '@nibblecue/core';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockAccountsApi, MockAuthProvider, MockBackend } from '../auth/providers/mock';
+import type { AccountsApi, SessionStore } from '../auth/providers/types';
+import type { Session } from '../auth/session';
+import { MockBillingProvider } from '../billing/mock';
+import { setIdSource } from '../data/ids';
+import { nibbleDraft } from '../onboarding/nibbleDraft';
+import { sendFinish } from '../onboarding/sendFinish';
+import { memoryStore } from '../prefs';
+import { seededIds } from '../testing/fixtures';
+
+const TZ = 'America/Chicago';
+const EVENING = zonedToUtc(TZ, 2026, 10, 8, 19, 30);
+
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(EVENING);
+});
+afterEach(() => {
+  vi.useRealTimers();
+  setIdSource(null);
+});
+
+function sessionStore(): SessionStore {
+  let s: Session | null = null;
+  return {
+    load: async () => s,
+    save: async v => {
+      s = v;
+    },
+    clear: async () => {
+      s = null;
+    },
+  };
+}
+
+describe('a new parent', () => {
+  it('signs up, makes a family in one page, gets the free plan, then buys NibbleCue Plus', async () => {
+    const backend = new MockBackend({ now: () => Date.now(), newId: seededIds('abababab') });
+    const prefs = memoryStore();
+    const auth = new MockAuthProvider(backend, sessionStore());
+    const api = new MockAccountsApi(backend, auth) as AccountsApi;
+
+    await auth.signUpWithPassword('sam@example.com', 'correct horse battery');
+    const opened = await auth.handleAuthLink(backend.lastLink ?? '');
+    expect(opened.kind).toBe('signed_in');
+    const uid = auth.current()?.user.id ?? '';
+
+    const draft = nibbleDraft(initialDraft(crypto.randomUUID()), {
+      name: 'Sam',
+      child: 'Ada',
+      birth: '2026-03-20',
+    });
+    const sent = await sendFinish(
+      {
+        store: prefs,
+        userId: uid,
+        context: { locale: 'en-US', time_zone: TZ },
+        createHousehold: body => api.createHousehold(body),
+      },
+      draft,
+    );
+    expect(sent.kind).toBe('created');
+    if (sent.kind !== 'created') return;
+    const householdId = sent.result.household_id;
+
+    // the family exists with CuddleCue's modules, solids among them, and one baby
+    const state = await api.bootstrapState();
+    expect(state.memberships.map(m => m.household_id)).toEqual([householdId]);
+    expect(state.children.map(c => c.name)).toEqual(['Ada']);
+    const modules = state.modules.filter(m => m.enabled).map(m => m.module_id);
+    expect(modules).toContain('solids');
+
+    // the free plan: today's plan and logging always; the full plan is NibbleCue Plus
+    const before = planSnapshot(state.nibblePlans?.[householdId] ?? null, state.serverNow);
+    expect(before.tier).toBe('FREE');
+    expect(can('logging', before.tier)).toBe(true);
+    expect(can('allergens', before.tier)).toBe(true);
+    expect(can('fullPlan', before.tier)).toBe(false);
+    const cuddleBefore = state.entitlement;
+
+    // NibbleCue Plus, bought: its own row, read back by the next account read
+    const billing = new MockBillingProvider(backend, () => ({ userId: uid, householdId }));
+    const [annual] = await billing.products();
+    expect(annual?.id).toBe('nibble_plus_annual');
+    expect(await billing.purchase(annual!.id)).toEqual({ kind: 'purchased' });
+    const after = await api.bootstrapState();
+    const plus = planSnapshot(after.nibblePlans?.[householdId] ?? null, after.serverNow);
+    expect(plus.tier).toBe('PLUS');
+    expect(can('fullPlan', plus.tier)).toBe(true);
+    // CuddleCue's plan is exactly what it was: a NibbleCue purchase is never CuddleCue Plus
+    expect(after.entitlement).toEqual(cuddleBefore);
+    // and the caregiver seats are still CuddleCue's to answer
+    expect(planOf('caregivers')).toBe('cuddlecue');
+  });
+});

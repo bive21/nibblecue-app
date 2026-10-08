@@ -1,0 +1,161 @@
+{
+  "profile": "US_PUBLISHED",
+  "version": "2026_09",
+  "retrievedOn": "2026-09-17",
+  "locale": "en-US",
+  "$note": "EVERY NUMBER BELOW IS QUOTED FROM THE PUBLICATION NAMED IN ITS OWN `sourceId`. Nothing here is averaged across sources, rounded from memory, or written by a model. Each rhythm carries the sentence it came from so a reviewer checks the value against the page without leaving the file (CLAUDE.md §2 rule 5). Three publishers (CDC, AAP, and since 2026-09-26 the WHO), so the source is per rhythm rather than per file: the screen names the one the value actually came from, and a source read on another day than the rest carries its own `retrievedOn`.",
+  "disclaimer": "General published guidance about babies, not advice about yours. Every baby is different — your own health professional is the one to ask.",
+  "reviewRule": "This file is the ONLY place a published rhythm may live. New guidance means a new version file, never an edit to a value here or a number in code.",
+  "sources": {
+    "cdc_breastfeeding": {
+      "name": "CDC — How Much and How Often to Breastfeed",
+      "url": "https://www.cdc.gov/infant-toddler-nutrition/breastfeeding/how-much-and-how-often.html"
+    },
+    "cdc_formula": {
+      "name": "CDC — How Much and How Often to Feed Infant Formula",
+      "url": "https://www.cdc.gov/infant-toddler-nutrition/formula-feeding/how-much-and-how-often.html"
+    },
+    "cdc_pumping": {
+      "name": "CDC — Pumping Breast Milk",
+      "url": "https://www.cdc.gov/infant-toddler-nutrition/breastfeeding/pumping-breast-milk.html"
+    },
+    "cdc_vitamin_d": {
+      "name": "CDC — Vitamin D",
+      "url": "https://www.cdc.gov/infant-toddler-nutrition/vitamins-minerals/vitamin-d.html"
+    },
+    "aap_bathing": {
+      "name": "AAP HealthyChildren — Bathing Your Baby",
+      "url": "https://www.healthychildren.org/English/ages-stages/baby/bathing-skin-care/Pages/Bathing-Your-Newborn.aspx"
+    },
+    "aap_tummy": {
+      "name": "AAP HealthyChildren — Back to Sleep, Tummy to Play",
+      "url": "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/back-to-sleep-tummy-to-play.aspx"
+    },
+    "aap_diaper": {
+      "name": "AAP HealthyChildren — Why is my baby always getting diaper rashes?",
+      "url": "https://www.healthychildren.org/English/tips-tools/ask-the-pediatrician/Pages/Why-is-my-baby-always-getting-diaper-rashes.aspx"
+    },
+    "who_activity_under_5": {
+      "name": "WHO — Guidelines on physical activity, sedentary behaviour and sleep for children under 5 years of age (2019)",
+      "url": "https://www.who.int/publications/i/item/9789241550536",
+      "retrievedOn": "2026-09-26"
+    }
+  },
+  "feeding": {
+    "modules": [
+      "bottle",
+      "breastfeed"
+    ],
+    "sourceId": "cdc_breastfeeding",
+    "alsoSourceId": "cdc_formula",
+    "bands": [
+      {
+        "id": "newborn",
+        "fromDays": 0,
+        "toDays": 182,
+        "label": "0 to 6 months",
+        "perDayLow": 8,
+        "perDayHigh": 12,
+        "everyHoursLow": 2,
+        "everyHoursHigh": 4,
+        "suggestEveryMinutes": 180,
+        "quote": "Your baby will breastfeed about 8 to 12 times in 24 hours. At first, babies need to eat every 2 to 4 hours. Most infant formula-fed newborns will feed 8 to 12 times in 24 hours.",
+        "$suggestion": "180 minutes is 24 h ÷ 8 feeds, the low end of the published count, and sits inside the published 'every 2 to 4 hours'."
+      },
+      {
+        "id": "older_infant",
+        "fromDays": 183,
+        "toDays": 365,
+        "label": "6 to 12 months",
+        "perDayLow": 5,
+        "perDayHigh": 6,
+        "everyHoursLow": 4,
+        "everyHoursHigh": 5,
+        "suggestEveryMinutes": 240,
+        "quote": "Most 6 to 12-month-olds will need infant formula or solid foods about 5 to 6 times in 24 hours.",
+        "$suggestion": "240 minutes is 24 h ÷ 6 feeds, the high end of the published count. The app's longest feeding chip is 4 h, so a band that would suggest longer is clamped to it rather than invented."
+      }
+    ],
+    "beyondDays": 365,
+    "$beyond": "Past twelve months neither page states a feeding frequency, so the app preselects NOTHING. An empty chip row is the honest answer where the source is silent."
+  },
+  "pump": {
+    "modules": [
+      "pump"
+    ],
+    "sourceId": "cdc_pumping",
+    "followsFeeding": true,
+    "quote": "When away from your baby or if you exclusively pump your milk, try to pump as often as your baby is drinking breast milk.",
+    "$suggestion": "The source does not publish a pumping interval of its own — it publishes a RULE, that pumping matches the feeding rhythm. So the pump row takes whatever the feeding band suggests, and offers nothing when feeding offers nothing (past twelve months, or with no date of birth). Copying the rule is quoting it; inventing a number would not be."
+  },
+  "diaper": {
+    "modules": [
+      "diaper"
+    ],
+    "sourceId": "aap_diaper",
+    "suggestEveryMinutes": 180,
+    "everyHoursLow": 3,
+    "everyHoursHigh": 4,
+    "quote": "Changing diapers every three to four hours — or anytime you notice the diaper is soiled — can help prevent most diaper rashes.",
+    "$suggestion": "180 minutes is the low end of the published 'every three to four hours'. It does not vary by age: the source states one interval for the whole period."
+  },
+  "bath": {
+    "modules": [
+      "bath"
+    ],
+    "sourceId": "aap_bathing",
+    "suggestEveryDays": 2,
+    "perWeek": 3,
+    "quote": "Three baths per week during baby's first year may be enough. Bathing more frequently can dry out your baby's skin.",
+    "$suggestion": "The app's cadence chips are whole days: every 2 days is 3.5 baths a week and every 3 days is 2.3, so 2 is the chip nearest the published three a week. It is also the owner's own choice (2026-09-17: 'bath set it to every other day')."
+  },
+  "tummy": {
+    "modules": [
+      "tummy"
+    ],
+    "sourceId": "aap_tummy",
+    "suggestTimesADay": 2,
+    "timesLow": 2,
+    "timesHigh": 3,
+    "quote": "Beginning on their first day home from the hospital, play and interact with the baby while they are awake and on the tummy 2 to 3 times each day for a short period of time (3-5 minutes).",
+    "$suggestion": "2 is the LOW end of the published '2 to 3 times each day' — the smallest claim the source supports. Tummy time is a count per day in this app rather than an interval, which is the same unit the source uses.",
+    "goal": {
+      "suggestMinutes": 6,
+      "minutesLowPerGo": 3,
+      "minutesHighPerGo": 5,
+      "$derivation": "The app sets tummy time as a DAILY GOAL in minutes (the owner, 2026-09-19). The source publishes a count of goes and a length per go, not a daily total, so the goal is the two multiplied at their LOW ends: 2 goes x 3 minutes = 6 minutes a day — the smallest daily claim the quoted sentence supports, on the same rule that made the count 2. Nothing else on the page was read for it; a published daily total, if the source ever states one, replaces this arithmetic."
+    }
+  },
+  "playtime": {
+    "modules": [
+      "tummy"
+    ],
+    "variant": "playtime",
+    "sourceId": "who_activity_under_5",
+    "quote": "spend at least 180 minutes in a variety of types of physical activities at any intensity, including moderate- to vigorous-intensity physical activity, spread throughout the day; more is better.",
+    "$quote": "The guidelines' recommendation for children 1–2 years of age, in the words the owner's brief quoted on 2026-09-26. The WHO's pages could not be reached from the build environment that day, so the sentence has not yet been checked against the publication word for word: a reviewer should open the URL above and compare before this ships.",
+    "goal": {
+      "suggestMinutes": 180,
+      "minutesLow": 180,
+      "$derivation": "The app keeps Playtime — tummy time's second life, which a household switches on under What you track — as a DAILY GOAL in minutes, the unit tummy time already uses. The source publishes a daily MINIMUM ('at least 180 minutes … spread throughout the day; more is better') and no maximum, so the goal is that minimum, whole: 180 minutes a day. It is written once, when the household itself switches to Playtime (the owner, 2026-09-26: 'goals need to be increased if anything to 3 hours a day (user still can change) based on the WHO report'); it is never derived from the baby's age, the tummy-time goal it replaces comes back when the switch goes back, and one tap on the Playtime chips changes it."
+    }
+  },
+  "supplements": {
+    "$note": "A published recommendation with a named source, offered as an item the parent may add. The app prefills the NAME and the once-a-day frequency; it never prefills an amount into the item (CLAUDE.md §2 rule 4) — what to give is what the parent was told, in their own words, on the item itself.",
+    "items": [
+      {
+        "id": "vitamin_d",
+        "name": "Vitamin D drops",
+        "kind": "VITAMIN",
+        "timesADay": 1,
+        "appliesWhenFeeding": [
+          "breast",
+          "pumping"
+        ],
+        "sourceId": "cdc_vitamin_d",
+        "quote": "Babies who are fed only breast milk or who receive both breast milk and infant formula need to have a supplement with 400 IU of vitamin D every day beginning shortly after birth.",
+        "note": "The CDC says every day, beginning shortly after birth. Your own health professional decides what your baby takes."
+      }
+    ]
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "$note": "NIBBLECUE DRAFT (2026-10-08). Adapted from CuddleCue's text for NibbleCue: the logbook paragraphs describe solid food, allergens and what a parent noticed; the coins and the community are not part of NibbleCue and were taken out; the AI paragraph says what the plan ideas send and that every idea is checked by the plan's safety rules. Every name and address is a {{key}} reference to a DECIDED value in brand.json. The contact line points at the decided support page, because NibbleCue's own support email is still a proposal. The owner reads and approves this text, in their own words, before release (docs/DECISIONS.md). Version 1: nothing has been published or accepted yet.",
+  "id": "terms",
+  "version": 1,
+  "effectiveDate": "2026-10-08",
+  "title": "Terms of Use",
+  "summary": [
+    "{{appDisplayName}} is a food planner and a logbook for a baby starting solids. It plans meals from published guidance and what you log, and it does not give medical advice.",
+    "You own what you log. The people you invite to your household can see it. You can download all of it at any time, free of charge, and delete your account whenever you like.",
+    "{{plusTierName}} is optional. The App Store or Google Play bills it at the price they show and it renews until you cancel it there. The free plan stays a working app.",
+    "Keep other people’s information private, and use the app only for a child in your care."
+  ],
+  "sections": [
+    {
+      "heading": "1. Who we are",
+      "paragraphs": [
+        "These terms are an agreement between you and {{legalEntity}}, the company that makes {{appDisplayName}}. You can reach us at the support page at {{supportUrl}}, and our website is {{universalLinkHost}}."
+      ]
+    },
+    {
+      "heading": "2. What these terms cover",
+      "paragraphs": [
+        "These terms cover the {{appDisplayName}} app for iOS and Android, {{plusTierName}}, the website, and the support we provide. By creating an account or using the app you agree to these terms and to our privacy policy, which you can read in the app under Account and privacy, and which explains what we collect and why. If you do not agree, please do not use the app.",
+        "Anyone 13 or older can create an account. If you are under the age of majority where you live (18 in most places), a parent or guardian must agree to these terms for you."
+      ]
+    },
+    {
+      "heading": "3. What {{appDisplayName}} is, and what it is not",
+      "paragraphs": [
+        "{{appDisplayName}} is a shared food planner and logbook for a baby starting solid food. It suggests what to offer at each meal from published feeding guidance and the foods, allergens and reactions that you and the people you invite enter, and it keeps the meals, the allergens offered and anything you noticed so you can share them with your pediatrician.",
+        "Some meal ideas may be suggested by an AI model. The model is sent only a summary of foods and counts, never a name, a date of birth or your own words, and every idea it returns is checked by the same safety rules as the rest of the plan before you see it. An idea that fails a rule is never shown.",
+        "It is not a medical device, a medical service, or a source of medical advice, and using it does not create a relationship with a doctor, nurse, midwife or lactation consultant. Nothing in the app diagnoses, treats, monitors or assesses your baby, you, or anyone else.",
+        "Serving advice, choking notes, allergen guidance and the guidance cards are shown from published sources, with the source and its date, for you to read. They are general information, not a recommendation for your child.",
+        "Always rely on your own judgment and on the professionals who care for your family. If you are worried about a baby’s health, contact a healthcare professional. In an emergency, call your local emergency number.",
+        "The app never sets an amount your baby should eat and never calculates a dose. Portions are for your baby to decide."
+      ]
+    },
+    {
+      "heading": "4. Your account",
+      "paragraphs": [
+        "Give us an email address that is yours and keep it up to date. Keep your sign-in details to yourself; you are responsible for what happens under your account until you tell us it has been compromised.",
+        "One account is for one person. Each caregiver in a household has their own sign-in; the app is built so that nobody has to share a password.",
+        "We may refuse, suspend or close an account that breaks these terms, that is used to harm someone, or that we are required by law to close. Where we reasonably can, we will tell you why."
+      ]
+    },
+    {
+      "heading": "5. Your household and the people you invite",
+      "paragraphs": [
+        "When you create a household you become its owner. When you invite someone, they see the household’s entries according to the role you give them, and they can add entries of their own. You are responsible for who you invite and for having the right to share the information about the child with them. Anyone you invite must accept these terms too.",
+        "You can change a person’s role or remove them at any time."
+      ]
+    },
+    {
+      "heading": "6. Your content",
+      "paragraphs": [
+        "Everything you enter, such as names, entries, notes, photos and lists, is yours. You give us only the permission we need to run the service: to store it, keep it in sync between the members of your household, back it up, show it back to you, and produce the downloads and summaries you ask for. We do not use it for anything else.",
+        "You promise that you have the right to enter what you enter, including a child’s details and photo, and that it does not break the law or someone else’s rights.",
+        "You can download everything you have logged, in a machine-readable format, at any time and on every plan, free of charge."
+      ]
+    },
+    {
+      "heading": "7. Acceptable use",
+      "paragraphs": [
+        "Do not use the app to do anything unlawful, to harm or harass anyone, or to enter information that is misleading or that you have no right to share. Do not try to reach another household’s data, interfere with the service, probe its security, copy it, or resell it."
+      ]
+    },
+    {
+      "heading": "8. {{plusTierName}}",
+      "paragraphs": [
+        "{{plusTierName}} is an optional subscription that adds features described in the app. You buy it through the Apple App Store or Google Play. The store shows the price in your currency, takes the payment, and handles renewal, refunds and cancellation under its own terms. We never see your card details.",
+        "A subscription renews automatically for the same period until you cancel it in your App Store or Google Play account settings. To avoid the next charge, cancel at least 24 hours before the current period ends. The app will never stand in the way of canceling.",
+        "What {{plusTierName}} includes may change over time, and we will tell you before a change takes effect. Logging, timers, reminders, sharing with your household, light and dark mode, and the full download of your data are never behind {{plusTierName}}."
+      ]
+    },
+    {
+      "heading": "9. The free plan",
+      "paragraphs": [
+        "The free plan is a working app, not a trial. Nothing you have logged is deleted when a subscription ends. Entries older than the free plan’s history window are kept and are shown again if you subscribe."
+      ]
+    },
+    {
+      "heading": "10. Changes",
+      "paragraphs": [
+        "We improve the app continuously and may add, change or remove features. We may also change these terms. If a change is material, we will show it in the app and ask you to accept the new terms before you continue. If you do not accept them, you can stop using the app and delete your account."
+      ]
+    },
+    {
+      "heading": "11. Ending the agreement",
+      "paragraphs": [
+        "You can delete your account from inside the app at any time. Your data is removed after a 14-day window during which you can change your mind by signing in again; after that it is permanently deleted, as the privacy policy describes.",
+        "We may suspend or end your access if you break these terms or if we are required to. Where we reasonably can, we will tell you first."
+      ]
+    },
+    {
+      "heading": "12. Disclaimers",
+      "paragraphs": [
+        "The app is provided “as is” and “as available”. We do our best to keep it working and accurate, but we do not promise that it will be uninterrupted, error-free, or that every reminder will arrive on time. It is not medical advice, and we make no promise about any outcome for you or your baby."
+      ]
+    },
+    {
+      "heading": "13. Limitation of liability",
+      "paragraphs": [
+        "To the extent the law allows, {{legalEntity}} is not liable for indirect, incidental, special or consequential loss, or for loss of data, arising from your use of the app. Our total liability to you for all claims together is limited to the greater of the amount you paid us in the 12 months before the claim and 50 US dollars.",
+        "Nothing in these terms limits or excludes liability that cannot be limited or excluded by law, including for death or personal injury caused by negligence, for fraud, or under consumer protection laws that apply to you."
+      ]
+    },
+    {
+      "heading": "14. Governing law and disputes",
+      "paragraphs": [
+        "These terms are governed by the laws of the state of the United States in which {{legalEntity}} is organized, without regard to its conflict-of-law rules. If you live somewhere whose consumer laws give you rights or a choice of court that these terms cannot take away, those rights apply.",
+        "If something goes wrong, write to the support page at {{supportUrl}} first. Most problems are fixed that way. Any dispute that cannot be resolved between us is heard by the courts of that state, unless the law where you live requires otherwise."
+      ]
+    },
+    {
+      "heading": "15. App stores",
+      "paragraphs": [
+        "Apple and Google are not parties to these terms and have no obligation to maintain or support the app. If you got the app from the App Store, Apple and its subsidiaries are third-party beneficiaries of these terms and may enforce them against you. Your use of the app must also follow the store’s terms."
+      ]
+    },
+    {
+      "heading": "16. General",
+      "paragraphs": [
+        "These terms and the privacy policy are the whole agreement between you and us about the app. If a part of them turns out to be unenforceable, the rest still applies. You may not transfer your account or this agreement to someone else. If we do not act on a breach at once, we have not given up the right to act on it later."
+      ]
+    },
+    {
+      "heading": "17. Contact",
+      "paragraphs": [
+        "{{legalEntity}}. Email the support page at {{supportUrl}}. The current version of these terms is always in the app, under About, and at {{universalLinkHost}}."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+node_modules
+pnpm-lock.yaml
+.turbo
+.expo
+dist
+coverage
+apps/mobile/ios
+apps/mobile/android
+expo-env.d.ts
+
+# Markdown is written by people and read by people; prettier's rewrapping is noise here.
+*.md
+
+# The prototype is one hand-written file, opened in a browser; its formatting is deliberate.
+prototype/
+.env.example
+
+# Copied verbatim from CuddleCue (docs/REUSE.md): kept byte-comparable with the source so a fix
+# there can be carried here with a diff.
+packages/core/src/domain/domain-types.ts
+packages/ui/src/theme/design-tokens.json
+packages/brand/brand.json
+
+# CuddleCue's own verbatim set, kept as CuddleCue keeps it: aligned registries, guidance files,
+# the theme tables and the generated database types.
+packages/core/src/modules/module-registry.ts
+packages/core/src/guidance/*.json
+packages/ui/src/theme/theme.ts
+packages/db/src/database.types.ts

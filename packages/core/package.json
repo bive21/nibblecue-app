@@ -1,0 +1,34 @@
+{
+  "name": "@nibblecue/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Domain types, sync and the plan matrix (from CuddleCue), and NibbleCue's own domain under ./nibble. Pure TypeScript: no React, no React Native, no Supabase client, nothing from apps/.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./domain": "./src/domain/domain-types.ts",
+    "./modules": "./src/modules/index.ts",
+    "./plan": "./src/plan/entitlements.ts",
+    "./plan/pricing.config.json": "./src/plan/pricing.config.json",
+    "./guidance": "./src/guidance/index.ts",
+    "./sync/scenarios": "./src/sync/scenarios.ts",
+    "./sync/ids.vectors": "./src/sync/ids.vectors.ts",
+    "./schedule/foresight.banned": "./src/schedule/foresight.banned.ts",
+    "./reports/glance.banned": "./src/reports/glance.banned.ts",
+    "./nibble": "./src/nibble/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

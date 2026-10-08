@@ -1,0 +1,108 @@
+{
+  "$meta": {
+    "status": "DRAFT, not submitted, and not ready to submit. Every line below the notes is the developer's draft of 2026-10-08 for the owner to read and change; nothing in it has been approved as store copy. A human enters the approved strings in the store consoles at release time; nothing here uploads itself.",
+    "authority": "packages/brand/brand.json for the names, the URLs and the identifiers; docs/PRODUCT.md for what NibbleCue does and what NibbleCue Plus adds.",
+    "rules": [
+      "No medical claim, no diagnosis, no dose, no verdict on a baby. A sign a parent writes down is something you noticed, a possible reaction, never an allergy. Serving guidance is general guidance from published sources, not medical advice. Enforced by brand.test.ts.",
+      "No legal entity typed. The seller name is the studio's decided legal entity (brand.json `decided.legalEntity`), entered by the owner in each console's seller field; this file reaches it only as `brand:legalEntity` (the website footer's legal line), names no company form, and carries no `pending` value (brand.test.ts).",
+      "Character limits enforced by brand.test.ts against brand.json `storeLimits`, measured with every reference resolved.",
+      "'Baby Tracker' is never the title, the subtitle or the positioning line (brand.json `banned`).",
+      "No dash in a sentence, sentence case, US English. The one short hyphen allowed is the decided store title's own.",
+      "Nothing CuddleCue has and NibbleCue does not: no Community, no coins or NFC accessory, no widgets, no welcome trial.",
+      "URLs, addresses and the proposed lines are references (`brand:<key>`, or the key in double braces inside a longer text) resolved from brand.json by the accessor, never copies. A pending or unconfirmed key cannot be referenced. A PROPOSED key can, because a development build runs on it, and every proposed key this file references is listed in `waitingOnOwner`; brand.test.ts holds that list to the references."
+    ],
+    "waitingOnOwner": [
+      "appleSubtitle",
+      "playShortDescription",
+      "marketingHeadline",
+      "marketingUrl",
+      "privacyPolicyUrl",
+      "termsUrl",
+      "accountDeletionUrl",
+      "supportEmail"
+    ],
+    "$waitingOnOwnerNote": "The proposed brand.json keys this listing references. Each is the developer's proposal of 2026-10-08 (brand.json `proposed`) and becomes final only when the owner moves it to `decided`. Beside them, the copy itself is a draft: the descriptions, the keywords, the promotional text, the categories and the age rating, the website lines, the email footer and the in-app story lines marked in `inApp.$storyNote`."
+  },
+  "links": {
+    "$note": "References, not copies: `brand:<key>` resolves to brand.json in packages/brand (resolveBrandRefs). Only `supportUrl` is decided today (the studio's own support page, shared with CuddleCue); the rest are proposed under the marketing URL and wait on the owner (`$meta.waitingOnOwner`). A URL a store field needs INSIDE its text is written as its key in double braces there, like `{{termsUrl}}` (the App Store description's Terms of Use and Privacy Policy lines, which Apple 3.1.2 wants in the description or the EULA field), and is resolved by the same accessor with the same rule.",
+    "privacyPolicyUrl": "brand:privacyPolicyUrl",
+    "termsUrl": "brand:termsUrl",
+    "accountDeletionUrl": "brand:accountDeletionUrl",
+    "supportUrl": "brand:supportUrl",
+    "marketingUrl": "brand:marketingUrl",
+    "supportEmail": "brand:supportEmail"
+  },
+  "inApp": {
+    "$note": "The only brand strings the app itself renders. Short name only: the full store title never appears in app chrome. Every key here is one the app reads (apps/mobile/src, `IN_APP_STRINGS.<key>`); CuddleCue's trial banner, setup heads up, welcome card, export, email and notification names were not carried, because nothing in NibbleCue reads them and NibbleCue has no welcome trial.",
+    "signInTitle": "NibbleCue",
+    "signInTagline": "Your baby’s first foods, planned.",
+    "signInBlurbCreate": "Welcome to NibbleCue 💛\nSee what to offer at each meal, bring in the allergens one at a time, and share every meal with the people who feed your baby.",
+    "signInBlurbReturning": "Sign in to pick up where your household left off.",
+    "paywallTitle": "NibbleCue Plus",
+    "aboutTitle": "About NibbleCue",
+    "$storyNote": "Who made it. The studio's lines are the owner's own, carried from CuddleCue unchanged (2026-09-27 and 2026-09-28): `familyLine`, the tagline in `footerLine` (\"By new parents, for every parent.\"), `aboutStoryTitle`, `aboutPlus`, `contactNote` and `planWhy`. Same family, same studio. Two are DRAFTS for the owner, because CuddleCue's words were not true of NibbleCue: `aboutStory` (CuddleCue's second sentence was about keeping track through the long nights) and `aboutArt` (CuddleCue's said the pictures are Mom's own drawings, and NibbleCue's artwork is placeholder art until the designer's kit arrives, brand.json `assets.$status`). The signInTagline is brand.json `tagline`, itself a proposal (`$taglineNote`).",
+    "familyLine": "Dad develops · Mom designs · Baby approves",
+    "footerLine": "By new parents, for every parent.",
+    "aboutStoryTitle": "Our story",
+    "aboutStory": "We became parents in 2026 and we’re still in the thick of it. We built this to make first foods a little easier, for your family and for ours.",
+    "aboutArt": "The pictures here are stand-ins until our own drawings are ready.",
+    "aboutPlus": "Plus pays for the servers, the replies when you write and what we build next, so we can keep going and still do what’s best for our own kids. As they grow, what we make will grow with them.",
+    "contactNote": "One of us will answer, usually after bedtime.",
+    "planWhy": "Plus pays for the servers, the replies when you write and what we build next."
+  },
+  "appStore": {
+    "name": "NibbleCue - Baby Food Planner",
+    "subtitle": "brand:appleSubtitle",
+    "promotionalText": "Today’s meals planned for your baby, the allergens brought in one at a time, and one log shared with CuddleCue. The free plan is a real app, with no ads.",
+    "keywords": "solids,weaning,blw,baby-led,puree,allergen,meal plan,starting,toddler,iron,caregiver,shopping list",
+    "description": "NibbleCue plans your baby’s first foods, from the first bite to toddler meals. Open it to see today’s meals, tap Served and say how it went, and the plan moves on with your baby.\n\n{{marketingHeadline}}\n\nWhat it does\n· Today’s meals, each food with how to serve it at your baby’s age.\n· Log a meal in two taps: Served, then how it went.\n· A 14-day meal plan that follows what you log.\n· A food library that shows how to serve each food at each age.\n· An allergen tracker: bring in one allergen at a time, then keep each one in the week.\n· Something you noticed: write down what you saw after a meal, in your own words. The emergency card is one tap away.\n· A shopping list the whole household shares.\n· Works with CuddleCue: the same account, the same household and the same log. A meal logged in either app is logged once.\n\nWhat it does not do\nNibbleCue never diagnoses and never gives a dose. A sign you write down stays something you noticed, a possible reaction to show your pediatrician, never a verdict. Serving guidance is general guidance from published sources, not medical advice. The judgment stays with you and your pediatrician.\n\nMeal ideas, if you want more\nAsk for more ideas and an AI model suggests foods for variety. It is sent a summary of foods and counts, never a name. Every idea is checked by the same safety rules as the rest of the plan, and an idea that fails a rule is never shown.\n\nThe free plan is a real app\nToday’s and tomorrow’s meals, logging, the whole food library, the allergen tracker, something you noticed and the emergency card, the shopping list, light and dark, a download of everything you logged and account deletion. Safety is never sold. No ads, on any plan, and we do not sell your data.\n\nNibbleCue Plus\nThe full 14-day meal plan. A caregiver sheet for whoever feeds your baby today. A pediatrician summary to bring to a visit. Milk and drinks beside the meals, read from your CuddleCue log. NibbleCue Plus is its own subscription, separate from CuddleCue Plus.\n\nMade by the family behind CuddleCue\nDad develops, Mom designs, and the baby approves. Plus pays for the servers, the replies when you write and what we build next, so the free plan can stay a real app.\n\nNibbleCue Plus is an auto-renewing subscription. The price is shown in the app before you buy. It renews automatically unless canceled at least 24 hours before the end of the period, and you can manage or cancel it in your App Store account settings. Canceling keeps NibbleCue Plus until the end of the period you paid for.\n\nTerms of Use (EULA): {{termsUrl}}\nPrivacy Policy: {{privacyPolicyUrl}}",
+    "whatsNew": "First release.",
+    "categoryPrimary": "Food & Drink",
+    "categorySecondary": "Lifestyle",
+    "ageRating": "4+",
+    "$draft": "Every line here is a draft for the owner. The name is the decided store title; the subtitle is brand.json's proposed `appleSubtitle`. The categories and the age rating are the developer's proposals: CuddleCue is Health & Fitness, and NibbleCue's plan is about food, so Food & Drink is proposed; the age rating questionnaire is answered in the console, and the AI meal ideas are a new answer CuddleCue never gave. The meal ideas paragraph says what docs/SERVER.md and the privacy policy say the model is sent; the owner allowed the model on 2026-10-08, and whether the listing names it is the owner's call.",
+    "$consoleOnly": [
+      "Seller / legal name: the owner enters brand.json.decided.legalEntity in the console, the same company as CuddleCue",
+      "Privacy policy URL, support URL, marketing URL: from `links`, i.e. brand.json (all but the support URL still proposed)",
+      "A subscription group of NibbleCue's own, separate from CuddleCue Plus: product ids, localized prices (the target prices are proposals, packages/core/src/plan/pricing.config.json) and the price-increase exclusion",
+      "App Privacy answers, traced to legal/privacy.json: data types collected, linked to identity, used for tracking (none), and the AI provider the meal ideas use",
+      "Screenshots and the app preview video"
+    ]
+  },
+  "play": {
+    "title": "NibbleCue - Baby Food Planner",
+    "shortDescription": "brand:playShortDescription",
+    "fullDescription": "NibbleCue plans your baby’s first foods, from the first bite to toddler meals. See today’s meals, tap Served and say how it went, and the plan moves on with your baby.\n\n{{marketingHeadline}}\n\nToday’s meals\nEach meal with its foods and how to serve each one at your baby’s age. Log the whole meal in two taps: Served, then how it went.\n\nA 14-day meal plan\nThe next two weeks, meal by meal, following what you log. Today and tomorrow are free; the rest of the two weeks comes with NibbleCue Plus.\n\nThe food library\nEvery food with how to serve it at each age, so you can look one up while you cook.\n\nThe allergen tracker\nBring in one allergen at a time, then keep each one in the week. See which are in, which are kept going and which are still to come.\n\nSomething you noticed\nWrite down what you saw after a meal, in your own words. It stays a possible reaction for your pediatrician to look at, never a verdict. The emergency card is one tap away.\n\nShare the load\nBoth parents and every caregiver sign in on their own phone. The shopping list is one list the whole household shares.\n\nWorks with CuddleCue\nThe same account, the same household and the same log. A meal logged in either app is logged once.\n\nWhat NibbleCue does not do\nNibbleCue never diagnoses and never gives a dose. Serving guidance is general guidance from published sources, not medical advice. The judgment stays with you and your pediatrician.\n\nMeal ideas, if you want more\nAsk for more ideas and an AI model suggests foods for variety. It is sent a summary of foods and counts, never a name. Every idea is checked by the same safety rules as the rest of the plan, and an idea that fails a rule is never shown.\n\nThe free plan is a real app\nToday’s and tomorrow’s meals, logging, the whole food library, the allergen tracker, something you noticed and the emergency card, the shopping list, light and dark, a download of everything you logged and account deletion. Safety is never sold. No ads on any plan, and we do not sell your data.\n\nNibbleCue Plus\nThe full 14-day meal plan. A caregiver sheet for whoever feeds your baby today. A pediatrician summary to bring to a visit. Milk and drinks beside the meals, read from your CuddleCue log. NibbleCue Plus is its own subscription, separate from CuddleCue Plus.\n\nMade by the family behind CuddleCue\nDad develops, Mom designs, and the baby approves. Plus pays for the servers, the replies when you write and what we build next, so the free plan can stay a real app.\n\nNibbleCue Plus is an auto-renewing subscription. The price is shown in the app before you buy and you can cancel any time in Google Play.",
+    "categoryPrimary": "Parenting",
+    "contentRating": "Everyone",
+    "$draft": "Every line here is a draft for the owner. The title is the decided store title; the short description is brand.json's proposed `playShortDescription`. Parenting is CuddleCue's category, proposed again. The content rating questionnaire is answered in the console.",
+    "$consoleOnly": [
+      "Developer name and address on the store page",
+      "Privacy policy URL (from `links`, still proposed), Data safety form (no data sold, no ads SDK, the AI provider the meal ideas use), and the account deletion URL (`links.accountDeletionUrl`, still proposed)",
+      "Subscription base plans, offers, product ids and country prices for NibbleCue Plus, separate from CuddleCue Plus",
+      "Graphics: icon, feature graphic, phone and tablet screenshots"
+    ]
+  },
+  "website": {
+    "heroTitle": "brand:storeTitle",
+    "heroHeadline": "brand:marketingHeadline",
+    "heroSub": "A meal plan for your baby’s first foods that follows what you log, with the allergens kept in the week and one log shared with CuddleCue. Free plan, no ads.",
+    "footerDeveloper": "brand:developerName",
+    "footerLegal": "brand:legalEntity",
+    "$draft": "NibbleCue has no website yet. These are draft lines for its page at the proposed `marketingUrl`, for the owner to approve with the page.",
+    "$footerNote": "The footer names the company as a person sees it (decided.developerName) and, on the legal line, the registered form (decided.legalEntity): the studio's one name, plus its suffix, the same company as CuddleCue. The policy links come from `links`; the policies themselves are packages/brand/legal/*.json."
+  },
+  "email": {
+    "fromName": "NibbleCue",
+    "headerWordmark": "NibbleCue",
+    "footerLine": "You are receiving this because you use NibbleCue.",
+    "$footerNote": "The legal footer names the entity from brand.json.decided.legalEntity. A postal address and any unsubscribe wording for a jurisdiction are the owner's to supply and are not recorded. Transactional mail can ship without them; marketing mail cannot. The sender address is decided.transactionalFromAddress, the studio's own.",
+    "$authNote": "OWNER QUESTION. The sign-in emails (confirm sign up, reset password, invite and the rest) are sent by Supabase Auth, and NibbleCue signs in to CuddleCue's Supabase projects (docs/SERVER.md). One project has one set of those templates, made by tools/email/auth-emails.mjs in the CuddleCue repository, so today a NibbleCue parent gets them in CuddleCue's name. Whether they should name both apps, or neither, is the owner's to decide, and the change is made in the CuddleCue repository.",
+    "templates": ["receipt-note", "account-deleted"],
+    "$templatesNote": "Draft: the mail NibbleCue itself would send, if any. CuddleCue's trial-ending and trial-ended are not here because NibbleCue has no welcome trial; verify-email, reset-password and caregiver-invite are the shared server's sign-in mail (`$authNote`)."
+  },
+  "admin": {
+    "title": "NibbleCue Admin",
+    "$note": "Internal console, never seen by parents. NibbleCue has no console of its own: the shared server is run from CuddleCue's. Kept as a draft name in case the owner wants one."
+  }
+}

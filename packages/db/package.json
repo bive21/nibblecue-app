@@ -1,0 +1,18 @@
+{
+  "name": "@nibblecue/db",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The generated Supabase Database type for the server NibbleCue shares with CuddleCue (docs/REUSE.md).",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

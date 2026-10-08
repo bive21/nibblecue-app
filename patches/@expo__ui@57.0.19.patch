@@ -1,0 +1,61 @@
+diff --git a/ios/ImageView.swift b/ios/ImageView.swift
+index 170de73445439a3ba4e5495643ee5f7c3eb332ab..8a60cec9a338345d36c1477e62c97ff224055de1 100644
+--- a/ios/ImageView.swift
++++ b/ios/ImageView.swift
+@@ -26,18 +26,35 @@ public struct ImageView: ExpoSwiftUI.View {
+       }
+       return Image(systemName: systemName)
+     }
+-    if let assetName = props.assetName {
+-      if #available(iOS 16.0, tvOS 16.0, *) {
+-        return Image(assetName, variableValue: props.variableValue)
+-      }
+-      return Image(assetName)
+-    }
+     return nil
+   }
+ 
++  /// The `size` prop arrives as a `font` modifier. A symbol uses that font; a raster ignores it,
++  /// so the template image is framed to the same number of points.
++  private static func templateSide(_ modifiers: ModifierArray?) -> CGFloat {
++    guard let modifiers else { return 24 }
++    for modifier in modifiers {
++      guard modifier["$type"] as? String == "font" else { continue }
++      if let size = modifier["size"] as? CGFloat { return size }
++      if let size = modifier["size"] as? Double { return CGFloat(size) }
++      if let size = modifier["size"] as? NSNumber { return CGFloat(truncating: size) }
++    }
++    return 24
++  }
++
+   @ViewBuilder
+   public var body: some View {
+-    if let symbolImage {
++    // `assetName` is a raster in the widget extension's asset catalog, drawn as its catalog says:
++    // a line glyph is a template the foreground style tints, an illustrated picture keeps its
++    // own colors. `Image(name, variableValue:)` looks up a symbol set, which these are not.
++    if let assetName = props.assetName {
++      let side = Self.templateSide(props.modifiers)
++      Image(assetName)
++        .resizable()
++        .scaledToFit()
++        .frame(width: side, height: side)
++        .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
++    } else if let symbolImage {
+       symbolImage
+         .applyImageModifiers(props.modifiers, appContext: props.appContext)
+         .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
+diff --git a/src/swift-ui/Image/index.tsx b/src/swift-ui/Image/index.tsx
+index 7d40eae96fce872b58904ff512f48bb049e86ff4..15c3aa1ff76279bc7d01ea9ea8d7795d4badc891 100644
+--- a/src/swift-ui/Image/index.tsx
++++ b/src/swift-ui/Image/index.tsx
+@@ -14,7 +14,8 @@ export interface ImageProps extends CommonViewModifierProps {
+    */
+   systemName?: SFSymbol;
+   /**
+-   * The asset catalog name of a custom SF Symbol imported as a symbol set.
++   * The asset catalog name of an image in the widget extension.
++   * Drawn as a template, so `color` tints it. A symbol set is `systemName`.
+    */
+   assetName?: string;
+   /**

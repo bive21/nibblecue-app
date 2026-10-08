@@ -1,0 +1,17 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    // app.config.ts imports the coins grammar as `../../packages/core/src/tags/coins.ts`,
+    // extension and all, because EXPO reads that file with Node's ESM loader and Node will not
+    // resolve it otherwise (src/app-config.test.ts explains, and guards it). Safe here because
+    // this project only ever typechecks with --noEmit; Metro does the bundling.
+    "allowImportingTsExtensions": true,
+    "types": ["node"]
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+  "exclude": ["node_modules", "dist", "ios", "android"]
+}

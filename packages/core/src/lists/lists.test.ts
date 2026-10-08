@@ -1,0 +1,510 @@
+/**
+ * The two lists, held to what the prototype does and to the one rule that is not a nicety:
+ * neither of them is part of the baby's record, so nothing here computes anything about a
+ * baby. These are strings and weekdays.
+ */
+import { describe, expect, it } from 'vitest';
+import {
+  basketLine,
+  boughtOn,
+  doneLine,
+  groupByShop,
+  dueToday,
+  inTheBasket,
+  isDone,
+  isLate,
+  lineLabel,
+  lineTitle,
+  NO_STORE,
+  onListQty,
+  shoppingText,
+  stillToBuy,
+  toggleOnList,
+  tasksForToday,
+  tripFinished,
+  TASK_REPEAT_LABEL,
+  type ShoppingLine,
+  type TaskRow,
+} from './index';
+import { clampShoppingQty, SHOPPING_QTY_MAX } from '../sync/chains';
+
+const line = (over: Partial<ShoppingLine> & { title: string }): ShoppingLine => ({
+  id: over.title,
+  qty: 1,
+  note: null,
+  store: null,
+  checkedAt: null,
+  ...over,
+});
+
+const task = (over: Partial<TaskRow> & { title: string }): TaskRow => ({
+  id: over.title,
+  atLocalTime: null,
+  repeat: 'DAILY',
+  assignedTo: null,
+  lastDoneOn: null,
+  ...over,
+});
+
+describe('the shopping list', () => {
+  const lines = [
+    line({ title: 'Diapers', qty: 2, store: 'Target' }),
+    line({ title: 'Wipes', store: 'Target', checkedAt: '2026-09-15T10:00:00.000Z' }),
+    line({ title: 'Bananas' }),
+    line({ title: 'Formula', store: 'Pharmacy', note: 'the blue tub' }),
+  ];
+
+  it('splits into what is left and what is in the basket', () => {
+    expect(stillToBuy(lines).map(l => l.title)).toEqual(['Diapers', 'Bananas', 'Formula']);
+    expect(inTheBasket(lines).map(l => l.title)).toEqual(['Wipes']);
+    expect(basketLine(lines)).toBe('1 of 4 in the basket');
+    expect(basketLine([])).toBe('The list is empty');
+  });
+
+  it('groups by shop, alphabetically, with the anywhere lines last', () => {
+    expect(groupByShop(stillToBuy(lines))).toEqual([
+      { store: 'Pharmacy', lines: [lines[3]] },
+      { store: 'Target', lines: [lines[0]] },
+      { store: NO_STORE, lines: [lines[2]] },
+    ]);
+  });
+
+  it('shows a quantity only when there is more than one', () => {
+    expect(lineLabel({ title: 'Diapers', qty: 2 })).toBe('Diapers ×2');
+    expect(lineLabel({ title: 'Diapers', qty: 1 })).toBe('Diapers');
+  });
+
+  /**
+   * THE SHAPE THE PEDIATRICIAN SHEET USES (the owner, 2026-09-22: "when sharing by text, make it
+   * more interesting … same like pediatrician report"). A context line under the heading, shop
+   * names as UPPER-CASE headings, and every line indented under its shop — so the message keeps
+   * its structure when a chat app rewraps it, which is what happens to every one of these.
+   */
+  it('shares only what is still to buy, under a heading per shop, with the size of the errand', () => {
+    const text = shoppingText(lines);
+    expect(text).toBe(
+      [
+        'Shopping list',
+        '',
+        '3 items · 3 shops',
+        '',
+        'PHARMACY',
+        '  • Formula',
+        '      the blue tub',
+        '',
+        'TARGET',
+        '  • Diapers ×2',
+        '',
+        NO_STORE.toUpperCase(),
+        '  • Bananas',
+      ].join('\n'),
+    );
+    // the ticked line is not in the message a partner reads in a queue
+    expect(text).not.toContain('Wipes');
+    expect(shoppingText([])).toContain('(Nothing on the list.)');
+    // one of each is singular, like every other count in the app
+    expect(shoppingText([line({ title: 'Bananas' })])).toContain('1 item · 1 shop');
+  });
+
+  /**
+   * ONE SHOP, WHATEVER THE CASE. `byStore` grouped by the literal string, so a household with
+   * "Target" on one line and "target" on another saw one shop on the list and two in the message
+   * it sent — the message disagreeing with the app about the household's own data. It groups by
+   * `groupByShop` now, the screen's own function.
+   */
+  it('merges a shop spelled two ways, exactly as the list does', () => {
+    const text = shoppingText([
+      line({ title: 'Diapers', store: 'Target' }),
+      line({ title: 'Wipes', store: 'target' }),
+    ]);
+    expect(text).toContain('1 shop');
+    expect(text.match(/TARGET/g) ?? []).toHaveLength(1);
+    expect(text).toContain('  • Diapers');
+    expect(text).toContain('  • Wipes');
+  });
+
+  /**
+   * THE APP NAME IS A PARAMETER, and this test proves it by passing one that is not the app's.
+   * Every product name in this repository is read from `assets/brand.json`; `assets/brand.test.ts`
+   * fails the build on one typed into a source file, a test fixture included. So the caller
+   * hands the name in, and what this file checks is the SHAPE of the sentence.
+   */
+  it('says who the run is for and signs itself with whatever made it', () => {
+    const text = shoppingText(lines, {
+      childNames: ['Emma'],
+      madeBy: { appName: 'ExampleApp', at: 'Sep 17, 2026 at 9:42 PM' },
+    });
+    expect(text.split('\n')[0]).toBe('Please buy this for Emma');
+    expect(text.endsWith('\nGenerated by ExampleApp on Sep 17, 2026 at 9:42 PM')).toBe(true);
+    // the blank line before the signature: it is a footer, not another shopping line
+    expect(text).toContain('\n\nGenerated by ');
+
+    // an empty list is still signed and still addressed — a partner who gets one should be able
+    // to see it is current rather than wonder whether it failed to send
+    const none = shoppingText([], {
+      childNames: ['Emma'],
+      madeBy: { appName: 'ExampleApp', at: 'Sep 17, 2026 at 9:42 PM' },
+    });
+    expect(none).toBe(
+      'Please buy this for Emma\n\n(Nothing on the list.)\n\nGenerated by ExampleApp on Sep 17, 2026 at 9:42 PM',
+    );
+  });
+
+  it('names twins the way a person would, and falls back when it knows no name', () => {
+    const head = (names: string[]): string =>
+      shoppingText(lines, { childNames: names }).split('\n')[0] ?? '';
+    expect(head([])).toBe('Shopping list');
+    expect(head(['  '])).toBe('Shopping list');
+    expect(head(['Emma'])).toBe('Please buy this for Emma');
+    expect(head(['Emma', 'Noah'])).toBe('Please buy this for Emma and Noah');
+    expect(head(['Emma', 'Noah', 'Ava'])).toBe('Please buy this for Emma, Noah and Ava');
+    // and with no signature asked for, nothing is appended
+    expect(shoppingText(lines, { childNames: ['Emma'] })).not.toContain('Generated by');
+  });
+
+  /**
+   * THE KIND, THE NAME, THEN THE SIZE UNDER IT (the owner, 2026-09-19: "the category needs to be
+   * written for clarity … Diapers: Pampers Swaddle / Size 3"). `Pampers Swaddlers — Size 3` on
+   * one line reads as a brand and a dash to whoever the list was sent to, which is the person
+   * this message exists for.
+   */
+  it('a catalog line names its kind, then its size, its note and its link', () => {
+    const text = shoppingText([
+      {
+        id: 'x',
+        title: 'Pampers Swaddlers',
+        qty: 1,
+        note: 'The green pack, not the blue one.',
+        store: 'Target',
+        checkedAt: null,
+        supplyId: 'sp1',
+        categoryLabel: 'Diapers',
+        variant: 'Size 3 (16–28 lb)',
+        pack: '84-count box',
+        link: 'https://example.test/p/123',
+      },
+    ]);
+    expect(text).toBe(
+      [
+        'Shopping list',
+        '',
+        '1 item · 1 shop',
+        '',
+        'TARGET',
+        '  • Diapers: Pampers Swaddlers',
+        '      Size 3 (16–28 lb) · 84-count box',
+        '      The green pack, not the blue one.',
+        '      https://example.test/p/123',
+      ].join('\n'),
+    );
+  });
+
+  it('a one-off keeps its own words: it has no catalog entry to have a kind in', () => {
+    const text = shoppingText([
+      { id: 'y', title: 'Bananas', qty: 1, note: null, store: null, checkedAt: null },
+    ]);
+    expect(text).toContain('  • Bananas');
+    // no `Kind: name` anywhere — a one-off has no catalog entry to take a kind from
+    expect(text).not.toMatch(/• [^\n]*:/);
+  });
+
+  /**
+   * A ONE-OFF'S QUANTITY IS IN THE SHARED MESSAGE (the owner, 2026-10-03). The row used to refuse
+   * a stepper on a one-off, so Share never had a number to print; `lineLabel` already knew how.
+   * Two bananas is two bananas on the partner's phone and in the text they send.
+   */
+  it('a one-off’s quantity shows in the shared list, the same way a supply’s does', () => {
+    const text = shoppingText([
+      { id: 'y', title: 'Bananas', qty: 3, note: null, store: null, checkedAt: null },
+      {
+        id: 'z',
+        title: 'Pampers Swaddlers',
+        qty: 2,
+        note: null,
+        store: 'Target',
+        checkedAt: null,
+        supplyId: 'sp1',
+        categoryLabel: 'Diapers',
+      },
+    ]);
+    expect(text).toContain('  • Bananas ×3');
+    expect(text).toContain('  • Diapers: Pampers Swaddlers ×2');
+    expect(lineLabel({ title: 'Bananas', qty: 3 })).toBe('Bananas ×3');
+    expect(lineLabel({ title: 'Bananas', qty: 1 })).toBe('Bananas');
+  });
+
+  it('lineTitle names the kind first, and says the name alone without one', () => {
+    const base = {
+      id: 'x',
+      title: 'Pampers Swaddlers',
+      qty: 1,
+      note: null,
+      store: null,
+      checkedAt: null,
+    };
+    expect(lineTitle({ ...base, categoryLabel: 'Diapers' })).toBe('Diapers: Pampers Swaddlers');
+    expect(lineTitle({ ...base, categoryLabel: '  ' })).toBe('Pampers Swaddlers');
+    expect(lineTitle(base)).toBe('Pampers Swaddlers');
+  });
+});
+
+describe('the household checklist', () => {
+  const TODAY = '2026-09-15'; // a Tuesday
+  const tasks = [
+    task({ title: 'Wash the bottles', atLocalTime: '21:00' }),
+    task({ title: 'Pack the diaper bag', atLocalTime: '07:30', repeat: 'WEEKDAYS' }),
+    task({ title: 'Big shop', repeat: 'WEEKENDS' }),
+    task({ title: 'Call the clinic', repeat: 'ONCE' }),
+    task({ title: 'Start the laundry' }),
+  ];
+
+  it('a repeat decides the day, and a one-off leaves once it is ticked', () => {
+    // Tuesday
+    expect(tasks.filter(t => dueToday(t, 2)).map(t => t.title)).toEqual([
+      'Wash the bottles',
+      'Pack the diaper bag',
+      'Call the clinic',
+      'Start the laundry',
+    ]);
+    // Sunday
+    expect(tasks.filter(t => dueToday(t, 0)).map(t => t.title)).toEqual([
+      'Wash the bottles',
+      'Big shop',
+      'Call the clinic',
+      'Start the laundry',
+    ]);
+    expect(dueToday({ repeat: 'ONCE', lastDoneOn: TODAY }, 2)).toBe(false);
+    expect(Object.keys(TASK_REPEAT_LABEL)).toHaveLength(4);
+  });
+
+  it('orders by time, any-time last, and counts what is done', () => {
+    expect(tasksForToday(tasks, 2).map(t => t.title)).toEqual([
+      'Pack the diaper bag',
+      'Wash the bottles',
+      'Call the clinic',
+      'Start the laundry',
+    ]);
+    const some = [task({ title: 'a', lastDoneOn: TODAY }), task({ title: 'b' })];
+    expect(doneLine(some, TODAY)).toBe('1 of 2 done');
+    expect(doneLine([], TODAY)).toBe('Nothing on the list');
+    expect(isDone(some[0]!, TODAY)).toBe(true);
+    // yesterday's tick does not carry over: a daily chore comes back
+    expect(isDone({ lastDoneOn: '2026-09-14' }, TODAY)).toBe(false);
+  });
+
+  it('is late only past its own time, and never once it is done', () => {
+    const t = { atLocalTime: '21:00', lastDoneOn: null };
+    expect(isLate(t, TODAY, 20 * 60)).toBe(false);
+    expect(isLate(t, TODAY, 21 * 60 + 1)).toBe(true);
+    expect(isLate({ ...t, lastDoneOn: TODAY }, TODAY, 23 * 60)).toBe(false);
+    // any time is never late: there is no time to be past
+    expect(isLate({ atLocalTime: null, lastDoneOn: null }, TODAY, 23 * 60)).toBe(false);
+  });
+});
+
+/**
+ * The quantity bound is exported so the stepper on the list and the write behind it cannot
+ * disagree. A − that stays live at 1, or a + that counts to 200 and is silently clamped on
+ * save, is a control lying about what it did — and the stepper reads these two numbers.
+ */
+describe('clampShoppingQty', () => {
+  it('holds a line between one and the max, whole', () => {
+    expect(clampShoppingQty(0)).toBe(1);
+    expect(clampShoppingQty(-4)).toBe(1);
+    expect(clampShoppingQty(1)).toBe(1);
+    expect(clampShoppingQty(2.4)).toBe(2);
+    expect(clampShoppingQty(SHOPPING_QTY_MAX + 50)).toBe(SHOPPING_QTY_MAX);
+  });
+
+  it('takes a number that is not one as one of something', () => {
+    expect(clampShoppingQty(Number.NaN)).toBe(1);
+    expect(clampShoppingQty(Number.POSITIVE_INFINITY)).toBe(1);
+  });
+});
+
+/**
+ * The 2026-09-19 shopping redesign's rules. Each is a line a parent would read as wrong: one
+ * trip split into "Target" and "target", a second tap that adds a second copy instead of taking
+ * the first off, or a tick that does not survive the other phone.
+ */
+describe('grouping a trip by shop', () => {
+  const line = (id: string, store: string | null): ShoppingLine => ({
+    id,
+    title: id,
+    qty: 1,
+    note: null,
+    store,
+    checkedAt: null,
+  });
+
+  it('merges two spellings of one shop, and keeps the first one seen', () => {
+    const groups = groupByShop([line('a', 'Target'), line('b', 'target'), line('c', 'TARGET')]);
+    expect(groups).toHaveLength(1);
+    expect(groups[0]?.store).toBe('Target');
+    expect(groups[0]?.lines.map(l => l.id)).toEqual(['a', 'b', 'c']);
+  });
+
+  it('merges on the trimmed name too, since a shop is free text', () => {
+    const groups = groupByShop([line('a', 'Target'), line('b', ' target ')]);
+    expect(groups).toHaveLength(1);
+  });
+
+  it('puts named shops in order and Any shop last', () => {
+    const groups = groupByShop([
+      line('a', null),
+      line('b', 'Whole Foods'),
+      line('c', 'Aldi'),
+      line('d', null),
+    ]);
+    expect(groups.map(g => g.store)).toEqual(['Aldi', 'Whole Foods', NO_STORE]);
+    // and the two with no shop are one group, not two
+    expect(groups[2]?.lines.map(l => l.id)).toEqual(['a', 'd']);
+  });
+
+  it('is empty for an empty list', () => {
+    expect(groupByShop([])).toEqual([]);
+  });
+});
+
+describe('a tap on a catalog row', () => {
+  const on = (id: string, supplyId: string): ShoppingLine => ({
+    id,
+    title: supplyId,
+    qty: 2,
+    note: null,
+    store: null,
+    checkedAt: null,
+    supplyId,
+  });
+
+  it('adds one when the supply is not on the list', () => {
+    expect(toggleOnList('s1', [])).toEqual({ action: 'add', supplyId: 's1', qty: 1 });
+  });
+
+  it('takes it off when it is — never a second copy', () => {
+    expect(toggleOnList('s1', [on('l1', 's1')])).toEqual({ action: 'remove', lineId: 'l1' });
+  });
+
+  /**
+   * A LINE IN THE BASKET HAS BEEN BOUGHT, and a supply is on the list only while it has a line
+   * still to buy — the picker and the Supplies page draw it so, and the toggle reads the same lines.
+   * This used to say the opposite ("a basket line is still ON the list"), while both screens drew
+   * that line's supply with a +; so on the way to a new list each + took a bought line out of the
+   * basket instead of adding one (the owner's report, 2026-09-26). The + adds now, and the bought
+   * line leaves with its trip.
+   */
+  it('reads a line in the basket as bought, not as on the list: the + adds a fresh one', () => {
+    const ticked = { ...on('l1', 's1'), checkedAt: '2026-09-19T12:00:00.000Z' };
+    expect(toggleOnList('s1', [ticked])).toEqual({ action: 'add', supplyId: 's1', qty: 1 });
+    expect(onListQty('s1', [ticked])).toBeNull();
+    // and with a fresh line on the list beside the bought one, a tap takes off the fresh one
+    expect(toggleOnList('s1', [ticked, on('l2', 's1')])).toEqual({
+      action: 'remove',
+      lineId: 'l2',
+    });
+    expect(onListQty('s1', [ticked, on('l2', 's1')])).toBe(2);
+  });
+
+  it('reports the quantity for the pill, and null when it is off', () => {
+    expect(onListQty('s1', [on('l1', 's1')])).toBe(2);
+    expect(onListQty('s2', [on('l1', 's1')])).toBeNull();
+    // a qty that arrived as 0 still reads as one of it, never as none
+    expect(onListQty('s1', [{ ...on('l1', 's1'), qty: 0 }])).toBe(1);
+  });
+});
+
+/**
+ * THE TRIP IS OVER, AND WHAT IT RECORDS (the owner's report, 2026-09-26: a one-off stayed in the
+ * basket of the list that came after an "All done").
+ */
+describe('a finished trip', () => {
+  const T = '2026-09-19T16:12:00.000Z';
+  it('is over only when something is in the basket and nothing is left to buy', () => {
+    expect(tripFinished([])).toBe(false);
+    expect(tripFinished([{ checkedAt: T }, { checkedAt: T }])).toBe(true);
+    // one thing still to buy — a one-off nobody found, say — is a trip still going
+    expect(tripFinished([{ checkedAt: T }, { checkedAt: null }])).toBe(false);
+    expect(tripFinished([{ checkedAt: null }])).toBe(false);
+  });
+
+  // the household's own day, from a zone the caller holds: here, one five hours behind UTC
+  const dayOf = (ms: number) => new Date(ms - 5 * 60 * 60_000).toISOString().slice(0, 10);
+
+  it('records each supply on the day its tick was made, not the day the trip is finished', () => {
+    const days = boughtOn(
+      [
+        { supplyId: 's1', checkedAt: '2026-09-19T16:12:00.000Z' },
+        // 1 a.m. UTC on the 20th is still the evening of the 19th in the household's zone
+        { supplyId: 's2', checkedAt: '2026-09-20T01:00:00.000Z' },
+        // a one-off records nothing anywhere
+        { supplyId: null, checkedAt: T },
+      ],
+      dayOf,
+      '2026-09-23',
+    );
+    expect([...days]).toEqual([
+      ['s1', '2026-09-19'],
+      ['s2', '2026-09-19'],
+    ]);
+  });
+
+  it('takes the later tick for a supply bought twice, and never moves a date backwards', () => {
+    const basket = [
+      { supplyId: 's1', checkedAt: '2026-09-18T15:00:00.000Z' },
+      { supplyId: 's1', checkedAt: '2026-09-19T15:00:00.000Z' },
+      { supplyId: 's2', checkedAt: '2026-09-18T15:00:00.000Z' },
+    ];
+    const held = new Map<string, string | null>([
+      ['s1', '2026-09-01'],
+      // another phone's trip, synced meanwhile, already says later
+      ['s2', '2026-09-21'],
+    ]);
+    expect(boughtOn(basket, dayOf, '2026-09-23', held)).toEqual(
+      new Map([
+        ['s1', '2026-09-19'],
+        ['s2', '2026-09-21'],
+      ]),
+    );
+  });
+
+  it('falls back to today for a tick that will not parse', () => {
+    expect(boughtOn([{ supplyId: 's1', checkedAt: 'not a time' }], dayOf, '2026-09-23')).toEqual(
+      new Map([['s1', '2026-09-23']]),
+    );
+  });
+});
+
+/**
+ * ONE WORD FOR ONE THING, ON TWO SCREENS A TAP APART. The catalog and the list do not import one
+ * another — a supply knows nothing about a shopping line by design — so the heading a thing with
+ * no shop files under is spelled in both halves of core. This is the tripwire that stops them
+ * becoming two words.
+ */
+describe('the no-shop heading', () => {
+  it('is the same string in the catalog and on the list', async () => {
+    const { ANY_SHOP } = await import('../supplies/index');
+    expect(NO_STORE).toBe(ANY_SHOP);
+  });
+});
+
+describe('one-offs sit together under the supplies in each shop (2026-10-06)', () => {
+  const l = (id: string, supplyId: string | null): ShoppingLine => ({
+    id,
+    title: id,
+    qty: 1,
+    note: null,
+    store: null,
+    checkedAt: null,
+    supplyId,
+  });
+
+  it('keeps each half in its own order, supplies first', () => {
+    const [any] = groupByShop([
+      l('strawberries', null),
+      l('swaddle', 's1'),
+      l('banana', null),
+      l('wipes', 's2'),
+    ]);
+    expect(any?.lines.map(x => x.id)).toEqual(['swaddle', 'wipes', 'strawberries', 'banana']);
+  });
+});

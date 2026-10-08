@@ -1,0 +1,64 @@
+{
+  "profile": "CDC_US",
+  "version": "2026_01",
+  "source": "CDC — Proper Storage and Preparation of Breast Milk",
+  "sourceUrl": "https://www.cdc.gov/breastfeeding-special-circumstances/hcp/handling-breast-milk/",
+  "effectiveDate": "2026-01-15",
+  "locale": "en-US",
+  "disclaimer": "Storage windows are published general guidance, not advice about your milk or your baby. Check with your own health professional for your situation.",
+  "reviewRule": "This file is the ONLY place storage durations may live. Changing guidance means adding a new version file and bumping household.guidance_version — never editing values in code or in an old version.",
+  "conditions": {
+    "ROOM": {
+      "label": "Room temperature",
+      "detail": "up to 77°F / 25°C",
+      "bestUseMinutes": 240,
+      "guidanceLimitMinutes": 240
+    },
+    "FRIDGE": {
+      "label": "Refrigerator",
+      "detail": "40°F / 4°C",
+      "bestUseMinutes": 5760,
+      "guidanceLimitMinutes": 5760
+    },
+    "FREEZER": {
+      "label": "Freezer",
+      "detail": "0°F / −18°C or colder",
+      "bestUseMinutes": 263520,
+      "guidanceLimitMinutes": 525600
+    },
+    "DEEP_FREEZER": {
+      "label": "Deep freezer",
+      "detail": "−4°F / −20°C or colder",
+      "bestUseMinutes": 263520,
+      "guidanceLimitMinutes": 525600
+    },
+    "THAWED": {
+      "label": "Thawed, in refrigerator",
+      "detail": "previously frozen, fully thawed",
+      "bestUseMinutes": 1440,
+      "guidanceLimitMinutes": 1440
+    }
+  },
+  "anchors": {
+    "ROOM": "pumped_at",
+    "FRIDGE": "pumped_at",
+    "FREEZER": "first_frozen_at",
+    "DEEP_FREEZER": "first_frozen_at",
+    "THAWED": "thawed_at"
+  },
+  "display": {
+    "bestUseLabel": "Best use by",
+    "limitLabel": "Storage guidance limit",
+    "freezerBestUseHuman": "about 6 months",
+    "freezerLimitHuman": "about 12 months",
+    "neverSay": ["expired", "spoiled", "bad", "unsafe", "do not use"],
+    "rule": "Show both dates. Past best-use is presented neutrally as 'past best use', with the guidance limit still shown. The app never declares a container unusable."
+  },
+  "notifications": {
+    "grouping": "ONE grouped notification per threshold per household — never one per container.",
+    "bestUseThresholdsDays": [30, 7, 0],
+    "limitThresholdsDays": [30, 7, 1],
+    "copyTemplate": "{{oz}} of frozen milk is approaching its best-use date.",
+    "deepLink": "{{URL_SCHEME}}://stash?filter=use-soon"
+  }
+}

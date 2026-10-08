@@ -1,0 +1,31 @@
+{
+  "$meta": {
+    "version": "0.1.0",
+    "note": "NibbleCue Plus TARGET price points, for the store dashboards only. The app never reads a price from here: a price a parent sees comes from the store SDK at runtime. The owner decided on 2026-10-08 that NibbleCue Plus is its own subscription with its own price (\"this is a different subscription called nibblecue plus, and its different price too\"); the numbers and the product ids below are the developer's PROPOSAL until the owner sets them (docs/DECISIONS.md).",
+    "owner_to_confirm": true,
+    "discount_note": "39.99 a year against 12 × 4.99 = 59.88 a month: 33.2% off, the figure the subscribe page floors to \"save 33%\". Recompute if either target moves."
+  },
+  "packages": [
+    {
+      "key": "annual",
+      "product_id": "nibble_plus_annual",
+      "entitlement": "nibble_plus",
+      "target_price_usd": 39.99,
+      "period": "P1Y",
+      "default_selected": true,
+      "discount_vs_monthly_pct": 33.2
+    },
+    {
+      "key": "monthly",
+      "product_id": "nibble_plus_monthly",
+      "entitlement": "nibble_plus",
+      "target_price_usd": 4.99,
+      "period": "P1M",
+      "default_selected": false
+    }
+  ],
+  "welcome_preview": {
+    "$note": "CuddleCue's 14-day preview length, kept so the shared plan code reads one number. NibbleCue grants no preview of its own until the owner decides on one.",
+    "days": 14
+  }
+}

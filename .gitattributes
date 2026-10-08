@@ -1,0 +1,16 @@
+# Every text file is committed and checked out with LF, on every platform. Windows git
+# defaults to converting to CRLF on checkout, which the formatter (`prettier --check`) and
+# the editorconfig both reject; this setting wins over that default.
+* text=auto eol=lf
+
+# Binary assets are never touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.pdf binary

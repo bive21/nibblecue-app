@@ -1,0 +1,21 @@
+packages:
+  - apps/*
+  - packages/*
+
+# One place for the versions every workspace package shares, matched to CuddleCue's so a fix
+# found in one app ports to the other without a version gap.
+catalog:
+  '@types/node': ^22.20.2
+  typescript: ~6.0.3
+  vitest: ^4.1.11
+  zod: ^3.25.76
+
+# pnpm 10 refuses dependency build scripts unless they are listed here.
+onlyBuiltDependencies:
+  - '@swc/core'
+  - esbuild
+  - sharp
+  - unrs-resolver
+patchedDependencies:
+  '@expo/ui@57.0.19': patches/@expo__ui@57.0.19.patch
+  react-native-android-widget@0.22.1: patches/react-native-android-widget@0.22.1.patch
